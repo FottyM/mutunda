@@ -1,14 +1,19 @@
 import { css, cx } from "@emotion/css"
+import Logo from "../imgs/mutunda-logo.svg"
+import Hamburger from "../imgs/hamburger.svg"
 
 const NavWrapper = css`
-    background: red;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
     width: 100%;
 `
 
 const Navbar = () => {
     return ( 
         <div className={cx(NavWrapper)}>
-            Navbar
+            <Logo />
+            <Hamburger />
         </div>
      );
 }
