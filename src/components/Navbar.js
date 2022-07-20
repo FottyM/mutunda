@@ -3,7 +3,7 @@ import Logo from "../imgs/mutunda-logo.svg"
 import Hamburger from "../imgs/hamburger.svg"
 
 const NavWrapper = css`
-    padding: 20px;
+    padding: 30px;
     display: flex;
     justify-content: space-between;
     width: 100%;

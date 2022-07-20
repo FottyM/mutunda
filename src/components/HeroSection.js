@@ -1,4 +1,4 @@
-import HeroImage from "../imgs/hero-image.svg"
+import HeroImage from "../imgs/hero-background.svg"
 import styled from "@emotion/styled"
 import { css } from "@emotion/react"
 
