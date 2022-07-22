@@ -20,7 +20,7 @@ const StyledAbout = styled.div`
 
     span {
         font-weight: 400; 
-        font-size: clamp(20px, 2vw, 2rem);
+        font-size: clamp(20px, 1.8vw, 28px);
         line-height: 1.5;
         opacity: 0.7;
     }
