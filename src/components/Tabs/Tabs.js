@@ -59,9 +59,16 @@ const Tabs = ({children}) => {
                     line-height: 1;
                 }
 
+                h5 {
+                    font-size: 1.2rem;
+                    line-height: 1;
+                    opacity: 0.6;
+                    margin: 0;
+                }
+
                 p {
                     font-size: 20px;
-                    line-height: 1.4;
+                    line-height: 1.6;
                 }
             `}>
                 {activeTab.props.children}

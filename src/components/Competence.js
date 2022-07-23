@@ -58,6 +58,7 @@ const arr = [
   const Text = styled.span`
     font-size: 1.25rem;
     line-height: 1.4;
+    opacity: 0.8;
   `
   
 

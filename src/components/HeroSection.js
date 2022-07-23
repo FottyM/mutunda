@@ -5,7 +5,7 @@ import styled from "@emotion/styled"
 import { useEffect, useState } from "react"
 
 const Wrapper = styled.div`
-    width: 100vw;
+    width: 100%;
     height: 45rem;
     background: #1A191E;
     position: relative;
@@ -58,8 +58,6 @@ const HeroSection = () => {
         media.addEventListener('change', listener)
         return () => media.removeEventListener("change", listener)
     }, [matches])
-
-    console.log('matches', matches);
 
     return ( 
         <Wrapper>

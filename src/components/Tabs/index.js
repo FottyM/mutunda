@@ -7,7 +7,7 @@ import { css } from "@emotion/css"
 const TabsNavigation = () => {
     return (
         <div className={css`
-        padding: 4rem 15rem;
+        padding: 4rem 12vw;
 
         @media (max-width: 767.98px) {
           padding: 2rem 1rem;
