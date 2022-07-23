@@ -2,10 +2,10 @@ import React from 'react'
 import styled from "@emotion/styled"
 
 const StyledAbout = styled.div`
-    padding: 4rem 14rem;
+    padding: 4rem 12vw;
     background: #FAFAFF;
     display: grid;
-    grid-template-columns: 0.6fr 900px;
+    grid-template-columns: 0.8fr 40vw;
     margin: 2rem 0;
 
     h2 {
