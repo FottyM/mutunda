@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="869.794" height="204.751" viewBox="0 0 869.794 204.751">
+  <g id="Group_1991" data-name="Group 1991" transform="translate(-517 -378.581)">
+    <g id="Group_1988" data-name="Group 1988" transform="translate(3)">
+      <rect id="Rectangle_1059" data-name="Rectangle 1059" width="25.766" height="79.557" transform="matrix(0.966, 0.259, -0.259, 0.966, 865.951, 438.841)" fill="#dc7759"/>
+      <rect id="Rectangle_1060" data-name="Rectangle 1060" width="13.26" height="79.557" transform="matrix(-0.259, 0.966, -0.966, -0.259, 916.948, 468.485)" fill="#dc7759"/>
+    </g>
+    <rect id="Rectangle_1063" data-name="Rectangle 1063" width="25.77" height="79.557" transform="translate(1329.944 444.493)" fill="#6f729d"/>
+    <rect id="Rectangle_1062" data-name="Rectangle 1062" width="13.26" height="79.557" transform="translate(1386.794 458.305) rotate(90)" fill="#6f729d"/>
+    <path id="Polygon_7" data-name="Polygon 7" d="M48.227,0,96.455,79.794H0Z" transform="translate(1187.285 444.475)" fill="#f3c978"/>
+    <rect id="Rectangle_1067" data-name="Rectangle 1067" width="80.671" height="79.794" transform="translate(517 444.475)" fill="#f3c978"/>
+    <g id="Group_1983" data-name="Group 1983" transform="translate(948.781 472.016) rotate(-30)">
+      <path id="Path_9231" data-name="Path 9231" d="M0,25.646a20.443,20.443,0,0,1,2.567-9.814,26.465,26.465,0,0,1,7.31-8.32,35.876,35.876,0,0,1,10.94-5.559,43.629,43.629,0,0,1,25.81,0,35.876,35.876,0,0,1,10.94,5.559,26.463,26.463,0,0,1,7.31,8.32,20.443,20.443,0,0,1,2.567,9.814H0Z" transform="translate(67.444 66.61) rotate(180)" fill="#6f729d"/>
+      <rect id="Rectangle_1066" data-name="Rectangle 1066" width="67.449" height="46.011" transform="translate(0 -4)" fill="#6f729d"/>
+    </g>
+    <path id="Path_9231-2" data-name="Path 9231" d="M0,32.753A35.109,35.109,0,0,1,2.3,20.219,33.055,33.055,0,0,1,8.863,9.593a30.223,30.223,0,0,1,9.817-7.1,28.141,28.141,0,0,1,23.161,0,30.223,30.223,0,0,1,9.817,7.1,33.052,33.052,0,0,1,6.56,10.626,35.109,35.109,0,0,1,2.3,12.534H0Z" transform="matrix(0.259, 0.966, -0.966, 0.259, 786.846, 428.942)" fill="#6f729d"/>
+    <rect id="Rectangle_1066-2" data-name="Rectangle 1066" width="60.527" height="34.011" transform="matrix(-0.259, -0.966, 0.966, -0.259, 739.625, 504.324)" fill="#6f729d"/>
+    <rect id="Rectangle_1061" data-name="Rectangle 1061" width="79.016" height="79.557" transform="translate(1097.647 426.808) rotate(30)" fill="#7fb3a6"/>
+    <path id="Path_9229" data-name="Path 9229" d="M0,0H69.4L0,59.793Z" transform="translate(1053.468 553.436) rotate(-60)" fill="#1a191e"/>
+    <path id="Path_9232" data-name="Path 9232" d="M0,0H81.283L0,70.03Z" transform="matrix(-0.259, -0.966, 0.966, -0.259, 744.997, 524.349)" fill="#6f729d"/>
+    <path id="Path_9230" data-name="Path 9230" d="M0,0H69.4L0,59.793Z" transform="translate(1170.118 408.477) rotate(120)" fill="#1a191e"/>
+    <rect id="Rectangle_1065" data-name="Rectangle 1065" width="61.878" height="57.458" transform="translate(559.237 498.481)" fill="#1a191e"/>
+    <rect id="Rectangle_1068" data-name="Rectangle 1068" width="60.475" height="8.275" transform="translate(559.237 463.474)" fill="#1a191e"/>
+    <rect id="WhatsApp_Image_2022-07-22_at_9.44.35_PM" data-name="WhatsApp Image 2022-07-22 at 9.44.35 PM" width="72.78" height="72.78" rx="36.39" transform="translate(627.977 464.475)" fill="#7fb3a6"/>
+    <circle id="Ellipse_175" data-name="Ellipse 175" cx="6" cy="6" r="6" transform="translate(657.897 495)" fill="#1a191e"/>
+    <circle id="Ellipse_177" data-name="Ellipse 177" cx="4.5" cy="4.5" r="4.5" transform="translate(758.897 459)" fill="#1a191e"/>
+    <circle id="Ellipse_176" data-name="Ellipse 176" cx="6" cy="6" r="6" transform="translate(1229.897 489)" fill="#1a191e"/>
+  </g>
+</svg>

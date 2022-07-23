@@ -7,6 +7,7 @@ const NavWrapper = css`
     display: flex;
     justify-content: space-between;
     width: 100%;
+    background: #1A191E;
 `
 
 const Navbar = () => {
