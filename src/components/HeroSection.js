@@ -2,6 +2,7 @@ import HeroImage from "../imgs/hero-bg.svg"
 import HeroTitle from "../imgs/fortunat.svg"
 import HeroTitleSmall from "../imgs/fortunat-small.svg"
 import styled from "@emotion/styled"
+import { useEffect, useState } from "react"
 
 const Wrapper = styled.div`
     width: 100vw;
@@ -47,11 +48,24 @@ const StyledSVG = styled(HeroImage)`
 
 
 const HeroSection = () => {
+    const [matches, setMatches] = useState()
+    useEffect(() => {
+        const media = window.matchMedia("(max-width: 767.98px)");
+        if (media.matches !== matches) {
+            setMatches(media.matches)
+        }
+        const listener = () => setMatches(media.matches)
+        media.addEventListener('change', listener)
+        return () => media.removeEventListener("change", listener)
+    }, [matches])
+
+    console.log('matches', matches);
+
     return ( 
         <Wrapper>
             <StyledSVG />
             <Text>            
-                <h1><HeroTitle /></h1>
+                <h1>{matches ? (<HeroTitleSmall />) : (<HeroTitle />)}</h1>
                 <span>A fullstack software Engineer</span>
             </Text>
         </Wrapper>
