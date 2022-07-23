@@ -1,7 +1,7 @@
 import HeroImage from "../imgs/hero-bg.svg"
 import HeroTitle from "../imgs/fortunat.svg"
+import HeroTitleSmall from "../imgs/fortunat-small.svg"
 import styled from "@emotion/styled"
-import { css } from "@emotion/react"
 
 const Wrapper = styled.div`
     width: 100vw;
@@ -45,11 +45,12 @@ const StyledSVG = styled(HeroImage)`
     align-items: center;
 `
 
+
 const HeroSection = () => {
     return ( 
         <Wrapper>
             <StyledSVG />
-            <Text>
+            <Text>            
                 <h1><HeroTitle /></h1>
                 <span>A fullstack software Engineer</span>
             </Text>
