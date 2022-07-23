@@ -20,6 +20,7 @@ const Technology = ({ title, icon }) => {
                 font-family: 'Josefin Sans', sans-serif;
                 font-weight: 600;
                 margin-top: 1.2rem;
+                text-align: center;
             }
         `}>
             {icon}

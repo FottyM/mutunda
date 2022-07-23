@@ -14,6 +14,10 @@ const Tabs = ({children}) => {
             padding: 1rem 15rem;
             max-width: 1800px;
             justify-content: center;
+
+            @media (max-width: 767.98px) {
+                padding: 2rem 1rem;
+              }
         `}>
             <div className={css`
                 display: flex;
@@ -31,12 +35,12 @@ const Tabs = ({children}) => {
                         cursor: pointer;
                         font-family: 'Raleway', sans-serif;
                         font-weight: 500;
-                        border-left: 5px solid #7e849e;
+                        border-left: 5px solid #F0F1F5;
+                        transition: all 0.2s;
 
                         ${activeTabIndex === index && `
-                            transition: border 0.2s;
-                            border-left: 5px solid #9ce5cc;
-                            color: #9ce5cc;
+                            border-left: 5px solid #6F729D;
+                            color: #6F729D;
                         `}
                     `}
                     onClick={() => { setActiveTabIndex(index)}}
@@ -52,7 +56,7 @@ const Tabs = ({children}) => {
 
                 h3 {
                     font-size: 1.6rem;
-                    line-height: 0.6;
+                    line-height: 1;
                 }
 
                 p {

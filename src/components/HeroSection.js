@@ -1,15 +1,17 @@
-import HeroImage from "../imgs/hero-background.svg"
+import HeroImage from "../imgs/hero-bg.svg"
+import HeroTitle from "../imgs/fortunat.svg"
 import styled from "@emotion/styled"
 import { css } from "@emotion/react"
 
 const Wrapper = styled.div`
     width: 100vw;
     height: 45rem;
-    background: rgb(79, 227, 193);
+    background: #1A191E;
     position: relative;
     display: grid;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 
 `
 const Text = styled.div`
@@ -21,6 +23,7 @@ const Text = styled.div`
         font-family: 'Josefin Sans', sans serif;
         font-size: clamp(30px, 4vw, 80px);
         line-height: 0;
+        margin: 0;
         text-transform: uppercase;
         font-weight: 700;
     }
@@ -29,6 +32,7 @@ const Text = styled.div`
         font-family: 'Raleway', sans serif;
         font-size: 22px;
         font-weight: 500;
+        color: #F3C978;
     }
 `
 const StyledSVG = styled(HeroImage)`
@@ -46,7 +50,7 @@ const HeroSection = () => {
         <Wrapper>
             <StyledSVG />
             <Text>
-                <h1>Fortunat Mutunda</h1>
+                <h1><HeroTitle /></h1>
                 <span>A fullstack software Engineer</span>
             </Text>
         </Wrapper>

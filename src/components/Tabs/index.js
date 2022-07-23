@@ -8,16 +8,23 @@ const TabsNavigation = () => {
     return (
         <div className={css`
         padding: 4rem 15rem;
+
+        @media (max-width: 767.98px) {
+          padding: 2rem 1rem;
+        }
         `}>
             <h3 className={css`
                 font-family: 'Josefin Sans', sans serif;
                 font-size: clamp(30px, 4vw, 40px);
-                line-height: 0;
                 text-transform: uppercase;
                 font-weight: 700;
                 color: #3B4754;
                 margin-bottom: 5rem;
                 padding-left: 15rem;
+
+                @media (max-width: 767.98px) {
+                  padding-left: 2rem;
+                }
             `}> Where I&apos;ve worked</h3>
         <Tabs>
             <div title="Katana">

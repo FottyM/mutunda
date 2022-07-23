@@ -71,6 +71,10 @@ const Technologies = () => {
             justify-content: center;
             gap: 20px;
             align-items: center;
+
+            @media (max-width: 767.98px) {
+              grid-template-columns: repeat(2, minmax(100px, 309px));
+            }
         `}>
             {arr.map(({ id, title, icon}) => (
                 <Technology 

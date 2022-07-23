@@ -11,11 +11,14 @@ const StyledAbout = styled.div`
     h2 {
         font-family: 'Josefin Sans', sans serif;
         font-size: clamp(30px, 4vw, 40px);
-        line-height: 0;
         text-transform: uppercase;
         font-weight: 700;
         color: #3B4754;
         padding-left: 15rem;
+
+        @media (max-width: 767.98px) {
+            padding-left: 0;
+          }
     }
 
     span {
