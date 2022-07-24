@@ -9,14 +9,14 @@ const arr = [
     {
       id: 1,
       icon: <Icon1 />,
-      background: "#F5F8FB",
+      background: "#F2F7F6",
       title: "",
       text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor? ",
     },
     {
       id: 2,
       icon: <Icon2 />,
-      background: "#EDEDEF",
+      background: "#F3F3F3",
       title: "",
       text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor? ",
     },
