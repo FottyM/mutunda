@@ -1,6 +1,5 @@
 import React from 'react';
 import Tabs from "./Tabs"
-import styled from "@emotion/styled"
 import { css } from "@emotion/css"
 
 
