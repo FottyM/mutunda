@@ -62,7 +62,7 @@ const Tabs = ({children}) => {
                 h5 {
                     font-size: 1.2rem;
                     line-height: 1;
-                    opacity: 0.6;
+                    opacity: 0.5;
                     margin: 0;
                 }
 
