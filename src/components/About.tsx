@@ -42,7 +42,7 @@ const About = () => {
     return (
         <StyledAbout>
             <h2>About me</h2>
-            <span>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. </span>        
+            <span>I am a software engineer with experience in JavaScript, TypeScript, and Rust. With a strong foundation in web development and skills in a variety of technologies and tools, including Docker, Jest, Mocha, React, Node.js, and the Loopback framework, I am dedicated to staying up-to-date with industry trends and continuously expanding my skillset.</span>        
         </StyledAbout>
     );
 }
