@@ -62,7 +62,7 @@ const arr = [
   `
   
 
-const Competence = () => {
+const Competence: React.FunctionComponent = () => {
     return (
         <Wrapper>
             <h3 className={css`
