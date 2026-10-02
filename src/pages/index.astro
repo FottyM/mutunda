@@ -8,11 +8,28 @@ const featuredProjects = await getCollection(
   "projects",
   ({ data }) => !data.draft && data.featured,
 );
+const profileStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Fortunat Mutunda",
+  url: Astro.site?.href,
+  sameAs: [
+    "https://github.com/FottyM",
+    "https://www.linkedin.com/in/fortunat-mutunda/",
+  ],
+  jobTitle: "Software engineer",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Tallinn",
+    addressCountry: "EE",
+  },
+};
 ---
 
 <BaseLayout
   title="Fortunat Mutunda — Software Engineer"
   description="Fortunat Mutunda is a software engineer working across web platforms, developer tools, and backend systems."
+  structuredData={profileStructuredData}
 >
   <main id="main-content">
     <section class="intro field-sheet" aria-labelledby="intro-heading">

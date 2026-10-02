@@ -17,6 +17,22 @@ interface Props {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const canonical = entry.data.canonicalUrl ?? new URL(`/writing/${entry.id}/`, Astro.site);
+const canonicalUrl = typeof canonical === "string" ? canonical : canonical.href;
+const articleStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished: entry.data.date.toISOString(),
+  mainEntityOfPage: canonicalUrl,
+  url: canonicalUrl,
+  keywords: entry.data.tags,
+  author: {
+    "@type": "Person",
+    name: "Fortunat Mutunda",
+    url: Astro.site?.href,
+  },
+};
 const formatDate = (date: Date) => new Intl.DateTimeFormat("en", {
   day: "numeric",
   month: "long",
@@ -29,6 +45,9 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
   title={`${entry.data.title} — Fortunat Mutunda`}
   description={entry.data.description}
   canonical={canonical}
+  structuredData={articleStructuredData}
+  openGraphType="article"
+  publishedTime={entry.data.date.toISOString()}
 >
   <main id="main-content" class="article-page">
     <header class="article-header">
