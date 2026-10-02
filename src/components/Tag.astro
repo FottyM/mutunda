@@ -1,0 +1,12 @@
+---
+interface Props {
+  href?: string;
+}
+
+const { href } = Astro.props;
+const Element = href ? "a" : "span";
+---
+
+<Element class="tag" href={href}>
+  <slot />
+</Element>

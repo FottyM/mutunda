@@ -7,13 +7,23 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   description="Fortunat Mutunda is a software engineer working across web platforms, developer tools, and backend systems."
 >
   <main id="main-content">
-    <section class="intro" aria-labelledby="intro-heading">
-      <p class="eyebrow">Software engineer</p>
-      <h1 id="intro-heading">Fortunat Mutunda</h1>
-      <p class="lede">
-        I build reliable web platforms, developer tools, and backend systems with
-        JavaScript, TypeScript, and Rust.
-      </p>
+    <section class="intro field-sheet" aria-labelledby="intro-heading">
+      <div class="field-sheet__index" aria-hidden="true">
+        <span>Field note</span>
+        <span>001 / 2026</span>
+      </div>
+      <div class="intro__content">
+        <p class="eyebrow">Software engineer · Tallinn, Estonia</p>
+        <h1 id="intro-heading">Fortunat<br />Mutunda</h1>
+        <p class="lede">
+          I build reliable web platforms, developer tools, and backend systems with
+          JavaScript, TypeScript, and Rust.
+        </p>
+      </div>
+      <div class="intro__margin-note" aria-label="Areas of practice">
+        <span>Practice</span>
+        <p>Web platforms<br />Developer tooling<br />Backend systems</p>
+      </div>
     </section>
   </main>
 </BaseLayout>

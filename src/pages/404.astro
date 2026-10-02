@@ -7,8 +7,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   description="The requested page could not be found."
 >
   <main id="main-content">
-    <section class="error-page" aria-labelledby="not-found-heading">
-      <p class="eyebrow">Error 404</p>
+    <section class="error-page field-sheet" aria-labelledby="not-found-heading">
+      <div class="field-sheet__index" aria-hidden="true">
+        <span>Field note</span>
+        <span>404 / Missing</span>
+      </div>
+      <p class="eyebrow">Archive error</p>
       <h1 id="not-found-heading">Page not found</h1>
       <p>The address may be outdated, or the page may have moved.</p>
       <a class="text-link" href="/">Return home <span aria-hidden="true">&rarr;</span></a>
