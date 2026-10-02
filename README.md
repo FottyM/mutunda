@@ -34,3 +34,6 @@ SITE_URL=https://preview.example.com npm run build
 
 The static output is written to `dist/` and can be inspected with
 `npm run preview`.
+
+See [`docs/content-authoring.md`](docs/content-authoring.md) for the Markdown
+publishing workflow for writing and project case studies.

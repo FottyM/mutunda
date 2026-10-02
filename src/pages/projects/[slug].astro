@@ -1,64 +1,55 @@
 ---
 import type { GetStaticPaths } from "astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ButtonLink from "../../components/ButtonLink.astro";
 import Tag from "../../components/Tag.astro";
-import { projects, type ProjectEntry } from "../../data/projects";
 
-export const getStaticPaths = (() =>
-  projects.map((project) => ({
-    params: { slug: project.slug },
+export const getStaticPaths = (async () => {
+  const projects = await getCollection("projects", ({ data }) => !data.draft);
+
+  return projects.map((project) => ({
+    params: { slug: project.data.slug },
     props: { project },
-  }))) satisfies GetStaticPaths;
+  }));
+}) satisfies GetStaticPaths;
 
 interface Props {
-  project: ProjectEntry;
+  project: CollectionEntry<"projects">;
 }
 
 const { project } = Astro.props;
+const { Content } = await render(project);
+const { data } = project;
 ---
 
 <BaseLayout
-  title={`${project.title} — Fortunat Mutunda`}
-  description={project.description}
+  title={`${data.title} — Fortunat Mutunda`}
+  description={data.description}
 >
   <main id="main-content" class="case-study">
     <header class="case-study__header">
       <div>
-        <p class="eyebrow">Case study · {project.year}</p>
-        <h1>{project.title}</h1>
-        <p class="lede">{project.summary}</p>
+        <p class="eyebrow">Case study · {data.year}</p>
+        <h1>{data.title}</h1>
+        <p class="lede">{data.summary}</p>
         <div class="button-row case-study__actions">
-          {project.links.live && <ButtonLink href={project.links.live}>View live project</ButtonLink>}
-          {project.links.repository && <ButtonLink href={project.links.repository} variant="secondary">View repository</ButtonLink>}
+          {data.links.live && <ButtonLink href={data.links.live}>View live project</ButtonLink>}
+          {data.links.repository && <ButtonLink href={data.links.repository} variant="secondary">View repository</ButtonLink>}
         </div>
       </div>
       <dl class="project-facts">
-        <div><dt>Role</dt><dd>{project.role}</dd></div>
-        <div><dt>Year</dt><dd>{project.year}</dd></div>
+        <div><dt>Role</dt><dd>{data.role}</dd></div>
+        <div><dt>Year</dt><dd>{data.year}</dd></div>
         <div>
           <dt>Tools</dt>
-          <dd class="tag-row">{project.technologies.map((technology) => <Tag>{technology}</Tag>)}</dd>
+          <dd class="tag-row">{data.technologies.map((technology) => <Tag>{technology}</Tag>)}</dd>
         </div>
       </dl>
     </header>
 
-    <article class="case-study__body prose">
-      <section>
-        <p class="section-number">01 / Problem</p>
-        <h2>The reporting landscape</h2>
-        {project.problem.map((paragraph) => <p>{paragraph}</p>)}
-      </section>
-      <section>
-        <p class="section-number">02 / Approach</p>
-        <h2>Validation before presentation</h2>
-        {project.approach.map((paragraph) => <p>{paragraph}</p>)}
-      </section>
-      <section>
-        <p class="section-number">03 / Outcome</p>
-        <h2>A static public surface with an operational core</h2>
-        {project.outcome.map((paragraph) => <p>{paragraph}</p>)}
-      </section>
+    <article class="case-study__body prose project-prose">
+      <Content />
     </article>
   </main>
 </BaseLayout>
