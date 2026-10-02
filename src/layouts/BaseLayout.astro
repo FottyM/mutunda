@@ -5,9 +5,19 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description: string;
+  canonical?: URL | string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, canonical = new URL(Astro.url.pathname, Astro.site) } = Astro.props;
+const navigation = [
+  { href: "/", label: "Home" },
+  { href: "/projects", label: "Projects" },
+  { href: "/writing", label: "Writing" },
+  { href: "/about", label: "About" },
+];
+
+const isCurrent = (href: string) =>
+  href === "/" ? Astro.url.pathname === href : Astro.url.pathname.startsWith(href);
 ---
 
 <!doctype html>
@@ -16,6 +26,7 @@ const { title, description } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width" />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
@@ -29,7 +40,11 @@ const { title, description } = Astro.props;
           <span>Fortunat Mutunda</span>
         </a>
         <nav aria-label="Primary">
-          <a href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Home</a>
+          <ul>
+            {navigation.map(({ href, label }) => (
+              <li><a href={href} aria-current={isCurrent(href) ? "page" : undefined}>{label}</a></li>
+            ))}
+          </ul>
         </nav>
       </div>
     </header>

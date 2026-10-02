@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ButtonLink from "../components/ButtonLink.astro";
+---
+
+<BaseLayout
+  title="About — Fortunat Mutunda"
+  description="About Fortunat Mutunda, a software engineer based in Tallinn, Estonia."
+>
+  <main id="main-content" class="about-page">
+    <header class="page-header">
+      <p class="eyebrow">About</p>
+      <h1>Engineering for the whole system.</h1>
+    </header>
+    <div class="about-page__body prose">
+      <p class="lede">
+        I'm Fortunat Mutunda, a software engineer based in Tallinn, Estonia. I
+        build web platforms, developer tools, and backend systems with JavaScript,
+        TypeScript, and Rust.
+      </p>
+      <p>
+        My work tends to sit where product interfaces meet operational concerns:
+        data quality, automation, delivery, and the small decisions that make a
+        system easier to understand and maintain.
+      </p>
+      <p>
+        This site is the working record of those projects and the technical ideas
+        behind them.
+      </p>
+      <ButtonLink href="https://github.com/FottyM">Contact me on GitHub</ButtonLink>
+    </div>
+  </main>
+</BaseLayout>
