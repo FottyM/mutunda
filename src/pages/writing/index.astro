@@ -1,5 +1,18 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Tag from "../../components/Tag.astro";
+import { getCollection } from "astro:content";
+
+const entries = (await getCollection("writing", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const formatDate = (date: Date) => new Intl.DateTimeFormat("en", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+}).format(date);
+
+const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 ---
 
 <BaseLayout
@@ -10,7 +23,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <header class="page-header">
       <p class="eyebrow">Writing</p>
       <h1>Field notes</h1>
-      <p class="lede">No notes are published yet. This index will collect practical writing about software systems and the work behind them.</p>
+      <p class="lede">Practical notes about software systems, their operating constraints, and the work behind them.</p>
     </header>
+
+    <ol class="writing-list">
+      {entries.map((entry, index) => (
+        <li class="writing-entry">
+          <p class="writing-entry__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</p>
+          <div>
+            <p class="writing-entry__meta">
+              <time datetime={entry.data.date.toISOString()}>{formatDate(entry.data.date)}</time>
+              <span aria-hidden="true">·</span>
+              <span>Field note</span>
+            </p>
+            <h2><a href={`/writing/${entry.id}`}>{entry.data.title}</a></h2>
+            <p>{entry.data.description}</p>
+            <div class="tag-row" aria-label="Tags">
+              {entry.data.tags.map((tag) => <Tag href={`/writing/tags/${tagSlug(tag)}`}>{tag}</Tag>)}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
   </main>
 </BaseLayout>

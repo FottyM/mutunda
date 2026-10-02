@@ -370,6 +370,113 @@ h3 {
   border-top: var(--rule);
 }
 
+.project-prose {
+  counter-reset: project-section;
+}
+
+.project-prose h2 {
+  counter-increment: project-section;
+  padding-top: var(--space-12);
+  border-top: var(--rule);
+}
+
+.project-prose h2::before {
+  content: "0" counter(project-section) " / ";
+  display: block;
+  margin-bottom: var(--space-4);
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.writing-list {
+  margin: 0;
+  padding: 0;
+  border-top: var(--rule);
+  list-style: none;
+}
+
+.writing-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 5rem minmax(0, var(--reading-width));
+  gap: var(--space-8);
+  padding-block: var(--space-8);
+  border-bottom: var(--rule);
+}
+
+.writing-entry__index,
+.writing-entry__meta,
+.article-meta {
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+}
+
+.writing-entry__index,
+.writing-entry__meta,
+.writing-entry h2,
+.writing-entry > div > p {
+  margin-top: 0;
+}
+
+.writing-entry h2 {
+  margin-bottom: var(--space-3);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.writing-entry h2 a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.writing-entry > div > p:not(.writing-entry__meta) {
+  color: var(--color-muted);
+}
+
+.writing-entry .tag-row {
+  position: relative;
+  z-index: 1;
+  margin-top: var(--space-6);
+}
+
+.article-page {
+  padding-block: var(--space-24);
+}
+
+.article-header,
+.article-body {
+  max-width: var(--reading-width);
+  margin-inline: auto;
+}
+
+.article-header {
+  padding-bottom: var(--space-12);
+  border-bottom: var(--rule);
+}
+
+.article-header h1 {
+  max-width: 13ch;
+  font-size: clamp(3rem, 8vw, 6rem);
+  line-height: 0.92;
+}
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.article-body {
+  margin-top: var(--space-12);
+}
+
 .about-page {
   display: grid;
   grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.5fr);
@@ -667,6 +774,11 @@ h3 {
 
   .card-grid {
     grid-template-columns: 1fr;
+  }
+
+  .writing-entry {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: var(--space-4);
   }
 }
 

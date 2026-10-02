@@ -1,0 +1,58 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export const getStaticPaths = (async () => {
+  const entries = await getCollection("writing", ({ data }) => !data.draft);
+  const tags = new Map<string, { label: string; entries: CollectionEntry<"writing">[] }>();
+  const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  for (const entry of entries) {
+    for (const label of entry.data.tags) {
+      const slug = tagSlug(label);
+      const group = tags.get(slug) ?? { label, entries: [] };
+      group.entries.push(entry);
+      tags.set(slug, group);
+    }
+  }
+
+  return [...tags.entries()].map(([tag, group]) => ({
+    params: { tag },
+    props: group,
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  label: string;
+  entries: CollectionEntry<"writing">[];
+}
+
+const { label, entries } = Astro.props;
+const orderedEntries = entries.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<BaseLayout
+  title={`${label} writing — Fortunat Mutunda`}
+  description={`Technical notes tagged ${label}.`}
+>
+  <main id="main-content" class="listing-page">
+    <header class="page-header">
+      <p class="eyebrow">Writing tag</p>
+      <h1>{label}</h1>
+      <p class="lede">{orderedEntries.length} {orderedEntries.length === 1 ? "note" : "notes"} in this field.</p>
+    </header>
+    <ol class="writing-list">
+      {orderedEntries.map((entry, index) => (
+        <li class="writing-entry">
+          <p class="writing-entry__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</p>
+          <div>
+            <p class="writing-entry__meta"><time datetime={entry.data.date.toISOString()}>{entry.data.date.toISOString().slice(0, 10)}</time></p>
+            <h2><a href={`/writing/${entry.id}`}>{entry.data.title}</a></h2>
+            <p>{entry.data.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </main>
+</BaseLayout>

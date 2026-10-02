@@ -2,9 +2,12 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Card from "../components/Card.astro";
 import Tag from "../components/Tag.astro";
-import { projects } from "../data/projects";
+import { getCollection } from "astro:content";
 
-const featuredProjects = projects.filter((project) => project.featured);
+const featuredProjects = await getCollection(
+  "projects",
+  ({ data }) => !data.draft && data.featured,
+);
 ---
 
 <BaseLayout
@@ -37,7 +40,7 @@ const featuredProjects = projects.filter((project) => project.featured);
         <h2 id="selected-work-heading">Systems built for real conditions.</h2>
       </div>
       <div class="card-grid">
-        {featuredProjects.map((project) => (
+        {featuredProjects.map(({ data: project }) => (
           <Card title={project.title} eyebrow={`${project.year} · ${project.role}`} href={`/projects/${project.slug}`}>
             <p>{project.summary}</p>
             <div class="tag-row" aria-label="Technologies">

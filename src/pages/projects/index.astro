@@ -2,7 +2,10 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Card from "../../components/Card.astro";
 import Tag from "../../components/Tag.astro";
-import { projects } from "../../data/projects";
+import { getCollection } from "astro:content";
+
+const projects = (await getCollection("projects", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.year - a.data.year);
 ---
 
 <BaseLayout
@@ -17,7 +20,7 @@ import { projects } from "../../data/projects";
     </header>
 
     <section aria-label="Projects" class="project-list">
-      {projects.map((project, index) => (
+      {projects.map(({ data: project }, index) => (
         <Card title={project.title} eyebrow={`${String(index + 1).padStart(2, "0")} · ${project.year}`} href={`/projects/${project.slug}`}>
           <p>{project.summary}</p>
           <div class="tag-row" aria-label="Technologies">

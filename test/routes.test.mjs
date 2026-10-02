@@ -57,11 +57,23 @@ test("the project index and generated case study use the shared project entry", 
   assert.match(caseStudy, /rel="canonical" href="https:\/\/mutunda\.me\/projects\/ebola-tracker\/"/);
 });
 
-test("the about and writing routes provide intentional public content", async () => {
+test("the about route provides intentional public content", async () => {
   const about = await readPage("/about");
-  const writing = await readPage("/writing");
 
   assert.match(about, /based in Tallinn, Estonia/);
   assert.match(about, /https:\/\/github\.com\/FottyM/);
-  assert.match(writing, /No notes are published yet/);
+});
+
+test("published writing renders chronologically with article and tag routes", async () => {
+  const writing = await readPage("/writing");
+  const article = await readPage("/writing/static-sites-are-operational-systems");
+  const tag = await readPage("/writing/tags/architecture");
+
+  assert.match(writing, /Static sites are operational systems/);
+  assert.doesNotMatch(writing, /An unpublished field note/);
+  assert.match(article, /datetime="2026-10-03T00:00:00.000Z"/);
+  assert.match(article, /Content is an interface/);
+  assert.match(article, /href="\/writing\/tags\/architecture"/);
+  assert.match(tag, /1 note in this field/);
+  assert.match(tag, /Static sites are operational systems/);
 });
