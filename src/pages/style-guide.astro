@@ -1,0 +1,87 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ButtonLink from "../components/ButtonLink.astro";
+import Callout from "../components/Callout.astro";
+import Card from "../components/Card.astro";
+import Tag from "../components/Tag.astro";
+---
+
+<BaseLayout
+  title="Style guide — Fortunat Mutunda"
+  description="Reusable interface patterns for mutunda.me."
+>
+  <main id="main-content" class="style-guide">
+    <header class="style-guide__header">
+      <p class="eyebrow">System reference · v1</p>
+      <h1>Technical field journal</h1>
+      <p class="lede">
+        A quiet editorial system for documenting work with clarity, precision,
+        and enough texture to feel made by a person.
+      </p>
+    </header>
+
+    <section class="style-guide__section" aria-labelledby="actions-heading">
+      <p class="style-guide__label" id="actions-heading">01 / Actions</p>
+      <div class="style-guide__examples">
+        <div class="button-row">
+          <ButtonLink href="#prose">Primary action</ButtonLink>
+          <ButtonLink href="#cards" variant="secondary">Secondary action</ButtonLink>
+        </div>
+        <p><a class="text-link" href="#tags">Editorial text link <span aria-hidden="true">&rarr;</span></a></p>
+      </div>
+    </section>
+
+    <section class="style-guide__section" id="tags" aria-labelledby="tags-heading">
+      <p class="style-guide__label" id="tags-heading">02 / Tags</p>
+      <div class="tag-row">
+        <Tag>TypeScript</Tag>
+        <Tag>Developer tools</Tag>
+        <Tag href="#prose">Systems</Tag>
+      </div>
+    </section>
+
+    <section class="style-guide__section" id="cards" aria-labelledby="cards-heading">
+      <p class="style-guide__label" id="cards-heading">03 / Cards</p>
+      <div class="card-grid">
+        <Card title="Project case study" eyebrow="Selected work" href="#prose">
+          <p>A concise record of the problem, approach, and outcome.</p>
+        </Card>
+        <Card title="Field note" eyebrow="Writing · 6 min">
+          <p>Technical writing uses the same measured hierarchy as project work.</p>
+        </Card>
+      </div>
+    </section>
+
+    <section class="style-guide__section" aria-labelledby="callouts-heading">
+      <p class="style-guide__label" id="callouts-heading">04 / Callouts</p>
+      <div class="style-guide__examples">
+        <Callout title="Note">
+          <p>Use a note for context that helps without interrupting the reading flow.</p>
+        </Callout>
+        <Callout title="Verified" tone="success">
+          <p>Success communicates a confirmed state, never decoration alone.</p>
+        </Callout>
+        <Callout title="Consider" tone="warning">
+          <p>Warnings make trade-offs visible before a decision is made.</p>
+        </Callout>
+      </div>
+    </section>
+
+    <section class="style-guide__section" id="prose" aria-labelledby="prose-heading">
+      <p class="style-guide__label" id="prose-heading">05 / Prose & code</p>
+      <article class="prose">
+        <h2>Build for the reader</h2>
+        <p>
+          Article pages use a constrained measure, visible hierarchy, and
+          <a href="#actions">purposeful links</a>. The system favors comprehension
+          over ornamental motion.
+        </p>
+        <h3>Implementation note</h3>
+        <p>Inline values such as <code>prefers-color-scheme</code> remain easy to scan.</p>
+        <pre><code>{`:root {
+  color-scheme: light dark;
+}`}</code></pre>
+      </article>
+    </section>
+  </main>
+</BaseLayout>
