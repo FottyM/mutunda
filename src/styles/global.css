@@ -487,8 +487,74 @@ h3 {
   margin-top: 0;
 }
 
+.profile-portrait {
+  width: clamp(8rem, 20vw, 11rem);
+  margin: 0 0 var(--space-8);
+  padding: var(--space-2);
+  border: var(--rule);
+  background: var(--color-surface);
+  transform: rotate(-2deg);
+}
+
+.profile-portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.05);
+}
+
 .about-page__body .button {
   margin-top: var(--space-6);
+}
+
+.profile-links {
+  margin-top: var(--space-12);
+  padding-top: var(--space-8);
+  border-top: var(--rule);
+}
+
+.profile-links h2 {
+  margin-bottom: var(--space-4);
+  font-size: 1.5rem;
+}
+
+.profile-links ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-3);
+}
+
+.profile-links a {
+  color: var(--color-accent);
+  font-weight: 650;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+
+.profile-links a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.profile-link__icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .site-footer__inner {

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ButtonLink from "../components/ButtonLink.astro";
+import SocialIcon from "../components/SocialIcon.astro";
 ---
 
 <BaseLayout
@@ -13,6 +13,15 @@ import ButtonLink from "../components/ButtonLink.astro";
       <h1>Engineering for the whole system.</h1>
     </header>
     <div class="about-page__body prose">
+      <figure class="profile-portrait">
+        <img
+          src="https://avatars.githubusercontent.com/u/227173828?v=4"
+          alt="Fortunat Mutunda"
+          width="460"
+          height="460"
+          loading="eager"
+        />
+      </figure>
       <p class="lede">
         I'm Fortunat Mutunda, a software engineer based in Tallinn, Estonia. I
         build web platforms, developer tools, and backend systems with JavaScript,
@@ -27,7 +36,13 @@ import ButtonLink from "../components/ButtonLink.astro";
         This site is the working record of those projects and the technical ideas
         behind them.
       </p>
-      <ButtonLink href="https://github.com/FottyM">Contact me on GitHub</ButtonLink>
+      <section class="profile-links" aria-labelledby="profiles-heading">
+        <h2 id="profiles-heading">Profiles</h2>
+        <ul>
+          <li><a href="https://github.com/FottyM"><SocialIcon name="github" />FottyM <span class="visually-hidden">(primary profile)</span></a></li>
+          <li><a href="https://www.linkedin.com/in/fortunat-mutunda/"><SocialIcon name="linkedin" />LinkedIn</a></li>
+        </ul>
+      </section>
     </div>
   </main>
 </BaseLayout>
