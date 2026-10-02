@@ -36,3 +36,32 @@ test("the style guide renders the reusable visual language", async () => {
   assert.match(html, /callout--warning/);
   assert.match(html, /class="prose"/);
 });
+
+test("the primary navigation reaches every portfolio section", async () => {
+  const html = await readPage("/");
+
+  for (const path of ["/projects", "/writing", "/about"]) {
+    assert.match(html, new RegExp(`href="${path}"`));
+  }
+});
+
+test("the project index and generated case study use the shared project entry", async () => {
+  const index = await readPage("/projects");
+  const caseStudy = await readPage("/projects/ebola-tracker");
+
+  assert.match(index, /href="\/projects\/ebola-tracker"/);
+  assert.match(caseStudy, /Ebola Tracker/);
+  assert.match(caseStudy, /Creator and software engineer/);
+  assert.match(caseStudy, /fottym\.github\.io\/ebola-tracker/);
+  assert.match(caseStudy, /github\.com\/FottyM\/ebola-tracker/);
+  assert.match(caseStudy, /rel="canonical" href="https:\/\/mutunda\.me\/projects\/ebola-tracker\/"/);
+});
+
+test("the about and writing routes provide intentional public content", async () => {
+  const about = await readPage("/about");
+  const writing = await readPage("/writing");
+
+  assert.match(about, /based in Tallinn, Estonia/);
+  assert.match(about, /https:\/\/github\.com\/FottyM/);
+  assert.match(writing, /No notes are published yet/);
+});

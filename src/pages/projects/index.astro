@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Card from "../../components/Card.astro";
+import Tag from "../../components/Tag.astro";
+import { projects } from "../../data/projects";
+---
+
+<BaseLayout
+  title="Projects — Fortunat Mutunda"
+  description="Selected software engineering projects by Fortunat Mutunda."
+>
+  <main id="main-content" class="listing-page">
+    <header class="page-header">
+      <p class="eyebrow">Project archive</p>
+      <h1>Selected work</h1>
+      <p class="lede">Products and systems shaped around reliability, useful information, and the people operating them.</p>
+    </header>
+
+    <section aria-label="Projects" class="project-list">
+      {projects.map((project, index) => (
+        <Card title={project.title} eyebrow={`${String(index + 1).padStart(2, "0")} · ${project.year}`} href={`/projects/${project.slug}`}>
+          <p>{project.summary}</p>
+          <div class="tag-row" aria-label="Technologies">
+            {project.technologies.map((technology) => <Tag>{technology}</Tag>)}
+          </div>
+        </Card>
+      ))}
+    </section>
+  </main>
+</BaseLayout>
