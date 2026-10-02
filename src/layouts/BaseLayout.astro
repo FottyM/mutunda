@@ -1,0 +1,38 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="Fortunat Mutunda, home">
+        <span aria-hidden="true">FM</span>
+        <span>Fortunat Mutunda</span>
+      </a>
+      <nav aria-label="Primary">
+        <a href="/" aria-current={Astro.url.pathname === "/" ? "page" : undefined}>Home</a>
+      </nav>
+    </header>
+    <slot />
+    <footer class="site-footer">
+      <p>&copy; {new Date().getFullYear()} Fortunat Mutunda</p>
+    </footer>
+  </body>
+</html>

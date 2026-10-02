@@ -41,6 +41,10 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Framework-generated caches
+.astro/
+.next/
+
 # TypeScript v1 declaration files
 typings/
 
@@ -74,9 +78,6 @@ typings/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
-
-# Next.js build output
-.next
 
 # Nuxt.js build / generate output
 .nuxt
