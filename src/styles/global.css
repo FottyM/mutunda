@@ -988,24 +988,26 @@ h3 {
   }
 }
 
-/* Star Wars screen wipe transition for theme changes */
+/* Page flip transition from the bottom right for theme changes */
 html.theme-transitioning::view-transition-old(root) {
   animation: none;
   z-index: 1;
 }
 
 html.theme-transitioning::view-transition-new(root) {
-  animation: star-wars-screen-wipe 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: page-flip-bottom-right 0.7s cubic-bezier(0.25, 1, 0.35, 1);
   z-index: 2;
-  filter: drop-shadow(-4px 0 16px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(-1px -1px 2px rgba(255, 255, 255, 0.55))
+          drop-shadow(-5px -5px 12px color-mix(in srgb, var(--color-accent) 40%, rgba(0, 0, 0, 0.45)))
+          drop-shadow(-14px -14px 32px rgba(0, 0, 0, 0.6));
 }
 
-@keyframes star-wars-screen-wipe {
+@keyframes page-flip-bottom-right {
   from {
-    clip-path: polygon(0 0, 0 0, -8% 100%, -8% 100%);
+    clip-path: polygon(200% 200%, 5% 200%, 200% 5%);
   }
   to {
-    clip-path: polygon(0 0, 108% 0, 100% 100%, 0 100%);
+    clip-path: polygon(200% 200%, -205% 200%, 200% -205%);
   }
 }
 
