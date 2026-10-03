@@ -142,3 +142,39 @@ test("public pages expose canonical and social metadata", async ({ page }) => {
   await page.goto("/writing/static-sites-are-operational-systems");
   await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "article");
 });
+
+test("project cards and technology tags navigate seamlessly", async ({ page }) => {
+  await page.goto("/projects");
+  await expect(page.getByRole("heading", { name: "Selected work" })).toBeVisible();
+
+  const techTag = page.locator(".project-list .card .tag").first();
+  await expect(techTag).toBeVisible();
+
+  // Clicking on the tag passes pointer events through to the underlying card link
+  await techTag.click({ force: true });
+  await expect(page).toHaveURL(/\/projects\/ebola-tracker\/?$/);
+  await expect(page.getByRole("heading", { name: "Ebola Tracker" })).toBeVisible();
+});
+
+test("case studies provide top and footer back buttons returning to selected work", async ({ page }) => {
+  await page.goto("/projects/ebola-tracker");
+
+  const topBackLink = page.locator(".case-study__header .back-link");
+  await expect(topBackLink).toBeVisible();
+  await expect(topBackLink).toHaveText(/Back to selected work/);
+
+  const footerBackButton = page.locator(".case-study__footer a");
+  await expect(footerBackButton).toBeVisible();
+  await expect(footerBackButton).toHaveText(/Back to selected work/);
+
+  await footerBackButton.click();
+  await expect(page).toHaveURL(/\/projects\/?$/);
+  await expect(page.getByRole("heading", { name: "Selected work" })).toBeVisible();
+
+  await page.goto("/fr/projects/ebola-tracker");
+  const frenchBackLink = page.locator(".case-study__header .back-link");
+  await expect(frenchBackLink).toHaveText(/Retour à la sélection de projets/);
+  await frenchBackLink.click();
+  await expect(page).toHaveURL(/\/fr\/projects\/?$/);
+  await expect(page.getByRole("heading", { name: "Sélection de projets" })).toBeVisible();
+});

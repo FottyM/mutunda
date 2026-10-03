@@ -6,6 +6,7 @@ import Callout from "../components/Callout.astro";
 import Tag from "../components/Tag.astro";
 import type { Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
+import { getLocalizedPath } from "../i18n/utils";
 
 interface Props {
   project: CollectionEntry<"projects">;
@@ -29,6 +30,11 @@ const t = useTranslations(locale);
   <main id="main-content" class="case-study">
     <header class="case-study__header">
       <div>
+        <nav aria-label="Breadcrumb" class="case-study__breadcrumb">
+          <a href={getLocalizedPath("/projects", locale)} class="back-link">
+            ← {t("projects.back_to_index")}
+          </a>
+        </nav>
         <p class="eyebrow">{t("projects.case_study_eyebrow")} · {data.year}</p>
         <h1>{data.title}</h1>
         <p class="lede">{data.summary}</p>
@@ -47,6 +53,12 @@ const t = useTranslations(locale);
       </dl>
     </header>
 
+    {data.cover && (
+      <figure class="case-study__cover">
+        <img src={data.cover.src} alt={data.cover.alt} width="1440" height="900" loading="eager" />
+      </figure>
+    )}
+
     {isFallback && (
       <Callout title={t("common.language_notice")} tone="warning">
         <p>{t("projects.fallback_notice")}</p>
@@ -56,5 +68,11 @@ const t = useTranslations(locale);
     <article class="case-study__body prose project-prose">
       <Content />
     </article>
+
+    <footer class="case-study__footer">
+      <ButtonLink href={getLocalizedPath("/projects", locale)} variant="secondary">
+        ← {t("projects.back_to_index")}
+      </ButtonLink>
+    </footer>
   </main>
 </BaseLayout>

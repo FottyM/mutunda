@@ -1,9 +1,9 @@
 ---
 slug: ebola-tracker
 title: Ebola Tracker
-summary: Reaalajas epidemioloogiline kaart ja olukorrapaneel 2026. aasta Bundibugyo ebolaviiruse puhangule Kesk-Aafrikas.
-description: Staatiline, mobiilisõbralik seireliides, mida toetab automatiseeritud andmehõive- ja valideerimiskonveier.
-role: Looja ja tarkvarainsener
+summary: Avalik olukorra juhtpaneel 2026. aasta Bundibugyo ebolaviiruse puhangu jälgimiseks Kongo DV-s ja naaberpiirkondades.
+description: Regulaarselt uuendatav kaart ja juhtpaneel, mis koondab hajutatud ametlikud raportid selgeks ülevaateks.
+role: Autor ja tarkvarainsener
 year: 2026
 featured: true
 draft: false
@@ -15,27 +15,28 @@ technologies:
   - OpenStreetMap
   - TanStack Charts
   - GitHub Actions
+cover:
+  src: /images/projects/ebola-tracker-cover.png
+  alt: Ebola Trackeri kaardi ja olukorra juhtpaneeli arvutivaade.
 links:
   live: https://fottym.github.io/ebola-tracker/
   repository: https://github.com/FottyM/ebola-tracker
 ---
 
-## Andmekogumise maastik
+## Probleem
 
-Puhanguandmed laekuvad eraldiseisvate rahvatervise allikate, eri formaatide ja geograafiliste tasandite kaudu. Toimiv avalik vaade peab säilitama andmete päritolu ja värskuse, ilma et ebakindlat teavet esitataks kindla tõena.
+Lokaalse puhangu korral on vajalikku avalikku teavet sageli keeruline leida. Olulised arvud peituvad eri PDF-bülletäänides, kaugel inimestest, kes püüavad toimuvast aru saada. Soovisin luua avaliku koha, kus teave oleks kättesaadav ja loetav ilma aruannetes ekslemata.
 
-Samuti peab liides hoidma tiheda kaardivaate ja olukorrakokkuvõtte mugavalt kasutatavana nutitelefonides, kus ekraanipind on piiratud.
+Ehitasin Ebola Trackeri nädalavahetuse eksperimendina. Sellest on välja kasvanud olukorra juhtpaneel 2026. aasta Bundibugyo ebolaviiruse puhangu jälgimiseks: Kongo Demokraatlik Vabariik, Uganda piirialad ja rahvusvahelised meditsiinilise evakuatsiooni teekonnad.
 
-## Valideerimine enne esitust
+## Faktide, mitte pealkirjade jälgimine
 
-Ehitasin ajastatud konveieri, mis tuvastab KDV terviseministeeriumi olukorraaruandeid, töötleb nende PDF-andmeid, lõimib ÜRO OCHA HDX andmevooge ning kooskõlastab riiklikke, provintsi ja tervisetsoonide koondandmeid.
+Iga nelja tunni järel kontrollib konveier ametlikke raporteid ja uuendab andmeid tavapärase koodi, mitte keelemudeli abil. See koondab Kongo DV terviseministeeriumi ja INSP bülletäänid, tervisetsoonide andmed ning kinnitused organisatsioonidelt nagu WHO ja Africa CDC.
 
-Konveier kasutab ranget tõrkekindlat valideerimist (fail-closed), muutumatuid hetktõmmiseid, anomaaliate tuvastust ja taastetööriistu, tagamaks, et kättesaamatu või vastuoluline allikas ei asendaks kunagi vaikimisi viimast kinnitatud andmestikku.
+Kongo DV arvud hoitakse lahus rahvusvahelistest meditsiinilistest evakueerimistest. See eristus on oluline: patsiendi ravi mujal ei tohi jätta muljet, nagu oleks puhang sinna üle kandunud.
 
-Leafletil ja OpenStreetMapil põhinev staatiline lahendus toetub kohanduvatele paneelidele, puutesõbralikele juhtelementidele, epideemiakõveratele, demograafilistele graafikutele ning selgetele allikate usaldusväärsuse indikaatoritele.
+Juhtpaneel hoiab allika ja viimase uuenduse aja selgelt nähtaval. Kaardil saab liikuda riigi, provintsi ja tervisetsooni tasemel. Olukorra kokkuvõtted, puhangu ajajooned ja demograafilised graafikud teevad arvud loetavaks nii telefonis kui ka suurel ekraanil.
 
-## Staatiline avalik kiht operatiivse tuumaga
+## Väike avalik pind, hoolikas andmetöötlus
 
-Avalikku juhtpaneeli serveeritakse GitHub Pagesi kaudu ilma serverita toodangukeskkonnas, samal ajal kui GitHub Actions uuendab valideeritud andmeid iga nelja tunni tagant.
-
-Projekt eristab allikate kättesaadavust epidemioloogilisest värskusest ning säilitab varasemad hetktõmmised kiireks operatiivseks taastamiseks.
+Avalik veebisait töötab GitHub Pagesis ilma tootmisrakenduse serverita. GitHub Actions hoolitseb plaanilise uuendamise eest. Valideerimine, hetktõmmised, muudatuste tuvastamine ja tagasipööramise kontroll tagavad, et kättesaamatu või ebakõlaline bülletään ei asenda märkamatult viimast usaldusväärset andmestikku.

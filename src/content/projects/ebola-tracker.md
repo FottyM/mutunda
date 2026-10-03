@@ -1,8 +1,8 @@
 ---
 slug: ebola-tracker
 title: Ebola Tracker
-summary: A live epidemiological map and situation dashboard for the 2026 Bundibugyo ebolavirus outbreak in Central Africa.
-description: A static, mobile-ready surveillance interface backed by an automated ingestion and validation pipeline.
+summary: A public situation dashboard for the 2026 Bundibugyo ebolavirus outbreak across the DRC and neighbouring surveillance routes.
+description: A regularly refreshed map and dashboard that turns scattered official reports into a clearer view of an outbreak.
 role: Creator and software engineer
 year: 2026
 featured: true
@@ -15,27 +15,28 @@ technologies:
   - OpenStreetMap
   - TanStack Charts
   - GitHub Actions
+cover:
+  src: /images/projects/ebola-tracker-cover.png
+  alt: Desktop view of the Ebola Tracker map and situation dashboard.
 links:
   live: https://fottym.github.io/ebola-tracker/
   repository: https://github.com/FottyM/ebola-tracker
 ---
 
-## The reporting landscape
+## The problem
 
-Outbreak reporting arrives through separate public-health sources, formats, and geographic levels. A useful public view needs to preserve provenance and freshness without presenting uncertain data as current.
+When an outbreak is local, useful public information can be hard to find. Important figures may sit in scattered PDF bulletins, far from the people trying to understand what is happening. I wanted a public place where the information could be found and read without hunting through reports.
 
-The interface also needs to keep a dense map and situation summary usable on phones, where the available map area is limited.
+I built Ebola Tracker as a small weekend experiment. It has since grown into a situation dashboard for the 2026 Bundibugyo ebolavirus outbreak: the Democratic Republic of the Congo, the Ugandan border context, and international medical-evacuation routes.
 
-## Validation before presentation
+## Following the data, not just the headline
 
-I built a scheduled pipeline that discovers DRC Ministry situation reports, parses their PDF data, incorporates UN OCHA HDX feeds, and reconciles national, provincial, and health-zone totals.
+Every four hours, the pipeline checks official reports and updates the data with ordinary code, not an LLM. It brings together DRC Ministry and INSP bulletins, health-zone data, and verification from organisations including WHO and Africa CDC.
 
-The pipeline uses fail-closed validation, immutable snapshots, change detection, retention, and rollback tooling so an unavailable or inconsistent source cannot silently replace the last validated dataset.
+The DRC figures remain separate from international medical evacuations. That distinction matters: a patient receiving care elsewhere should not make it appear that the outbreak has moved there.
 
-The static Leaflet and OpenStreetMap experience uses responsive panels, touch-oriented controls, epidemic curves, demographic charts, and explicit source-health states.
+The dashboard keeps the source and last-update time visible. Its map can move from country to province and health zone, while situation summaries, outbreak timelines and demographic charts make the figures easier to read on a phone or a larger screen.
 
-## A static public surface with an operational core
+## Small public surface, careful data handling
 
-The public dashboard is delivered through GitHub Pages without a production application server, while GitHub Actions refreshes validated data on a four-hour schedule.
-
-The project keeps source reachability separate from epidemiological freshness and retains previous snapshots for operational recovery.
+The public site runs on GitHub Pages without a production application server. GitHub Actions handles the scheduled refresh. Validation, snapshots, change detection and rollback checks stop an unavailable or inconsistent bulletin from silently replacing the last good dataset.

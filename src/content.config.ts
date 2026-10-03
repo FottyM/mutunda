@@ -37,6 +37,12 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     technologies: z.array(z.string().min(1)).min(1),
+    cover: z
+      .object({
+        src: z.string().min(1),
+        alt: z.string().min(1),
+      })
+      .optional(),
     links: z.object({
       live: z.url().optional(),
       repository: z.url().optional(),
