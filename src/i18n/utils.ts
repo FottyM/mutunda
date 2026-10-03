@@ -40,6 +40,10 @@ export function getLocalizedPath(pathname: string, targetLocale: Locale): string
 export function getLocaleFallbackPath(pathname: string, targetLocale: Locale): string {
   const defaultPath = getLocalizedPath(pathname, DEFAULT_LOCALE);
 
+  if (defaultPath === "/404" || defaultPath === "/404/") {
+    return getLocalizedPath("/", targetLocale);
+  }
+
   if (/^\/writing\/(?:tags\/)?[^/]+/.test(defaultPath)) {
     return getLocalizedPath("/writing", targetLocale);
   }
@@ -93,6 +97,10 @@ export function getLocaleMetadata(
   };
 
   const canonicalUrl = toAbsolute(currentPathname);
+
+  if (currentPathname === "/404" || currentPathname === "/404/") {
+    return { canonicalUrl, alternates: [] };
+  }
 
   const alternateLocales = overrides ? LOCALES.filter((locale) => overrides[locale]) : LOCALES;
   const alternates: AlternateLink[] = alternateLocales.map((locale) => {

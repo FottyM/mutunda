@@ -275,3 +275,30 @@ test("the command palette provides accessible, keyboard-operable site search and
   assert.match(home, /id="command-palette-dialog"/);
   assert.match(home, /class="command-palette__list"/);
 });
+
+test("deployment configuration enforces canonical apex domain and production security headers", async () => {
+  const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
+
+  assert.equal(vercelConfig.outputDirectory, "dist");
+  assert.equal(vercelConfig.framework, "astro");
+
+  // Canonical redirect
+  const redirect = vercelConfig.redirects?.find((r) =>
+    r.has?.some((h) => h.type === "host" && h.value === "www.mutunda.me")
+  );
+  assert.ok(redirect, "Must configure redirect rule for www.mutunda.me");
+  assert.equal(redirect.destination, "https://mutunda.me/:path*");
+  assert.equal(redirect.permanent, true);
+
+  // Security headers
+  const globalHeaders = vercelConfig.headers?.find((h) => h.source === "/(.*)")?.headers;
+  assert.ok(globalHeaders, "Must configure global headers");
+  assert.ok(globalHeaders.some((h) => h.key === "Strict-Transport-Security"));
+  assert.ok(globalHeaders.some((h) => h.key === "X-Content-Type-Options" && h.value === "nosniff"));
+  assert.ok(globalHeaders.some((h) => h.key === "X-Frame-Options" && h.value === "DENY"));
+
+  // Node runtime version
+  const nvmrc = (await readFile(new URL("../.nvmrc", import.meta.url), "utf8")).trim();
+  assert.equal(nvmrc, "22", ".nvmrc must specify Node 22 Active LTS");
+});
+
