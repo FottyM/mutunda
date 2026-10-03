@@ -1011,14 +1011,3 @@ html.theme-transitioning::view-transition-new(root) {
   }
 }
 
-/* Backward-compatibility alias for test assertions */
-@keyframes star-wars-screen-wipe {
-  from {
-    clip-path: polygon(200% 200%, 5% 200%, 200% 5%);
-  }
-  to {
-    clip-path: polygon(200% 200%, -205% 200%, 200% -205%);
-  }
-}
-
-
