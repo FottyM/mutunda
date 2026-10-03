@@ -1,0 +1,60 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ButtonLink from "../components/ButtonLink.astro";
+import Callout from "../components/Callout.astro";
+import Tag from "../components/Tag.astro";
+import type { Locale } from "../i18n/config";
+import { useTranslations } from "../i18n/translations";
+
+interface Props {
+  project: CollectionEntry<"projects">;
+  locale: Locale;
+  translations?: Partial<Record<Locale, string>>;
+  isFallback?: boolean;
+}
+
+const { project, locale, translations, isFallback = false } = Astro.props;
+const { Content } = await render(project);
+const { data } = project;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  title={`${data.title} — Fortunat Mutunda`}
+  description={data.description}
+  locale={locale}
+  translations={translations}
+>
+  <main id="main-content" class="case-study">
+    <header class="case-study__header">
+      <div>
+        <p class="eyebrow">{t("projects.case_study_eyebrow")} · {data.year}</p>
+        <h1>{data.title}</h1>
+        <p class="lede">{data.summary}</p>
+        <div class="button-row case-study__actions">
+          {data.links.live && <ButtonLink href={data.links.live}>{t("projects.view_live")}</ButtonLink>}
+          {data.links.repository && <ButtonLink href={data.links.repository} variant="secondary">{t("projects.view_repo")}</ButtonLink>}
+        </div>
+      </div>
+      <dl class="project-facts">
+        <div><dt>{t("projects.role")}</dt><dd>{data.role}</dd></div>
+        <div><dt>{t("projects.year")}</dt><dd>{data.year}</dd></div>
+        <div>
+          <dt>{t("projects.tools")}</dt>
+          <dd class="tag-row">{data.technologies.map((technology) => <Tag>{technology}</Tag>)}</dd>
+        </div>
+      </dl>
+    </header>
+
+    {isFallback && (
+      <Callout title="Language notice" tone="warning">
+        <p>{t("projects.fallback_notice")}</p>
+      </Callout>
+    )}
+
+    <article class="case-study__body prose project-prose">
+      <Content />
+    </article>
+  </main>
+</BaseLayout>

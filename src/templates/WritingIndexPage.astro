@@ -1,0 +1,87 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Tag from "../components/Tag.astro";
+import { getCollection } from "astro:content";
+import type { Locale } from "../i18n/config";
+import { useTranslations } from "../i18n/translations";
+import { formatLocalizedDate, getLocalizedPath } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const allEntries = (await getCollection("writing", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const getEntrySlug = (entry: typeof allEntries[0]) =>
+  entry.data.slug ?? entry.id.replace(/\.(fr|et)$/, "").replace(/^(fr|et)\//, "");
+
+const uniqueSlugs = [...new Set(allEntries.map(getEntrySlug))];
+
+const entries = uniqueSlugs.map((slug) => {
+  const inLocale = allEntries.find(
+    (e) => getEntrySlug(e) === slug && (e.data.locale ?? "en") === locale
+  );
+  if (inLocale) {
+    return {
+      entry: inLocale,
+      href: getLocalizedPath(`/writing/${slug}`, locale),
+      isFallback: false,
+    };
+  }
+  const inEn = allEntries.find(
+    (e) => getEntrySlug(e) === slug && (e.data.locale ?? "en") === "en"
+  );
+  if (!inEn) return null;
+  return {
+    entry: inEn,
+    href: getLocalizedPath(`/writing/${slug}`, "en"),
+    isFallback: locale !== "en",
+  };
+}).filter((item): item is NonNullable<typeof item> => item !== null);
+
+const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+---
+
+<BaseLayout
+  title={t("writing.title")}
+  description={t("writing.description")}
+  locale={locale}
+>
+  <main id="main-content" class="listing-page">
+    <header class="page-header">
+      <p class="eyebrow">{t("writing.eyebrow")}</p>
+      <h1>{t("writing.heading")}</h1>
+      <p class="lede">{t("writing.lede")}</p>
+    </header>
+
+    <ol class="writing-list">
+      {entries.map(({ entry, href, isFallback }, index) => (
+        <li class="writing-entry">
+          <p class="writing-entry__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</p>
+          <div>
+            <p class="writing-entry__meta">
+              <time datetime={entry.data.date.toISOString()}>{formatLocalizedDate(entry.data.date, locale)}</time>
+              <span aria-hidden="true">·</span>
+              <span>{t("writing.meta_field_note")}</span>
+            </p>
+            <h2>
+              <a href={href}>
+                {isFallback ? `${entry.data.title} ${t("writing.in_english")}` : entry.data.title}
+              </a>
+            </h2>
+            <p>{entry.data.description}</p>
+            <div class="tag-row" aria-label="Tags">
+              {entry.data.tags.map((tag) => (
+                <Tag href={getLocalizedPath(`/writing/tags/${tagSlug(tag)}`, locale)}>{tag}</Tag>
+              ))}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </main>
+</BaseLayout>

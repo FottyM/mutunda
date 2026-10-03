@@ -1,0 +1,61 @@
+---
+import type { Locale } from "../i18n/config";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+{locale === "en" && (
+  <svg
+    viewBox="0 0 60 30"
+    width="16"
+    height="11"
+    class="flag-icon"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <clipPath id="uk-clip">
+      <path d="M0,0 v30 h60 v-30 z" />
+    </clipPath>
+    <g clip-path="url(#uk-clip)">
+      <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#ffffff" stroke-width="6" />
+      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#C8102E" stroke-width="4" />
+      <path d="M30,0 v30 M0,15 h60" stroke="#ffffff" stroke-width="10" />
+      <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" stroke-width="6" />
+    </g>
+  </svg>
+)}
+
+{locale === "fr" && (
+  <svg
+    viewBox="0 0 3 2"
+    width="16"
+    height="11"
+    class="flag-icon"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <rect width="1" height="2" fill="#002654" />
+    <rect x="1" width="1" height="2" fill="#ffffff" />
+    <rect x="2" width="1" height="2" fill="#CE1126" />
+  </svg>
+)}
+
+{locale === "et" && (
+  <svg
+    viewBox="0 0 33 21"
+    width="16"
+    height="11"
+    class="flag-icon"
+    aria-hidden="true"
+    focusable="false"
+  >
+    <rect width="33" height="7" fill="#0072CE" />
+    <rect y="7" width="33" height="7" fill="#000000" />
+    <rect y="14" width="33" height="7" fill="#ffffff" />
+  </svg>
+)}

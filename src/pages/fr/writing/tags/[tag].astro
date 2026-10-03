@@ -1,11 +1,11 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
-import WritingTagPage from "../../../templates/WritingTagPage.astro";
+import WritingTagPage from "../../../../templates/WritingTagPage.astro";
 
 export const getStaticPaths = (async () => {
   const allEntries = await getCollection("writing", ({ data }) => !data.draft);
-  const englishEntries = allEntries.filter((e) => (e.data.locale ?? "en") === "en");
+  const frenchEntries = allEntries.filter((e) => (e.data.locale ?? "en") === "fr");
 
   const getEntrySlug = (e: typeof allEntries[0]) =>
     e.data.slug ?? e.id.replace(/\.(fr|et)$/, "").replace(/^(fr|et)\//, "");
@@ -13,7 +13,7 @@ export const getStaticPaths = (async () => {
   const tags = new Map<string, { label: string; entries: Array<{ entry: CollectionEntry<"writing">; slug: string }> }>();
   const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  for (const entry of englishEntries) {
+  for (const entry of frenchEntries) {
     const slug = getEntrySlug(entry);
     for (const label of entry.data.tags) {
       const s = tagSlug(label);
@@ -38,4 +38,4 @@ interface Props {
 const { label, tag, entries } = Astro.props;
 ---
 
-<WritingTagPage label={label} tag={tag} entries={entries} locale="en" />
+<WritingTagPage label={label} tag={tag} entries={entries} locale="fr" />

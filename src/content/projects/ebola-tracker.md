@@ -7,6 +7,7 @@ role: Creator and software engineer
 year: 2026
 featured: true
 draft: false
+locale: en
 technologies:
   - JavaScript
   - Vite+

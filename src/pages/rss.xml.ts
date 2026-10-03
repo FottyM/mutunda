@@ -3,7 +3,7 @@ import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async (context) => {
-  const entries = (await getCollection("writing", ({ data }) => !data.draft))
+  const entries = (await getCollection("writing", ({ data }) => !data.draft && data.locale === "en"))
     .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
   return rss({

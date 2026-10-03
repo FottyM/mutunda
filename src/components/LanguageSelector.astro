@@ -1,0 +1,53 @@
+---
+import { LOCALES, LOCALE_LABELS, type Locale } from "../i18n/config";
+import { getLocalizedPath } from "../i18n/utils";
+import { useTranslations } from "../i18n/translations";
+import FlagIcon from "./FlagIcon.astro";
+
+interface Props {
+  currentLocale: Locale;
+  translations?: Partial<Record<Locale, string>>;
+}
+
+const { currentLocale, translations = {} } = Astro.props;
+const t = useTranslations(currentLocale);
+---
+
+<nav class="language-selector" aria-label={t("nav.language")}>
+  <ul class="language-selector__list">
+    {LOCALES.map((locale) => {
+      const isCurrent = locale === currentLocale;
+      const targetPath = translations[locale] ?? getLocalizedPath(Astro.url.pathname, locale);
+      const nativeName = LOCALE_LABELS[locale].nativeName;
+      const uppercaseCode = locale.toUpperCase();
+
+      return (
+        <li class="language-selector__item">
+          {isCurrent ? (
+            <span
+              class="language-selector__button language-selector__button--current"
+              aria-current="true"
+              aria-label={t("lang.current", { lang: nativeName })}
+            >
+              <FlagIcon locale={locale} />
+              <span class="language-selector__code" aria-hidden="true">{uppercaseCode}</span>
+              <span class="visually-hidden">{nativeName}</span>
+            </span>
+          ) : (
+            <a
+              href={targetPath}
+              hreflang={locale}
+              lang={locale}
+              class="language-selector__button language-selector__link"
+              aria-label={t("lang.switch_to", { lang: nativeName })}
+            >
+              <FlagIcon locale={locale} />
+              <span class="language-selector__code" aria-hidden="true">{uppercaseCode}</span>
+              <span class="visually-hidden">{nativeName}</span>
+            </a>
+          )}
+        </li>
+      );
+    })}
+  </ul>
+</nav>

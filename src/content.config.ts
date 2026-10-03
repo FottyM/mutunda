@@ -3,7 +3,11 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 
 const writing = defineCollection({
-  loader: glob({ base: "./src/content/writing", pattern: "**/*.{md,mdx}" }),
+  loader: glob({
+    base: "./src/content/writing",
+    pattern: "**/*.{md,mdx}",
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ""),
+  }),
   schema: z.object({
     title: z.string().min(1),
     description: z.string().min(1),
@@ -11,11 +15,18 @@ const writing = defineCollection({
     tags: z.array(z.string().min(1)).min(1),
     draft: z.boolean().default(false),
     canonicalUrl: z.url().optional(),
+    locale: z.enum(["en", "fr", "et"]).default("en"),
+    slug: z.string().optional(),
+    translationKey: z.string().optional(),
   }),
 });
 
 const projects = defineCollection({
-  loader: glob({ base: "./src/content/projects", pattern: "**/*.{md,mdx}" }),
+  loader: glob({
+    base: "./src/content/projects",
+    pattern: "**/*.{md,mdx}",
+    generateId: ({ entry }) => entry.replace(/\.[^/.]+$/, ""),
+  }),
   schema: z.object({
     slug: z.string().min(1),
     title: z.string().min(1),
@@ -30,6 +41,8 @@ const projects = defineCollection({
       live: z.url().optional(),
       repository: z.url().optional(),
     }),
+    locale: z.enum(["en", "fr", "et"]).default("en"),
+    translationKey: z.string().optional(),
   }),
 });
 

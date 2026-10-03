@@ -7,6 +7,7 @@ tags:
   - astro
   - delivery
 draft: false
+locale: en
 ---
 
 A static site removes the application server from the request path. It does not remove operations from the product.

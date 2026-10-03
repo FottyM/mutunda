@@ -1,18 +1,18 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
-import WritingDetailPage from "../../templates/WritingDetailPage.astro";
-import { LOCALES, type Locale } from "../../i18n/config";
-import { getLocalizedPath } from "../../i18n/utils";
+import WritingDetailPage from "../../../templates/WritingDetailPage.astro";
+import { LOCALES, type Locale } from "../../../i18n/config";
+import { getLocalizedPath } from "../../../i18n/utils";
 
 export const getStaticPaths = (async () => {
   const allEntries = await getCollection("writing", ({ data }) => !data.draft);
-  const englishEntries = allEntries.filter((e) => (e.data.locale ?? "en") === "en");
+  const etEntries = allEntries.filter((e) => (e.data.locale ?? "en") === "et");
 
   const getEntrySlug = (e: typeof allEntries[0]) =>
     e.data.slug ?? e.id.replace(/\.(fr|et)$/, "").replace(/^(fr|et)\//, "");
 
-  return englishEntries.map((entry) => {
+  return etEntries.map((entry) => {
     const slug = getEntrySlug(entry);
     const translations: Partial<Record<Locale, string>> = {};
     for (const loc of LOCALES) {
@@ -37,4 +37,4 @@ interface Props {
 const { entry, slug, translations } = Astro.props;
 ---
 
-<WritingDetailPage entry={entry} slug={slug} locale="en" translations={translations} />
+<WritingDetailPage entry={entry} slug={slug} locale="et" translations={translations} />

@@ -43,6 +43,13 @@ read the same collection entry.
 Tags need no separate configuration. Adding a tag to a published field note
 creates its lowercase, hyphenated page under `/writing/tags` during the build.
 
+## Multilingual content
+
+Entries support localization across `en` (default), `fr`, and `et`. See
+[`docs/internationalization.md`](internationalization.md) for how to author, translate,
+and publish localized content and how the fallback policy operates.
+
+
 ## Validate before publishing
 
 Run:

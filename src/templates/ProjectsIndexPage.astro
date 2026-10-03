@@ -1,0 +1,68 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Card from "../components/Card.astro";
+import Tag from "../components/Tag.astro";
+import { getCollection } from "astro:content";
+import type { Locale } from "../i18n/config";
+import { useTranslations } from "../i18n/translations";
+import { getLocalizedPath } from "../i18n/utils";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const allProjects = (await getCollection("projects", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.year - a.data.year);
+
+const uniqueSlugs = [...new Set(allProjects.map((p) => p.data.slug))];
+const projects = uniqueSlugs.map((slug) => {
+  const inLocale = allProjects.find((p) => p.data.slug === slug && (p.data.locale ?? "en") === locale);
+  if (inLocale) {
+    return {
+      project: inLocale.data,
+      href: getLocalizedPath(`/projects/${slug}`, locale),
+      isFallback: false,
+    };
+  }
+  const fallback = allProjects.find((p) => p.data.slug === slug && (p.data.locale ?? "en") === "en")
+    ?? allProjects.find((p) => p.data.slug === slug);
+  if (!fallback) return null;
+  return {
+    project: fallback.data,
+    href: getLocalizedPath(`/projects/${slug}`, fallback.data.locale ?? "en"),
+    isFallback: locale !== (fallback.data.locale ?? "en"),
+  };
+}).filter((item): item is NonNullable<typeof item> => item !== null);
+---
+
+<BaseLayout
+  title={t("projects.title")}
+  description={t("projects.description")}
+  locale={locale}
+>
+  <main id="main-content" class="listing-page">
+    <header class="page-header">
+      <p class="eyebrow">{t("projects.eyebrow")}</p>
+      <h1>{t("projects.heading")}</h1>
+      <p class="lede">{t("projects.lede")}</p>
+    </header>
+
+    <section aria-label="Projects" class="project-list">
+      {projects.map(({ project, href, isFallback }, index) => (
+        <Card
+          title={isFallback ? `${project.title} ${t("projects.in_english")}` : project.title}
+          eyebrow={`${String(index + 1).padStart(2, "0")} · ${project.year}`}
+          href={href}
+        >
+          <p>{project.summary}</p>
+          <div class="tag-row" aria-label="Technologies">
+            {project.technologies.map((technology) => <Tag>{technology}</Tag>)}
+          </div>
+        </Card>
+      ))}
+    </section>
+  </main>
+</BaseLayout>
