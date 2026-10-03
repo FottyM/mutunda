@@ -67,6 +67,7 @@ export const translations = {
     "home.about_heading": "Software engineering with an operational point of view.",
     "home.about_text": "I work across web platforms, developer tooling, and backend systems, with an emphasis on dependable delivery and clear interfaces.",
     "home.more_about": "More about my work",
+    "home.more": "More",
 
     // Projects
     "projects.title": "Projects — Fortunat Mutunda",
@@ -191,6 +192,7 @@ export const translations = {
     "home.about_heading": "L'ingénierie logicielle sous un angle opérationnel.",
     "home.about_text": "J'interviens sur les plateformes web, l'outillage développeur et les architectures backend, avec une exigence constante de livraison fiable et d'interfaces claires.",
     "home.more_about": "En savoir plus sur mon travail",
+    "home.more": "En savoir plus",
 
     // Projects
     "projects.title": "Projets — Fortunat Mutunda",
@@ -315,6 +317,7 @@ export const translations = {
     "home.about_heading": "Tarkvaratehnika operatiivsest vaatenurgast.",
     "home.about_text": "Töötan veebiplatvormide, arendustööriistade ja taustasüsteemidega, keskendudes töökindlale tarnele ja selgetele liidestele.",
     "home.more_about": "Lähemalt minu tööst",
+    "home.more": "Rohkem",
 
     // Projects
     "projects.title": "Projektid — Fortunat Mutunda",

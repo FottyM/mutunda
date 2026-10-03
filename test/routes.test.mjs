@@ -25,9 +25,17 @@ test("the home page provides the primary site navigation and introduction", asyn
 
 test("the custom not-found page provides a route home", async () => {
   const html = await readPage("/404");
+  const french = await readPage("/fr/404");
+  const estonian = await readPage("/et/404");
 
   assert.match(html, /Page not found/);
+  assert.match(html, /class="error-page__code"[^>]*>404/);
   assert.match(html, /href="\/"/);
+  assert.match(html, /src="\/images\/okapi-crt\.png"/);
+  assert.match(french, /<html lang="fr">/);
+  assert.match(french, /Page introuvable/);
+  assert.match(estonian, /<html lang="et">/);
+  assert.match(estonian, /Lehte ei leitud/);
 });
 
 test("the style guide renders the reusable visual language", async () => {
@@ -179,6 +187,7 @@ test("published writing renders chronologically with article and tag routes", as
   const tag = await readPage("/writing/tags/architecture");
 
   assert.match(writing, /Static sites are operational systems/);
+  assert.doesNotMatch(writing, /Les sites statiques sont des systèmes opérationnels/);
   assert.doesNotMatch(writing, /An unpublished field note/);
   assert.match(article, /datetime="2026-10-03T00:00:00.000Z"/);
   assert.match(article, /Content is an interface/);
@@ -274,4 +283,30 @@ test("the command palette provides accessible, keyboard-operable site search and
   // Focus and dialog binding
   assert.match(home, /id="command-palette-dialog"/);
   assert.match(home, /class="command-palette__list"/);
+});
+
+test("deployment configuration enforces canonical apex domain and production security headers", async () => {
+  const vercelConfig = JSON.parse(await readFile(new URL("../vercel.json", import.meta.url), "utf8"));
+
+  assert.equal(vercelConfig.outputDirectory, "dist");
+  assert.equal(vercelConfig.framework, "astro");
+
+  // Canonical redirect
+  const redirect = vercelConfig.redirects?.find((r) =>
+    r.has?.some((h) => h.type === "host" && h.value === "www.mutunda.me")
+  );
+  assert.ok(redirect, "Must configure redirect rule for www.mutunda.me");
+  assert.equal(redirect.destination, "https://mutunda.me/:path*");
+  assert.equal(redirect.permanent, true);
+
+  // Security headers
+  const globalHeaders = vercelConfig.headers?.find((h) => h.source === "/(.*)")?.headers;
+  assert.ok(globalHeaders, "Must configure global headers");
+  assert.ok(globalHeaders.some((h) => h.key === "Strict-Transport-Security"));
+  assert.ok(globalHeaders.some((h) => h.key === "X-Content-Type-Options" && h.value === "nosniff"));
+  assert.ok(globalHeaders.some((h) => h.key === "X-Frame-Options" && h.value === "DENY"));
+
+  // Node runtime version
+  const nvmrc = (await readFile(new URL("../.nvmrc", import.meta.url), "utf8")).trim();
+  assert.equal(nvmrc, "22", ".nvmrc must specify Node 22 Active LTS");
 });

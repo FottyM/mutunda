@@ -1,0 +1,88 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { LOCALES, type Locale } from "../i18n/config";
+import { getLocalizedPath } from "../i18n/utils";
+import { useTranslations } from "../i18n/translations";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const errorCopy = Object.fromEntries(LOCALES.map((copyLocale) => {
+  const translate = useTranslations(copyLocale);
+  return [copyLocale, {
+    lang: copyLocale,
+    title: translate("404.title"),
+    description: translate("404.description"),
+    index: translate("404.index"),
+    eyebrow: translate("404.eyebrow"),
+    heading: translate("404.heading"),
+    message: translate("404.message"),
+    returnHome: translate("404.return_home"),
+    homeHref: getLocalizedPath("/", copyLocale),
+  }];
+}));
+---
+
+<BaseLayout
+  title={t("404.title")}
+  description={t("404.description")}
+  locale={locale}
+  translations={{ en: "/", fr: "/fr", et: "/et" }}
+>
+  <main id="main-content">
+    <section class="error-page field-sheet" aria-labelledby="not-found-heading" data-error-copy={JSON.stringify(errorCopy)}>
+      <div class="field-sheet__index" aria-hidden="true">
+        <span>Field note</span>
+        <span data-error-index>{t("404.index")}</span>
+      </div>
+      <figure class="error-page__tv" aria-hidden="true">
+        <img src="/images/okapi-crt.png" alt="" width="1296" height="1187" />
+      </figure>
+      <div class="error-page__content">
+        <p class="error-page__code" aria-hidden="true">404</p>
+        <p class="eyebrow" data-error-eyebrow>{t("404.eyebrow")}</p>
+        <h1 id="not-found-heading" data-error-heading>{t("404.heading")}</h1>
+        <p data-error-message>{t("404.message")}</p>
+        <a class="text-link" data-error-home href={getLocalizedPath("/", locale)}>
+          <span data-error-home-label>{t("404.return_home")}</span> <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
+
+<script>
+  const errorPage = document.querySelector<HTMLElement>("[data-error-copy]");
+  const localeMatch = window.location.pathname.match(/^\/(fr|et)(?:\/|$)/);
+
+  if (errorPage && localeMatch) {
+    const copy = JSON.parse(errorPage.dataset.errorCopy || "{}") as Record<string, {
+      lang: string;
+      title: string;
+      description: string;
+      index: string;
+      eyebrow: string;
+      heading: string;
+      message: string;
+      returnHome: string;
+      homeHref: string;
+    }>;
+    const localized = copy[localeMatch[1]];
+
+    if (localized) {
+      document.documentElement.lang = localized.lang;
+      document.title = localized.title;
+      document.querySelector('meta[name="description"]')?.setAttribute("content", localized.description);
+      errorPage.querySelector("[data-error-index]")!.textContent = localized.index;
+      errorPage.querySelector("[data-error-eyebrow]")!.textContent = localized.eyebrow;
+      errorPage.querySelector("[data-error-heading]")!.textContent = localized.heading;
+      errorPage.querySelector("[data-error-message]")!.textContent = localized.message;
+      const home = errorPage.querySelector<HTMLAnchorElement>("[data-error-home]")!;
+      home.href = localized.homeHref;
+      errorPage.querySelector("[data-error-home-label]")!.textContent = localized.returnHome;
+    }
+  }
+</script>
