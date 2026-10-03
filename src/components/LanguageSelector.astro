@@ -87,6 +87,8 @@ const currentLabel = LOCALE_LABELS[currentLocale].nativeName;
     const trigger = document.getElementById("language-selector-trigger") as HTMLButtonElement | null;
     const menu = document.getElementById("language-selector-menu") as HTMLElement | null;
     if (!trigger || !menu) return;
+    if (trigger.dataset.initialized === "true") return;
+    trigger.dataset.initialized = "true";
 
     function openMenu() {
       trigger?.setAttribute("aria-expanded", "true");
@@ -153,5 +155,6 @@ const currentLabel = LOCALE_LABELS[currentLocale].nativeName;
     });
   }
 
+  setupLanguageSelector();
   document.addEventListener("astro:page-load", setupLanguageSelector);
 </script>

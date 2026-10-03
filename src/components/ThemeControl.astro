@@ -95,6 +95,8 @@ const t = useTranslations(locale);
     const menu = document.getElementById("theme-menu") as HTMLElement | null;
     const options = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-theme-set]"));
     if (!trigger || !menu) return;
+    if (trigger.dataset.initialized === "true") return;
+    trigger.dataset.initialized = "true";
 
     function getStoredTheme(): "light" | "dark" | "system" {
       try {
@@ -222,5 +224,6 @@ const t = useTranslations(locale);
     }) as EventListener);
   }
 
+  setupThemeControl();
   document.addEventListener("astro:page-load", setupThemeControl);
 </script>
