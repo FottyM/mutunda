@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js (Active LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 26
           cache: "npm"
 
       - name: Install dependencies
@@ -47,3 +47,25 @@ jobs:
           test -f dist/sitemap-0.xml
           test -f dist/rss.xml
           echo "Static build artifacts verified successfully."
+
+  i18n-integrity:
+    name: I18n Integrity
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (Active LTS)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build every localized route
+        run: npm run build
+
+      - name: Verify locale isolation
+        run: npm run test:i18n

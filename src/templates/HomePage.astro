@@ -1,8 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Card from "../components/Card.astro";
-import Tag from "../components/Tag.astro";
-import { getCollection } from "astro:content";
 import type { Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
 import { getLocalizedPath } from "../i18n/utils";
@@ -13,17 +10,6 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-
-const allFeaturedProjects = await getCollection(
-  "projects",
-  ({ data }) => !data.draft && data.featured
-);
-
-// Match projects for the current locale; fallback to default locale if not yet translated
-const localizedProjects = allFeaturedProjects.filter((p) => (p.data.locale ?? "en") === locale);
-const featuredProjects = localizedProjects.length > 0
-  ? localizedProjects
-  : allFeaturedProjects.filter((p) => (p.data.locale ?? "en") === "en");
 
 const profileStructuredData = {
   "@context": "https://schema.org",
@@ -58,46 +44,18 @@ const profileStructuredData = {
       <div class="intro__content">
         <p class="eyebrow">{t("home.eyebrow")}</p>
         <h1 id="intro-heading">Fortunat<br />Mutunda</h1>
-        <p class="lede">{t("home.intro_p")}</p>
+        <p class="lede">
+          {t("home.intro_p")}{" "}&mdash;{" "}
+          <a
+            class="text-link"
+            style="margin-top: 0; display: inline; font-size: inherit; text-decoration: underline; text-underline-offset: 4px;"
+            href={getLocalizedPath("/about", locale)}
+          >{t("home.more")}</a>
+        </p>
       </div>
       <div class="intro__margin-note" aria-label={t("home.practice_label")}>
         <span>{t("home.practice_title")}</span>
         <p set:html={t("home.practice_items")} />
-      </div>
-    </section>
-
-    <section class="home-section" aria-labelledby="selected-work-heading">
-      <div class="section-heading">
-        <p class="eyebrow">{t("home.selected_work_eyebrow")}</p>
-        <h2 id="selected-work-heading">{t("home.selected_work_heading")}</h2>
-      </div>
-      <div class="card-grid">
-        {featuredProjects.map(({ data: project }) => (
-          <Card
-            title={project.title}
-            eyebrow={`${project.year} · ${project.role}`}
-            href={getLocalizedPath(`/projects/${project.slug}`, locale)}
-          >
-            <p>{project.summary}</p>
-            <div class="tag-row" aria-label={t("common.technologies")}>
-              {project.technologies.slice(0, 3).map((technology) => <Tag>{technology}</Tag>)}
-            </div>
-          </Card>
-        ))}
-      </div>
-      <a class="text-link" href={getLocalizedPath("/projects", locale)}>
-        {t("home.view_all_projects")} <span aria-hidden="true">&rarr;</span>
-      </a>
-    </section>
-
-    <section class="home-section home-about" aria-labelledby="home-about-heading">
-      <p class="eyebrow">{t("home.about_eyebrow")}</p>
-      <div>
-        <h2 id="home-about-heading">{t("home.about_heading")}</h2>
-        <p>{t("home.about_text")}</p>
-        <a class="text-link" href={getLocalizedPath("/about", locale)}>
-          {t("home.more_about")} <span aria-hidden="true">&rarr;</span>
-        </a>
       </div>
     </section>
   </main>
