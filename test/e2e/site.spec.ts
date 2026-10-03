@@ -3,10 +3,15 @@ import { expect, test } from "@playwright/test";
 test("primary navigation uses client-side routing", async ({ page }) => {
   await page.goto("/");
 
-  await page.getByRole("link", { name: "Projects" }).click();
-
-  await expect(page).toHaveURL(/\/projects\/?$/);
-  await expect(page.getByRole("link", { name: "Projects" })).toHaveAttribute("aria-current", "page");
+  for (const destination of [
+    { name: "Projects", path: "/projects" },
+    { name: "Writing", path: "/writing" },
+    { name: "About", path: "/about" },
+  ]) {
+    await page.getByRole("link", { name: destination.name, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`${destination.path}/?$`));
+    await expect(page.getByRole("link", { name: destination.name, exact: true })).toHaveAttribute("aria-current", "page");
+  }
 });
 
 test("command palette supports its keyboard shortcut and selection", async ({ page }) => {
@@ -55,6 +60,18 @@ test("not-found page returns visitors home", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Return home", exact: true })).toBeVisible();
 });
 
+test("localized not-found pages retain their language and recovery route", async ({ page }) => {
+  for (const pageInfo of [
+    { path: "/fr/404", lang: "fr", heading: "Page introuvable" },
+    { path: "/et/404", lang: "et", heading: "Lehte ei leitud" },
+  ]) {
+    await page.goto(pageInfo.path);
+    await expect(page.locator("html")).toHaveAttribute("lang", pageInfo.lang);
+    await expect(page.getByRole("heading", { name: pageInfo.heading })).toBeVisible();
+    await expect(page.locator("main").getByRole("link")).toHaveAttribute("href", pageInfo.lang === "fr" ? "/fr" : "/et");
+  }
+});
+
 test("localized writing renders only the selected language", async ({ page }) => {
   const listings = [
     {
@@ -98,4 +115,30 @@ test("published work exposes its public routes and metadata", async ({ page }) =
   const content = page.locator("main");
   await expect(content.getByText(/proud husband, dad, and Christian first/i)).toBeVisible();
   await expect(content.getByRole("link", { name: /LinkedIn/i })).toBeVisible();
+});
+
+test("writing, tags, and the style guide are navigable public pages", async ({ page }) => {
+  await page.goto("/writing");
+  await expect(page.getByRole("heading", { name: "Field notes" })).toBeVisible();
+  await page.getByRole("link", { name: "Static sites are operational systems", exact: true }).first().click();
+  await expect(page).toHaveURL(/\/writing\/static-sites-are-operational-systems\/?$/);
+  await expect(page.getByRole("article")).toContainText("Content is an interface");
+
+  await page.goto("/writing/tags/architecture");
+  await expect(page.getByRole("main")).toContainText("Static sites are operational systems");
+
+  await page.goto("/style-guide");
+  await expect(page.getByText("Technical field journal", { exact: true })).toBeVisible();
+  await expect(page.locator("main .button--primary")).toBeVisible();
+});
+
+test("public pages expose canonical and social metadata", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://mutunda.me/");
+  await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "Fortunat Mutunda — Software Engineer");
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute("content", "summary");
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute("href", "/site.webmanifest");
+
+  await page.goto("/writing/static-sites-are-operational-systems");
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute("content", "article");
 });
