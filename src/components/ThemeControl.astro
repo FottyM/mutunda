@@ -61,27 +61,42 @@ const t = useTranslations(locale);
     }
 
     function applyTheme(theme: "light" | "dark" | "system", persist = true) {
-      if (theme === "system") {
-        document.documentElement.removeAttribute("data-theme");
-        if (persist) {
-          try {
-            localStorage.removeItem("theme");
-          } catch (e) {}
+      const update = () => {
+        if (theme === "system") {
+          document.documentElement.removeAttribute("data-theme");
+          if (persist) {
+            try {
+              localStorage.removeItem("theme");
+            } catch (e) {}
+          }
+        } else {
+          document.documentElement.setAttribute("data-theme", theme);
+          if (persist) {
+            try {
+              localStorage.setItem("theme", theme);
+            } catch (e) {}
+          }
         }
-      } else {
-        document.documentElement.setAttribute("data-theme", theme);
-        if (persist) {
-          try {
-            localStorage.setItem("theme", theme);
-          } catch (e) {}
-        }
-      }
 
-      buttons.forEach((btn) => {
-        const isCurrent = btn.dataset.themeSet === theme;
-        btn.setAttribute("aria-pressed", isCurrent ? "true" : "false");
-        btn.classList.toggle("is-active", isCurrent);
-      });
+        buttons.forEach((btn) => {
+          const isCurrent = btn.dataset.themeSet === theme;
+          btn.setAttribute("aria-pressed", isCurrent ? "true" : "false");
+          btn.classList.toggle("is-active", isCurrent);
+        });
+      };
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const canTransition = typeof document.startViewTransition === "function" && !prefersReducedMotion && persist;
+
+      if (canTransition) {
+        document.documentElement.classList.add("theme-transitioning");
+        const transition = document.startViewTransition(update);
+        transition.finished.finally(() => {
+          document.documentElement.classList.remove("theme-transitioning");
+        });
+      } else {
+        update();
+      }
     }
 
     const currentTheme = getStoredTheme();
@@ -92,6 +107,13 @@ const t = useTranslations(locale);
         const targetTheme = btn.dataset.themeSet as "light" | "dark" | "system";
         applyTheme(targetTheme, true);
       });
+    });
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    mediaQuery.addEventListener("change", () => {
+      if (getStoredTheme() === "system") {
+        applyTheme("system", false);
+      }
     });
   }
 
