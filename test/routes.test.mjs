@@ -65,8 +65,9 @@ test("the about route provides intentional public content", async () => {
   const about = await readPage("/about");
 
   assert.match(about, /based in Tallinn, Estonia/);
-  assert.match(about, /src="https:\/\/avatars\.githubusercontent\.com\/u\/227173828\?v=4"/);
+  assert.match(about, /src="\/images\/fortunat\.jpeg"/);
   assert.match(about, /alt="Fortunat Mutunda"/);
+  assert.match(about, /proud husband, dad, and Christian first/);
   assert.match(about, /https:\/\/github\.com\/FottyM/);
   assert.match(about, /https:\/\/www\.linkedin\.com\/in\/fortunat-mutunda\//);
   assert.equal((about.match(/class="profile-link__icon"/g) ?? []).length, 2);
@@ -97,11 +98,15 @@ test("Estonian routes render localized navigation, content, and language metadat
   assert.match(home, /href="\/et\/writing">Kirjutised<\/a>/);
   assert.match(home, /href="\/et\/about">Minust<\/a>/);
   assert.match(about, /Tarkvaraarendus terve süsteemi vaates/);
+  assert.match(about, /uhke abikaasa, isa ja kristlane/);
   assert.match(projects, /Ebola Tracker/);
   assert.match(caseStudy, /Reaalajas epidemioloogiline kaart/);
   assert.match(article, /Staatilised veebisaidid on operatiivsed süsteemid/);
   assert.match(article, /Avaldatud 3\. oktoober 2026/);
   assert.match(article, /rel="alternate" hreflang="et" href="https:\/\/mutunda\.me\/et\/writing\/static-sites-are-operational-systems\/"/);
+
+  const frenchAbout = await readPage("/fr/about");
+  assert.match(frenchAbout, /un mari, un père et un chrétien fier de l'être/);
 });
 
 test("the language selector renders flags and preserves equivalent page navigation", async () => {
@@ -146,11 +151,12 @@ test("the site exposes a keyboard-accessible theme control with anti-FOUC script
   assert.match(home, /document\.documentElement\.setAttribute\("data-theme"/);
 
   // Accessible theme control exists in the header
-  assert.match(home, /<div class="theme-control"[^>]*role="group"/);
+  assert.match(home, /<div class="theme-control"/);
+  assert.match(home, /id="theme-toggle"/);
+  assert.match(home, /aria-label="Color theme"/);
   assert.match(home, /data-theme-set="system"/);
   assert.match(home, /data-theme-set="light"/);
   assert.match(home, /data-theme-set="dark"/);
-  assert.match(home, /aria-label="Color theme"/);
 
   // Tokens CSS supports light, dark, and system preference overrides
   assert.match(tokensCss, /:root\[data-theme="light"\]/);
@@ -188,6 +194,9 @@ test("public pages expose canonical, social, and structured metadata", async () 
   assert.match(home, /rel="canonical" href="https:\/\/mutunda\.me\/"/);
   assert.match(home, /property="og:title" content="Fortunat Mutunda — Software Engineer"/);
   assert.match(home, /name="twitter:card" content="summary"/);
+  assert.match(home, /rel="icon" type="image\/png" sizes="32x32" href="\/favicon-32x32\.png"/);
+  assert.match(home, /rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png"/);
+  assert.match(home, /rel="manifest" href="\/site\.webmanifest"/);
   assert.match(home, /"@type":"Person"/);
   assert.match(home, /https:\/\/www\.linkedin\.com\/in\/fortunat-mutunda\//);
   assert.match(article, /"@type":"Article"/);
@@ -196,11 +205,12 @@ test("public pages expose canonical, social, and structured metadata", async () 
 });
 
 test("the build emits RSS, sitemap, and a crawl policy", async () => {
-  const [rss, sitemapIndex, sitemap, robots] = await Promise.all([
+  const [rss, sitemapIndex, sitemap, robots, manifest] = await Promise.all([
     readOutput("rss.xml"),
     readOutput("sitemap-index.xml"),
     readOutput("sitemap-0.xml"),
     readOutput("robots.txt"),
+    readOutput("site.webmanifest"),
   ]);
 
   assert.match(rss, /<title>Fortunat Mutunda — Field notes<\/title>/);
@@ -212,4 +222,56 @@ test("the build emits RSS, sitemap, and a crawl policy", async () => {
   assert.match(robots, /User-agent: ClaudeBot\nDisallow: \//);
   assert.match(robots, /User-agent: PerplexityBot\nDisallow: \//);
   assert.match(robots, /Sitemap: https:\/\/mutunda\.me\/sitemap-index\.xml/);
+  assert.match(manifest, /"name": "Fortunat Mutunda"/);
+});
+
+test("the command palette provides accessible, keyboard-operable site search and actions", async () => {
+  const home = await readPage("/");
+  const frenchHome = await readPage("/fr");
+  const estonianHome = await readPage("/et");
+
+  // Visible discoverability trigger exists in header
+  assert.match(home, /id="command-palette-trigger"[^>]*aria-haspopup="dialog"/);
+  assert.match(home, /aria-controls="command-palette-dialog"/);
+  assert.match(home, /aria-label="Open command palette"/);
+  assert.match(home, /class="command-palette-trigger__icon"/);
+
+  // Native modal dialog with light dismiss attribute
+  assert.match(home, /<dialog[^>]*class="command-palette-dialog"[^>]*closedby="any"/);
+
+  // Accessible combobox search input
+  assert.match(home, /<input[^>]*id="command-palette-input"[^>]*role="combobox"/);
+  assert.match(home, /aria-autocomplete="list"/);
+  assert.match(home, /aria-controls="command-palette-list"/);
+
+  // Primary destinations listed (Home, Projects, Writing, About)
+  assert.match(home, /id="nav-home"[^>]*data-href="\/"/);
+  assert.match(home, /id="nav-projects"[^>]*data-href="\/projects"/);
+  assert.match(home, /id="nav-writing"[^>]*data-href="\/writing"/);
+  assert.match(home, /id="nav-about"[^>]*data-href="\/about"/);
+
+  // Actions and brand SVGs
+  assert.match(home, /data-action="theme-light"/);
+  assert.match(home, /data-action="theme-dark"/);
+  assert.match(home, /data-action="theme-system"/);
+  assert.match(home, /class="command-palette__brand-icon"/);
+  assert.match(home, /https:\/\/github\.com\/FottyM/);
+
+  // Localized palettes in French and Estonian
+  assert.match(frenchHome, /aria-label="Ouvrir la palette de commandes"/);
+  assert.match(frenchHome, /data-href="\/fr\/projects"/);
+  assert.match(frenchHome, /Les sites statiques sont des systèmes opérationnels/);
+  assert.match(estonianHome, /aria-label="Ava käsualus"/);
+  assert.match(estonianHome, /data-href="\/et\/writing"/);
+  assert.match(estonianHome, /Staatilised saidid on operatsioonisüsteemid/);
+
+  // Language switcher items in command palette
+  assert.match(home, /id="lang-fr"[^>]*data-href="\/fr"/);
+  assert.match(home, /id="lang-et"[^>]*data-href="\/et"/);
+  assert.match(frenchHome, /id="lang-en"[^>]*data-href="\/"/);
+  assert.match(estonianHome, /id="lang-en"[^>]*data-href="\/"/);
+
+  // Focus and dialog binding
+  assert.match(home, /id="command-palette-dialog"/);
+  assert.match(home, /class="command-palette__list"/);
 });
