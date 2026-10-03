@@ -1329,6 +1329,13 @@ h3 {
   margin-top: var(--space-12);
 }
 
+.article-footer {
+  max-width: var(--reading-width);
+  margin: var(--space-12) auto 0;
+  padding-top: var(--space-8);
+  border-top: var(--rule);
+}
+
 .about-page {
   display: grid;
   grid-template-columns: minmax(15rem, 1fr) minmax(0, 1.5fr);
@@ -1592,6 +1599,19 @@ h3 {
 .prose a {
   color: var(--color-accent);
   font-weight: 650;
+}
+
+.prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-block: var(--space-8);
+  border: var(--rule);
+  background: var(--color-surface);
+}
+
+.prose > p:first-child img {
+  margin-top: 0;
 }
 
 .prose code {
