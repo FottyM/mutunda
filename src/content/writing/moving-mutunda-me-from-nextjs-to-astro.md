@@ -10,60 +10,56 @@ draft: false
 locale: en
 ---
 
-This started with a conversation about blogging.
+![A browser window clearing the first hurdle on the way to a calmer publishing system.](/images/writing/mutunda-nextjs-to-astro-cover.png)
 
-I was considering dev.to, mostly because I have no existing audience. Publishing on a platform where developers already spend time made sense. But I also had a personal domain and a site that needed attention.
+This began with a small, awkward question: where should I put my writing?
 
-The old mutunda.me was a single-page portfolio built with Next.js 12, React 18, and Emotion. It had sections for experience and technologies, but also placeholder text and no proper writing workflow.
+dev.to was an obvious answer. People already go there to read about software, and I do not yet have an audience of my own. But I also had a domain and an old portfolio that had begun to feel like a locked room. It was a single page built with Next.js 12, React 18 and Emotion. It listed experience and technologies, but it had placeholder text and no real place for an article to live.
 
-Before worrying about where people would discover my posts, I needed somewhere worth sending them.
+Before I could send anyone to my writing, I needed a home worth sending them to.
 
 ## Why Astro
 
-There wasn't anything about the site that demanded a full React application. Most of what I wanted to publish was text: articles, a biography, and explanations of projects.
+Nothing about the site needed a full React application. I wanted to publish articles, a biography and project notes. Astro suited that job because it stays out of the way. I can write a page in MDX, build the site and publish it. I do not need extra systems around a personal portfolio.
 
-Astro fit that workload. The new configuration explicitly uses static output. Pages are generated at build time, and content lives in the repository.
+Next.js can do this work perfectly well. This was not an escape from a bad tool. I wanted adding an article to feel like adding an article, rather than changing an application. Astro makes static pages that search engines can read. If the site later needs pages made on the server, Astro can do that too. For now, it does not need to.
 
-This wasn't a migration driven by a benchmark or a claim that Next.js is bad. Next.js can handle a portfolio. I wanted a setup where adding an article felt like adding an article, rather than extending an application.
+## The requirements I did not have
 
-The old dependencies were also an opportunity to reconsider what the site needed. Carrying everything forward would have defeated much of the point.
+It is easy to prepare for a grand campaign when all you need is a good pair of boots. A portfolio rebuild can invite a headless CMS, a database, search, a dashboard and enough moving parts to make the original problem disappear beneath them.
+
+That was not an honest picture of this site. I needed a lasting home page, project notes, articles, stable URLs and a way to change them without reopening a half-remembered machine months later. Writing that down changed the question. I stopped asking which frontend was best and started asking what would make publishing simple and leave the work portable.
+
+Static output and Markdown answered most of it. There is still JavaScript where it earns its place. The site remembers a theme, switches languages, opens a command palette and moves between pages without a hard reset. But the words, navigation and reading experience arrive first.
 
 ## Giving the site somewhere to grow
 
-The rebuild separates the homepage, writing, projects, and about page.
+The new site has separate places for writing, projects and the about page. That gives each piece room to breathe. A project is no longer a name beside a technology logo. It can hold the problem, the decisions and what I learned. An article has a stable address and a place in the archive.
 
-That changes what I can put on the site. A project can now have its own case study instead of being a name beside a technology logo. An article has a stable URL, metadata, and a place in the writing archive.
+The content lives in Markdown files, with Astro Content Collections checking the front matter when the site builds. Git suits the way I work. I can review a change, find an older version and take the writing elsewhere if I ever need to. A Markdown file is not a promise that moving will be painless, but it does mean the words are not trapped behind one interface.
 
-Writing and project content use Astro Content Collections. Markdown is the default, with MDX available when content needs a component.
-
-Keeping the content in Git suits the way I already work. Changes are reviewable, previous versions are available, and the articles remain files I can take elsewhere. I don't need a separate content-management service to publish a few pages.
+That modest bit of checking has already proved useful. A missing title or a bad date fails near the change that caused it. I would rather meet that problem in a build than discover it after publishing.
 
 ## A theme built around reading
 
-The visual direction we settled on was a "technical field journal": editorial typography, compact annotations, thin rules, and enough space for longer writing.
+I wanted the design to feel like a technical field journal. That led to editorial type, small notes, thin rules and enough space for a longer piece of writing. It also gave the site a useful limit. It did not need to look new for the sake of looking new. It needed to make reading pleasant.
 
-That gave the rebuild a more useful design constraint than simply making it look newer.
-
-The implementation has shared design tokens and a rendered style guide. It supports light, dark, and system themes, with explicit preferences stored locally. There's also a command palette for navigating pages and changing themes.
-
-Those details give the site some personality, but the article layout matters more. Code should scroll without breaking the page. Text should have a comfortable reading width. Navigation should work with a keyboard.
-
-The repository now also includes English, French, and Estonian routes. That adds another concern beyond translating paragraphs: navigation, metadata, and links need to stay consistent across languages.
+The shared tokens and style guide keep the pages from drifting as the site grows. I made room for code, kept the text at a comfortable width and made the navigation work with a keyboard. Light, dark and system themes remember the choice a visitor has made. The site also has English, French and Estonian routes, which means the links and metadata need as much care as the translated paragraphs.
 
 ## Checking more than whether it builds
 
-A static site still has plenty of ways to break.
+Static does not mean untested. A page can build with a broken link, a draft can wander into the archive and a translated route can quietly lead to the wrong place. The project checks Astro and TypeScript, builds the site, checks links and covers the main journeys in a browser: moving around the site, changing language, keeping a theme and recovering from a missing page. The RSS feed and sitemap are made as part of the build, not remembered at the end.
 
-A page can build with a link to a nonexistent route. A draft can accidentally appear in the archive. A feed can point to the wrong hostname.
+I have no performance victory story to sell here. I did not measure the old site against the new one. A framework name is not evidence. What I have is a site that is simpler to publish to, easier to return to and ready to hold the work I want to share.
 
-The project includes Astro and TypeScript checks, build-based tests, internal-link checks, and internationalization tests. RSS and sitemap generation are part of the publishing setup rather than tasks to remember after writing.
+## A migration is an editorial decision
 
-I'm not attaching a performance victory lap to this migration. Without comparable measurements of the old and new sites, a faster-sounding framework name isn't evidence.
+Moving the site was not only a technical tidy-up. The old single page made writing and projects feel secondary. Now a post can be brief when it needs to be brief, or take its time when the subject deserves it. A project can show its trade-offs rather than end as a polished bullet point.
+
+I left out the parts that did not solve a real problem, including a database-backed CMS and search service. The aim was not a catalogue of tools and job titles. It was a place that shows how I approach the work.
 
 ## Where dev.to fits
 
-I still want to use dev.to for discovery. The plan is to publish on mutunda.me first, then cross-post selected articles with a canonical link back to the original.
+I still plan to use dev.to for discovery, publishing on mutunda.me first and cross-posting selected pieces with a canonical link back home. Owning a domain does not create an audience. It does give me a consistent place to keep the work while I earn one.
 
-Owning a domain doesn't produce an audience. It does give me somewhere consistent to keep the work as I build one.
-
-The rebuild gives me a publishing workflow and space to explain what I make. Now I need to use it.
+The next part of this story is about moving the finished site from Vercel to Cloudflare Workers: [from Vercel to Cloudflare Workers](/writing/moving-mutunda-me-from-vercel-to-cloudflare-workers/).
