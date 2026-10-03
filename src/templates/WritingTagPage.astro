@@ -1,0 +1,52 @@
+---
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import type { Locale } from "../i18n/config";
+import { useTranslations } from "../i18n/translations";
+import { formatLocalizedDate, getLocalizedPath } from "../i18n/utils";
+
+interface Props {
+  label: string;
+  tag: string;
+  entries: Array<{
+    entry: CollectionEntry<"writing">;
+    slug: string;
+  }>;
+  locale: Locale;
+}
+
+const { label, tag, entries, locale } = Astro.props;
+const t = useTranslations(locale);
+const translations = { [locale]: getLocalizedPath(`/writing/tags/${tag}`, locale) };
+const orderedEntries = entries.sort((a, b) => b.entry.data.date.valueOf() - a.entry.data.date.valueOf());
+const countText = orderedEntries.length === 1
+  ? t("writing.notes_count_single", { count: orderedEntries.length })
+  : t("writing.notes_count_plural", { count: orderedEntries.length });
+---
+
+<BaseLayout
+  title={`${label} writing — Fortunat Mutunda`}
+  description={`Technical notes tagged ${label}.`}
+  locale={locale}
+  translations={translations}
+>
+  <main id="main-content" class="listing-page">
+    <header class="page-header">
+      <p class="eyebrow">{t("writing.tag_eyebrow")}</p>
+      <h1>{label}</h1>
+      <p class="lede">{countText}</p>
+    </header>
+    <ol class="writing-list">
+      {orderedEntries.map(({ entry, slug }, index) => (
+        <li class="writing-entry">
+          <p class="writing-entry__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</p>
+          <div>
+            <p class="writing-entry__meta"><time datetime={entry.data.date.toISOString()}>{formatLocalizedDate(entry.data.date, locale)}</time></p>
+            <h2><a href={getLocalizedPath(`/writing/${slug}`, locale)}>{entry.data.title}</a></h2>
+            <p>{entry.data.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </main>
+</BaseLayout>

@@ -72,6 +72,72 @@ test("the about route provides intentional public content", async () => {
   assert.equal((about.match(/class="profile-link__icon"/g) ?? []).length, 2);
 });
 
+test("French routes render localized navigation, content, and language metadata", async () => {
+  const home = await readPage("/fr");
+  const article = await readPage("/fr/writing/static-sites-are-operational-systems");
+
+  assert.match(home, /<html lang="fr">/);
+  assert.match(home, /href="\/fr\/projects">Projets<\/a>/);
+  assert.match(home, /href="\/" hreflang="en" lang="en"/);
+  assert.match(home, /href="https:\/\/mutunda\.me\/fr\/"/);
+  assert.match(article, /Les sites statiques sont des systèmes opérationnels/);
+  assert.match(article, /Publié le 3 octobre 2026/);
+  assert.match(article, /rel="alternate" hreflang="en" href="https:\/\/mutunda\.me\/writing\/static-sites-are-operational-systems\/"/);
+});
+
+test("Estonian routes render localized navigation, content, and language metadata", async () => {
+  const home = await readPage("/et");
+  const about = await readPage("/et/about");
+  const projects = await readPage("/et/projects");
+  const article = await readPage("/et/writing/static-sites-are-operational-systems");
+  const caseStudy = await readPage("/et/projects/ebola-tracker");
+
+  assert.match(home, /<html lang="et">/);
+  assert.match(home, /href="\/et\/projects">Projektid<\/a>/);
+  assert.match(home, /href="\/et\/writing">Kirjutised<\/a>/);
+  assert.match(home, /href="\/et\/about">Minust<\/a>/);
+  assert.match(about, /Tarkvaraarendus terve süsteemi vaates/);
+  assert.match(projects, /Ebola Tracker/);
+  assert.match(caseStudy, /Reaalajas epidemioloogiline kaart/);
+  assert.match(article, /Staatilised veebisaidid on operatiivsed süsteemid/);
+  assert.match(article, /Avaldatud 3\. oktoober 2026/);
+  assert.match(article, /rel="alternate" hreflang="et" href="https:\/\/mutunda\.me\/et\/writing\/static-sites-are-operational-systems\/"/);
+});
+
+test("the language selector renders flags and preserves equivalent page navigation", async () => {
+  const home = await readPage("/");
+  const article = await readPage("/writing/static-sites-are-operational-systems");
+  const caseStudy = await readPage("/projects/ebola-tracker");
+
+  // Flag icons are present
+  assert.match(home, /class="flag-icon"/);
+  assert.match(home, /aria-label="Language selection"/);
+  assert.match(home, /aria-current="true"[^>]*>[\s\S]*?EN/);
+  assert.match(home, /href="\/fr" hreflang="fr" lang="fr"[^>]*>[\s\S]*?FR/);
+  assert.match(home, /href="\/et" hreflang="et" lang="et"[^>]*>[\s\S]*?ET/);
+
+  // Equivalent article routes are preserved
+  assert.match(article, /href="\/fr\/writing\/static-sites-are-operational-systems"/);
+  assert.match(article, /href="\/et\/writing\/static-sites-are-operational-systems"/);
+
+  // Equivalent project routes are preserved
+  assert.match(caseStudy, /href="\/fr\/projects\/ebola-tracker"/);
+  assert.match(caseStudy, /href="\/et\/projects\/ebola-tracker"/);
+});
+
+test("missing tag translations use a safe index fallback and localized interface copy", async () => {
+  const frenchOnlyTag = await readPage("/fr/writing/tags/livraison");
+  const frenchArticle = await readPage("/fr/writing/static-sites-are-operational-systems");
+  const estonianTag = await readPage("/et/writing/tags/delivery");
+
+  assert.match(frenchOnlyTag, /href="\/writing" hreflang="en" lang="en"/);
+  assert.doesNotMatch(frenchOnlyTag, /href="\/writing\/tags\/livraison" hreflang="en"/);
+  assert.doesNotMatch(frenchOnlyTag, /hreflang="en" href="https:\/\/mutunda\.me\/writing\/tags\/livraison/);
+  assert.match(frenchArticle, /aria-label="Étiquettes"/);
+  assert.match(estonianTag, /3\. oktoober 2026/);
+});
+
+
 test("published writing renders chronologically with article and tag routes", async () => {
   const writing = await readPage("/writing");
   const article = await readPage("/writing/static-sites-are-operational-systems");

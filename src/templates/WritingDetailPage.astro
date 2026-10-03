@@ -1,0 +1,83 @@
+---
+import { render, type CollectionEntry } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Callout from "../components/Callout.astro";
+import Tag from "../components/Tag.astro";
+import type { Locale } from "../i18n/config";
+import { useTranslations } from "../i18n/translations";
+import { formatLocalizedDate, getLocalizedPath } from "../i18n/utils";
+
+interface Props {
+  entry: CollectionEntry<"writing">;
+  locale: Locale;
+  slug: string;
+  translations?: Partial<Record<Locale, string>>;
+  isFallback?: boolean;
+}
+
+const { entry, locale, slug, translations, isFallback = false } = Astro.props;
+const { Content } = await render(entry);
+const t = useTranslations(locale);
+
+const localizedArticlePath = getLocalizedPath(`/writing/${slug}/`, locale);
+const canonical = entry.data.canonicalUrl ?? new URL(localizedArticlePath, Astro.site);
+const canonicalUrl = typeof canonical === "string" ? canonical : canonical.href;
+
+const articleStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished: entry.data.date.toISOString(),
+  mainEntityOfPage: canonicalUrl,
+  url: canonicalUrl,
+  keywords: entry.data.tags,
+  inLanguage: locale,
+  author: {
+    "@type": "Person",
+    name: "Fortunat Mutunda",
+    url: Astro.site?.href,
+  },
+};
+
+const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+---
+
+<BaseLayout
+  title={`${entry.data.title} — Fortunat Mutunda`}
+  description={entry.data.description}
+  canonical={canonical}
+  structuredData={articleStructuredData}
+  openGraphType="article"
+  publishedTime={entry.data.date.toISOString()}
+  locale={locale}
+  translations={translations}
+>
+  <main id="main-content" class="article-page">
+    <header class="article-header">
+      <p class="eyebrow">{t("writing.meta_field_note")}</p>
+      <h1>{entry.data.title}</h1>
+      <p class="lede">{entry.data.description}</p>
+      <div class="article-meta">
+        <time datetime={entry.data.date.toISOString()}>
+          {t("writing.published_date", { date: formatLocalizedDate(entry.data.date, locale) })}
+        </time>
+        <div class="tag-row" aria-label={t("common.tags")}>
+          {entry.data.tags.map((tag) => (
+            <Tag href={getLocalizedPath(`/writing/tags/${tagSlug(tag)}`, locale)}>{tag}</Tag>
+          ))}
+        </div>
+      </div>
+    </header>
+
+    {isFallback && (
+      <Callout title={t("common.language_notice")} tone="warning">
+        <p>{t("writing.fallback_notice")}</p>
+      </Callout>
+    )}
+
+    <article class="prose article-body">
+      <Content />
+    </article>
+  </main>
+</BaseLayout>

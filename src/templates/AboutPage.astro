@@ -1,0 +1,55 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SocialIcon from "../components/SocialIcon.astro";
+import type { Locale } from "../i18n/config";
+import { useTranslations } from "../i18n/translations";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  title={t("about.title")}
+  description={t("about.description")}
+  locale={locale}
+>
+  <main id="main-content" class="about-page">
+    <header class="page-header">
+      <p class="eyebrow">{t("about.eyebrow")}</p>
+      <h1>{t("about.heading")}</h1>
+    </header>
+    <div class="about-page__body prose">
+      <figure class="profile-portrait">
+        <img
+          src="https://avatars.githubusercontent.com/u/227173828?v=4"
+          alt="Fortunat Mutunda"
+          width="460"
+          height="460"
+          loading="eager"
+        />
+      </figure>
+      <p class="lede">{t("about.lede")}</p>
+      <p>{t("about.p1")}</p>
+      <p>{t("about.p2")}</p>
+      <section class="profile-links" aria-labelledby="profiles-heading">
+        <h2 id="profiles-heading">{t("about.profiles_heading")}</h2>
+        <ul>
+          <li>
+            <a href="https://github.com/FottyM">
+              <SocialIcon name="github" />FottyM <span class="visually-hidden">{t("about.primary_profile")}</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/fortunat-mutunda/">
+              <SocialIcon name="linkedin" />LinkedIn
+            </a>
+          </li>
+        </ul>
+      </section>
+    </div>
+  </main>
+</BaseLayout>

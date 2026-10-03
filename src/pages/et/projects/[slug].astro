@@ -1,15 +1,15 @@
 ---
 import type { GetStaticPaths } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
-import ProjectDetailPage from "../../templates/ProjectDetailPage.astro";
-import { LOCALES, type Locale } from "../../i18n/config";
-import { getLocalizedPath } from "../../i18n/utils";
+import ProjectDetailPage from "../../../templates/ProjectDetailPage.astro";
+import { LOCALES, type Locale } from "../../../i18n/config";
+import { getLocalizedPath } from "../../../i18n/utils";
 
 export const getStaticPaths = (async () => {
   const allProjects = await getCollection("projects", ({ data }) => !data.draft);
-  const englishProjects = allProjects.filter((p) => (p.data.locale ?? "en") === "en");
+  const etProjects = allProjects.filter((p) => (p.data.locale ?? "en") === "et");
 
-  return englishProjects.map((project) => {
+  return etProjects.map((project) => {
     const slug = project.data.slug;
     const translations: Partial<Record<Locale, string>> = {};
     for (const loc of LOCALES) {
@@ -33,4 +33,4 @@ interface Props {
 const { project, translations } = Astro.props;
 ---
 
-<ProjectDetailPage project={project} locale="en" translations={translations} />
+<ProjectDetailPage project={project} locale="et" translations={translations} />
