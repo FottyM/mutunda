@@ -995,17 +995,20 @@ html.theme-transitioning::view-transition-old(root) {
 }
 
 html.theme-transitioning::view-transition-new(root) {
-  animation: star-wars-screen-wipe 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: star-wars-screen-wipe 0.65s cubic-bezier(0.2, 0.8, 0.2, 1);
   z-index: 2;
-  filter: drop-shadow(-4px 0 16px rgba(0, 0, 0, 0.45));
+  filter: drop-shadow(-2px 0 2px rgba(255, 255, 255, 0.75))
+          drop-shadow(-4px 0 10px color-mix(in srgb, var(--color-accent) 85%, transparent))
+          drop-shadow(-10px 0 24px rgba(0, 0, 0, 0.65));
 }
 
 @keyframes star-wars-screen-wipe {
   from {
-    clip-path: polygon(0 0, 0 0, -8% 100%, -8% 100%);
+    clip-path: polygon(-120% -50%, -10% -50%, -110% 150%, -120% 150%);
   }
   to {
-    clip-path: polygon(0 0, 108% 0, 100% 100%, 0 100%);
+    clip-path: polygon(-120% -50%, 210% -50%, 110% 150%, -120% 150%);
   }
 }
+
 
