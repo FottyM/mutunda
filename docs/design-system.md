@@ -15,14 +15,17 @@ The source of truth is split between:
 - `/style-guide` for rendered examples of links, buttons, tags, cards, callouts,
   article prose, and code.
 
-## Theme decision
+## Theme architecture
 
-Version 1 follows the operating-system preference through
-`prefers-color-scheme`. There is no theme toggle and therefore no preference to
-persist. This keeps the site script-free while giving both light and dark modes
-an authored palette. A future toggle should set a `data-theme` attribute on the
-root element, store only the explicit override, and retain the system setting as
-the default.
+The visual system supports **light**, **dark**, and **system-preference** modes.
+
+The operating system preference is followed by default via `prefers-color-scheme`.
+A keyboard-accessible header control allows visitors to explicitly select Light,
+Dark, or System mode without a page reload. Explicit choices are stored in
+`localStorage.theme` and applied to the root element via a `data-theme` attribute.
+An inline `<script>` in `<head>` executes before rendering to eliminate flash of
+incorrect theme (FOUC). Choosing "System" removes the stored preference, returning
+control to the operating system.
 
 Both palettes use semantic roles instead of literal color names: background,
 surface, text, muted text, border, accent, focus, code, success, warning, and

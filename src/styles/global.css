@@ -136,6 +136,46 @@ nav ul {
   gap: var(--space-6);
 }
 
+.site-header__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.theme-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  padding: 0.125rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.theme-control__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.45rem;
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  border-radius: 1px;
+}
+
+.theme-control__button:hover {
+  color: var(--color-text);
+}
+
+.theme-control__button.is-active,
+.theme-control__button[aria-pressed="true"] {
+  background: var(--color-background);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+}
+
 .language-selector {
   display: inline-flex;
 }
@@ -868,7 +908,8 @@ h3 {
   }
 
   .site-header nav[aria-label="Primary"],
-  .site-header nav[aria-label="Navigation principale"] {
+  .site-header nav[aria-label="Navigation principale"],
+  .site-header nav[aria-label="Peamenüü"] {
     order: 3;
     width: 100%;
     overflow-x: auto;
@@ -879,8 +920,11 @@ h3 {
     gap: var(--space-3);
   }
 
-  .language-selector {
+  .site-header__controls {
     order: 2;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
   }
 
   .site-footer__inner {
@@ -936,4 +980,32 @@ h3 {
   html {
     scroll-behavior: auto;
   }
+
+  html.theme-transitioning::view-transition-group(*),
+  html.theme-transitioning::view-transition-old(*),
+  html.theme-transitioning::view-transition-new(*) {
+    animation: none !important;
+  }
 }
+
+/* Star Wars screen wipe transition for theme changes */
+html.theme-transitioning::view-transition-old(root) {
+  animation: none;
+  z-index: 1;
+}
+
+html.theme-transitioning::view-transition-new(root) {
+  animation: star-wars-screen-wipe 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 2;
+  filter: drop-shadow(-4px 0 16px rgba(0, 0, 0, 0.45));
+}
+
+@keyframes star-wars-screen-wipe {
+  from {
+    clip-path: polygon(0 0, 0 0, -8% 100%, -8% 100%);
+  }
+  to {
+    clip-path: polygon(0 0, 108% 0, 100% 100%, 0 100%);
+  }
+}
+
