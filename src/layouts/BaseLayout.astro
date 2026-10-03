@@ -2,6 +2,7 @@
 import "../styles/tokens.css";
 import "../styles/global.css";
 import LanguageSelector from "../components/LanguageSelector.astro";
+import ThemeControl from "../components/ThemeControl.astro";
 import { DEFAULT_LOCALE, type Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
 import { getLocaleMetadata, getLocalizedPath } from "../i18n/utils";
@@ -72,6 +73,16 @@ const isCurrent = (href: string) =>
     <meta name="twitter:description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <script is:inline>
+      (function () {
+        try {
+          var storedTheme = localStorage.getItem("theme");
+          if (storedTheme === "light" || storedTheme === "dark") {
+            document.documentElement.setAttribute("data-theme", storedTheme);
+          }
+        } catch (e) {}
+      })();
+    </script>
     {structuredDataJson && <script type="application/ld+json" set:html={structuredDataJson} />}
   </head>
   <body>
@@ -90,7 +101,10 @@ const isCurrent = (href: string) =>
               ))}
             </ul>
           </nav>
-          <LanguageSelector currentLocale={locale} translations={translations} />
+          <div class="site-header__controls">
+            <ThemeControl locale={locale} />
+            <LanguageSelector currentLocale={locale} translations={translations} />
+          </div>
         </div>
       </div>
     </header>

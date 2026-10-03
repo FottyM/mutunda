@@ -18,6 +18,10 @@ export const translations = {
     "common.tags": "Tags",
     "common.technologies": "Technologies",
     "common.language_notice": "Language notice",
+    "theme.label": "Color theme",
+    "theme.system": "System theme",
+    "theme.light": "Light theme",
+    "theme.dark": "Dark theme",
 
     // Home
     "home.title": "Fortunat Mutunda — Software Engineer",
@@ -108,6 +112,10 @@ export const translations = {
     "common.tags": "Étiquettes",
     "common.technologies": "Technologies",
     "common.language_notice": "Information sur la langue",
+    "theme.label": "Thème de couleur",
+    "theme.system": "Thème du système",
+    "theme.light": "Thème clair",
+    "theme.dark": "Thème sombre",
 
     // Home
     "home.title": "Fortunat Mutunda — Ingénieur logiciel",
@@ -198,6 +206,10 @@ export const translations = {
     "common.tags": "Sildid",
     "common.technologies": "Tehnoloogiad",
     "common.language_notice": "Keeleteade",
+    "theme.label": "Värviteema",
+    "theme.system": "Süsteemi teema",
+    "theme.light": "Hele teema",
+    "theme.dark": "Tume teema",
 
     // Home
     "home.title": "Fortunat Mutunda — Tarkvarainsener",

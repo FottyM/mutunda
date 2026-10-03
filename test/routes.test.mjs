@@ -137,6 +137,29 @@ test("missing tag translations use a safe index fallback and localized interface
   assert.match(estonianTag, /3\. oktoober 2026/);
 });
 
+test("the site exposes a keyboard-accessible theme control with anti-FOUC script and token contracts", async () => {
+  const home = await readPage("/");
+  const tokensCss = await readFile(new URL("../src/styles/tokens.css", import.meta.url), "utf8");
+
+  // Anti-FOUC script is present in <head>
+  assert.match(home, /localStorage\.getItem\("theme"\)/);
+  assert.match(home, /document\.documentElement\.setAttribute\("data-theme"/);
+
+  // Accessible theme control exists in the header
+  assert.match(home, /<div class="theme-control"[^>]*role="group"/);
+  assert.match(home, /data-theme-set="system"/);
+  assert.match(home, /data-theme-set="light"/);
+  assert.match(home, /data-theme-set="dark"/);
+  assert.match(home, /aria-label="Color theme"/);
+
+  // Tokens CSS supports light, dark, and system preference overrides
+  assert.match(tokensCss, /:root\[data-theme="light"\]/);
+  assert.match(tokensCss, /:root\[data-theme="dark"\]/);
+  assert.match(tokensCss, /@media \(prefers-color-scheme: dark\)/);
+  assert.match(tokensCss, /--color-background/);
+  assert.match(tokensCss, /--color-focus/);
+});
+
 
 test("published writing renders chronologically with article and tag routes", async () => {
   const writing = await readPage("/writing");
