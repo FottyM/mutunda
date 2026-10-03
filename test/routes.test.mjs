@@ -159,9 +159,9 @@ test("the site exposes a keyboard-accessible theme control with anti-FOUC script
   assert.match(tokensCss, /--color-background/);
   assert.match(tokensCss, /--color-focus/);
 
-  // Page flip from bottom right View Transition is defined in global CSS
+  // Star Wars screen wipe View Transition is defined in global CSS
   const globalCss = await readFile(new URL("../src/styles/global.css", import.meta.url), "utf8");
-  assert.match(globalCss, /@keyframes page-flip-bottom-right/);
+  assert.match(globalCss, /@keyframes star-wars-screen-wipe/);
   assert.match(globalCss, /html\.theme-transitioning::view-transition-new\(root\)/);
   assert.match(globalCss, /clip-path: polygon/);
 });

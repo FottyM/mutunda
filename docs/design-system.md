@@ -27,11 +27,6 @@ An inline `<script>` in `<head>` executes before rendering to eliminate flash of
 incorrect theme (FOUC). Choosing "System" removes the stored preference, returning
 control to the operating system.
 
-When changing themes, a browser View Transition renders a page flip sweeping
-diagonally from the bottom-right corner across the viewport with multi-layer
-paper fold shadows and a subtle edge sheen. Motion is fully disabled when
-`prefers-reduced-motion` is enabled.
-
 Both palettes use semantic roles instead of literal color names: background,
 surface, text, muted text, border, accent, focus, code, success, warning, and
 danger. Text and interactive states are selected to meet WCAG AA contrast.
