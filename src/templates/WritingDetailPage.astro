@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ButtonLink from "../components/ButtonLink.astro";
 import Callout from "../components/Callout.astro";
 import Tag from "../components/Tag.astro";
 import type { Locale } from "../i18n/config";
@@ -79,5 +80,11 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
     <article class="prose article-body">
       <Content />
     </article>
+
+    <footer class="article-footer">
+      <ButtonLink href={getLocalizedPath("/writing", locale)} variant="secondary">
+        {t("writing.back_to_index")}
+      </ButtonLink>
+    </footer>
   </main>
 </BaseLayout>
