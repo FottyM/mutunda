@@ -2,6 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "mutunda",
   "compatibility_date": "2026-10-03",
+  "preview_urls": true,
   "assets": {
     "directory": "./dist",
     "html_handling": "auto-trailing-slash",
