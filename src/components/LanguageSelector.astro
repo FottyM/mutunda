@@ -1,6 +1,6 @@
 ---
 import { LOCALES, LOCALE_LABELS, type Locale } from "../i18n/config";
-import { getLocalizedPath } from "../i18n/utils";
+import { getLocaleFallbackPath, getLocalizedPath } from "../i18n/utils";
 import { useTranslations } from "../i18n/translations";
 import FlagIcon from "./FlagIcon.astro";
 
@@ -9,7 +9,7 @@ interface Props {
   translations?: Partial<Record<Locale, string>>;
 }
 
-const { currentLocale, translations = {} } = Astro.props;
+const { currentLocale, translations } = Astro.props;
 const t = useTranslations(currentLocale);
 ---
 
@@ -17,7 +17,8 @@ const t = useTranslations(currentLocale);
   <ul class="language-selector__list">
     {LOCALES.map((locale) => {
       const isCurrent = locale === currentLocale;
-      const targetPath = translations[locale] ?? getLocalizedPath(Astro.url.pathname, locale);
+      const targetPath = translations?.[locale]
+        ?? (translations ? getLocaleFallbackPath(Astro.url.pathname, locale) : getLocalizedPath(Astro.url.pathname, locale));
       const nativeName = LOCALE_LABELS[locale].nativeName;
       const uppercaseCode = locale.toUpperCase();
 

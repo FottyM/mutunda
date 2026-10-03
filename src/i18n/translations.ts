@@ -15,6 +15,9 @@ export const translations = {
     "footer.copyright": "Fortunat Mutunda",
     "lang.switch_to": "Switch to {lang}",
     "lang.current": "Current language: {lang}",
+    "common.tags": "Tags",
+    "common.technologies": "Technologies",
+    "common.language_notice": "Language notice",
 
     // Home
     "home.title": "Fortunat Mutunda — Software Engineer",
@@ -102,6 +105,9 @@ export const translations = {
     "footer.copyright": "Fortunat Mutunda",
     "lang.switch_to": "Passer en {lang}",
     "lang.current": "Langue actuelle : {lang}",
+    "common.tags": "Étiquettes",
+    "common.technologies": "Technologies",
+    "common.language_notice": "Information sur la langue",
 
     // Home
     "home.title": "Fortunat Mutunda — Ingénieur logiciel",
@@ -189,6 +195,9 @@ export const translations = {
     "footer.copyright": "Fortunat Mutunda",
     "lang.switch_to": "Vali keeleks {lang}",
     "lang.current": "Aktiivne keel: {lang}",
+    "common.tags": "Sildid",
+    "common.technologies": "Tehnoloogiad",
+    "common.language_notice": "Keeleteade",
 
     // Home
     "home.title": "Fortunat Mutunda — Tarkvarainsener",

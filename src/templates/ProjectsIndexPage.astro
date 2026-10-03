@@ -50,7 +50,7 @@ const projects = uniqueSlugs.map((slug) => {
       <p class="lede">{t("projects.lede")}</p>
     </header>
 
-    <section aria-label="Projects" class="project-list">
+    <section aria-label={t("projects.heading")} class="project-list">
       {projects.map(({ project, href, isFallback }, index) => (
         <Card
           title={isFallback ? `${project.title} ${t("projects.in_english")}` : project.title}
@@ -58,7 +58,7 @@ const projects = uniqueSlugs.map((slug) => {
           href={href}
         >
           <p>{project.summary}</p>
-          <div class="tag-row" aria-label="Technologies">
+          <div class="tag-row" aria-label={t("common.technologies")}>
             {project.technologies.map((technology) => <Tag>{technology}</Tag>)}
           </div>
         </Card>

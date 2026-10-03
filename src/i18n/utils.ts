@@ -34,6 +34,24 @@ export function getLocalizedPath(pathname: string, targetLocale: Locale): string
 }
 
 /**
+ * Returns the nearest safe localized destination when a content translation
+ * does not exist. Detail and tag routes fall back to their collection index.
+ */
+export function getLocaleFallbackPath(pathname: string, targetLocale: Locale): string {
+  const defaultPath = getLocalizedPath(pathname, DEFAULT_LOCALE);
+
+  if (/^\/writing\/(?:tags\/)?[^/]+/.test(defaultPath)) {
+    return getLocalizedPath("/writing", targetLocale);
+  }
+
+  if (/^\/projects\/[^/]+/.test(defaultPath)) {
+    return getLocalizedPath("/projects", targetLocale);
+  }
+
+  return getLocalizedPath(defaultPath, targetLocale);
+}
+
+/**
  * Formats a Date object according to locale conventions.
  */
 export function formatLocalizedDate(date: Date, locale: Locale): string {
@@ -76,7 +94,8 @@ export function getLocaleMetadata(
 
   const canonicalUrl = toAbsolute(currentPathname);
 
-  const alternates: AlternateLink[] = LOCALES.map((locale) => {
+  const alternateLocales = overrides ? LOCALES.filter((locale) => overrides[locale]) : LOCALES;
+  const alternates: AlternateLink[] = alternateLocales.map((locale) => {
     const localePath = overrides?.[locale] ?? getLocalizedPath(currentPathname, locale);
     return {
       hreflang: locale,
@@ -84,7 +103,9 @@ export function getLocaleMetadata(
     };
   });
 
-  const defaultPath = overrides?.[DEFAULT_LOCALE] ?? getLocalizedPath(currentPathname, DEFAULT_LOCALE);
+  const defaultPath = overrides?.[DEFAULT_LOCALE] ?? (overrides
+    ? getLocaleFallbackPath(currentPathname, DEFAULT_LOCALE)
+    : getLocalizedPath(currentPathname, DEFAULT_LOCALE));
   alternates.push({
     hreflang: "x-default",
     href: toAbsolute(defaultPath),

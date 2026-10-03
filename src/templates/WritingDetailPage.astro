@@ -62,7 +62,7 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
         <time datetime={entry.data.date.toISOString()}>
           {t("writing.published_date", { date: formatLocalizedDate(entry.data.date, locale) })}
         </time>
-        <div class="tag-row" aria-label="Tags">
+        <div class="tag-row" aria-label={t("common.tags")}>
           {entry.data.tags.map((tag) => (
             <Tag href={getLocalizedPath(`/writing/tags/${tagSlug(tag)}`, locale)}>{tag}</Tag>
           ))}
@@ -71,7 +71,7 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
     </header>
 
     {isFallback && (
-      <Callout title="Language notice" tone="warning">
+      <Callout title={t("common.language_notice")} tone="warning">
         <p>{t("writing.fallback_notice")}</p>
       </Callout>
     )}

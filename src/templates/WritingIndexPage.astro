@@ -74,7 +74,7 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
               </a>
             </h2>
             <p>{entry.data.description}</p>
-            <div class="tag-row" aria-label="Tags">
+            <div class="tag-row" aria-label={t("common.tags")}>
               {entry.data.tags.map((tag) => (
                 <Tag href={getLocalizedPath(`/writing/tags/${tagSlug(tag)}`, locale)}>{tag}</Tag>
               ))}

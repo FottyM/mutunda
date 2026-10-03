@@ -48,7 +48,7 @@ const t = useTranslations(locale);
     </header>
 
     {isFallback && (
-      <Callout title="Language notice" tone="warning">
+      <Callout title={t("common.language_notice")} tone="warning">
         <p>{t("projects.fallback_notice")}</p>
       </Callout>
     )}

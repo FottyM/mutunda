@@ -52,7 +52,7 @@ const profileStructuredData = {
   <main id="main-content">
     <section class="intro field-sheet" aria-labelledby="intro-heading">
       <div class="field-sheet__index" aria-hidden="true">
-        <span>Field note</span>
+        <span>{t("writing.meta_field_note")}</span>
         <span>001 / 2026</span>
       </div>
       <div class="intro__content">
@@ -79,7 +79,7 @@ const profileStructuredData = {
             href={getLocalizedPath(`/projects/${project.slug}`, locale)}
           >
             <p>{project.summary}</p>
-            <div class="tag-row" aria-label="Technologies">
+            <div class="tag-row" aria-label={t("common.technologies")}>
               {project.technologies.slice(0, 3).map((technology) => <Tag>{technology}</Tag>)}
             </div>
           </Card>

@@ -125,6 +125,18 @@ test("the language selector renders flags and preserves equivalent page navigati
   assert.match(caseStudy, /href="\/et\/projects\/ebola-tracker"/);
 });
 
+test("missing tag translations use a safe index fallback and localized interface copy", async () => {
+  const frenchOnlyTag = await readPage("/fr/writing/tags/livraison");
+  const frenchArticle = await readPage("/fr/writing/static-sites-are-operational-systems");
+  const estonianTag = await readPage("/et/writing/tags/delivery");
+
+  assert.match(frenchOnlyTag, /href="\/writing" hreflang="en" lang="en"/);
+  assert.doesNotMatch(frenchOnlyTag, /href="\/writing\/tags\/livraison" hreflang="en"/);
+  assert.doesNotMatch(frenchOnlyTag, /hreflang="en" href="https:\/\/mutunda\.me\/writing\/tags\/livraison/);
+  assert.match(frenchArticle, /aria-label="Étiquettes"/);
+  assert.match(estonianTag, /3\. oktoober 2026/);
+});
+
 
 test("published writing renders chronologically with article and tag routes", async () => {
   const writing = await readPage("/writing");
