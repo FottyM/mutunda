@@ -1274,9 +1274,26 @@ h3 {
   margin-top: 0;
 }
 
+.writing-entry__index {
+  padding-top: var(--space-8);
+}
+
 .writing-entry h2 {
   margin-bottom: var(--space-3);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  max-width: 24ch;
+  font-size: clamp(1.5rem, 2.5vw, 2.25rem);
+  line-height: 1.05;
+}
+
+.writing-entry h2 a {
+  text-decoration: none;
+}
+
+.writing-entry h2 a:hover,
+.writing-entry h2 a:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.16em;
 }
 
 .writing-entry h2 a::after {
@@ -1519,6 +1536,23 @@ h3 {
   border: var(--rule);
   border-radius: 999px;
   color: var(--color-muted);
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.tag:is(a):hover,
+.tag:is(a):focus-visible {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
+  color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+.tag:is(a):active {
+  transform: translateY(0);
 }
 
 .card-grid {

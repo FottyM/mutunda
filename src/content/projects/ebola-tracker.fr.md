@@ -1,8 +1,8 @@
 ---
 slug: ebola-tracker
 title: Ebola Tracker
-summary: Une carte épidémiologique en direct et un tableau de bord de situation pour la flambée du virus Ebola Bundibugyo 2026 en Afrique centrale.
-description: Une interface de surveillance statique et adaptée aux mobiles, alimentée par un pipeline d'ingestion et de validation automatisé.
+summary: Un tableau de bord public sur la flambée de virus Ebola Bundibugyo de 2026, en RDC et sur les voies de surveillance voisines.
+description: Une carte et un tableau de bord régulièrement mis à jour qui rendent des rapports officiels dispersés plus faciles à lire.
 role: Créateur et ingénieur logiciel
 year: 2026
 featured: true
@@ -20,22 +20,20 @@ links:
   repository: https://github.com/FottyM/ebola-tracker
 ---
 
-## Le paysage de la collecte de données
+## Le problème
 
-Les rapports de situation épidémiologique proviennent de sources de santé publique hétérogènes, avec des formats et des échelons géographiques distincts. Une vue publique exploitable doit préserver la provenance et la fraîcheur des données sans présenter des chiffres incertains comme des certitudes.
+Lorsqu'une flambée reste locale, il peut être difficile de trouver des informations publiques utiles. Des chiffres importants peuvent rester dans des bulletins PDF dispersés, loin des personnes qui cherchent à comprendre la situation. Je voulais un lieu public où l'information pouvait être trouvée et lue sans devoir chercher dans de nombreux rapports.
 
-L'interface doit également conserver une carte dense et une vue synthétique parfaitement utilisables sur smartphone, où l'espace d'affichage est contraint.
+J'ai créé Ebola Tracker comme une petite expérience de week-end. Il est depuis devenu un tableau de bord pour la flambée de virus Ebola Bundibugyo de 2026 : la République démocratique du Congo, le contexte de la frontière ougandaise et les évacuations médicales internationales.
 
-## Valider avant de présenter
+## Suivre les données, pas seulement le titre
 
-J'ai conçu un pipeline automatisé qui extrait les rapports de situation du ministère de la Santé de la RDC, analyse leurs données PDF, intègre les flux HDX d'OCHA (ONU) et réconcilie les totaux aux niveaux national, provincial et des zones de santé.
+Toutes les quatre heures, le pipeline consulte les rapports officiels et met les données à jour avec du code classique, sans modèle de langage. Il rassemble les bulletins du ministère de la Santé et de l'INSP en RDC, des données par zone de santé, ainsi que des vérifications d'organisations comme l'OMS et Africa CDC.
 
-Ce pipeline applique une validation stricte (fail-closed), produit des instantanés immuables, détecte les anomalies et propose des mécanismes de rétention et de restauration afin qu'une source indisponible ou incohérente ne remplace jamais silencieusement le dernier jeu de données validé.
+Les chiffres de la RDC restent séparés des évacuations médicales internationales. C'est important : le soin d'un patient ailleurs ne doit pas donner l'impression que la flambée s'y est déplacée.
 
-L'expérience cartographique avec Leaflet et OpenStreetMap repose sur des panneaux adaptatifs, des commandes optimisées pour le tactile, des courbes épidémiques, des graphiques démographiques et des indicateurs explicites de fiabilité des sources.
+Le tableau de bord affiche clairement la source et l'heure de la dernière mise à jour. Sa carte peut passer du pays à la province puis à la zone de santé. Des résumés de situation, des chronologies de flambée et des graphiques démographiques rendent les chiffres plus lisibles sur téléphone comme sur grand écran.
 
-## Une vitrine statique dotée d'un cœur opérationnel
+## Une petite surface publique, des données traitées avec soin
 
-Le tableau de bord public est distribué via GitHub Pages sans aucun serveur d'application en production, tandis que GitHub Actions actualise les données validées selon un cycle planifié de quatre heures.
-
-Le projet dissocie la disponibilité des sources de la fraîcheur épidémiologique et archive les instantanés antérieurs pour permettre une reprise opérationnelle rapide.
+Le site public fonctionne sur GitHub Pages sans serveur applicatif en production. GitHub Actions assure la mise à jour planifiée. La validation, les instantanés, la détection des changements et les contrôles de restauration empêchent un bulletin indisponible ou incohérent de remplacer silencieusement le dernier jeu de données fiable.

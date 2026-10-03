@@ -1,8 +1,8 @@
 ---
 slug: ebola-tracker
 title: Ebola Tracker
-summary: Reaalajas epidemioloogiline kaart ja olukorrapaneel 2026. aasta Bundibugyo ebolaviiruse puhangule Kesk-Aafrikas.
-description: Staatiline, mobiilisõbralik seireliides, mida toetab automatiseeritud andmehõive- ja valideerimiskonveier.
+summary: Avalik olukorra juhtpaneel 2026. aasta Bundibugyo ebolaviiruse puhangu kohta KDV-s ja naaberalade seireradadel.
+description: Regulaarselt uuenev kaart ja juhtpaneel, mis muudavad laiali olevad ametlikud aruanded arusaadavamaks.
 role: Looja ja tarkvarainsener
 year: 2026
 featured: true
@@ -20,22 +20,20 @@ links:
   repository: https://github.com/FottyM/ebola-tracker
 ---
 
-## Andmekogumise maastik
+## Probleem
 
-Puhanguandmed laekuvad eraldiseisvate rahvatervise allikate, eri formaatide ja geograafiliste tasandite kaudu. Toimiv avalik vaade peab säilitama andmete päritolu ja värskuse, ilma et ebakindlat teavet esitataks kindla tõena.
+Kui puhang jääb kohalikuks, võib kasulikku avalikku teavet olla raske leida. Olulised arvud võivad jääda laiali olevatesse PDF-bülletäänidesse, kaugele inimestest, kes püüavad olukorda mõista. Tahtsin avalikku kohta, kus teabe leiab ja seda saab lugeda ilma paljusid aruandeid läbi otsimata.
 
-Samuti peab liides hoidma tiheda kaardivaate ja olukorrakokkuvõtte mugavalt kasutatavana nutitelefonides, kus ekraanipind on piiratud.
+Ehitasin Ebola Trackeri väikese nädalavahetuse katsena. Sellest on kasvanud olukorra juhtpaneel 2026. aasta Bundibugyo ebolaviiruse puhangu jaoks: Kongo Demokraatlik Vabariik, Uganda piiri kontekst ja rahvusvahelised meditsiinilised evakuatsiooniteed.
 
-## Valideerimine enne esitust
+## Andmete, mitte ainult pealkirja jälgimine
 
-Ehitasin ajastatud konveieri, mis tuvastab KDV terviseministeeriumi olukorraaruandeid, töötleb nende PDF-andmeid, lõimib ÜRO OCHA HDX andmevooge ning kooskõlastab riiklikke, provintsi ja tervisetsoonide koondandmeid.
+Iga nelja tunni järel kontrollib töövoog ametlikke aruandeid ja uuendab andmeid tavalise koodi, mitte keelemudeli abil. See ühendab KDV terviseministeeriumi ja INSP bülletäänid, tervisetsoonide andmed ning kontrolli organisatsioonidelt nagu WHO ja Africa CDC.
 
-Konveier kasutab ranget tõrkekindlat valideerimist (fail-closed), muutumatuid hetktõmmiseid, anomaaliate tuvastust ja taastetööriistu, tagamaks, et kättesaamatu või vastuoluline allikas ei asendaks kunagi vaikimisi viimast kinnitatud andmestikku.
+KDV arvud jäävad rahvusvahelistest meditsiinilistest evakuatsioonidest eraldi. See on oluline: patsiendi ravi mujal ei tohi jätta muljet, et puhang on sinna liikunud.
 
-Leafletil ja OpenStreetMapil põhinev staatiline lahendus toetub kohanduvatele paneelidele, puutesõbralikele juhtelementidele, epideemiakõveratele, demograafilistele graafikutele ning selgetele allikate usaldusväärsuse indikaatoritele.
+Juhtpaneel näitab selgelt allikat ja viimase uuenduse aega. Kaardil saab liikuda riigi, provintsi ja tervisetsooni vahel. Olukorra kokkuvõtted, puhangu ajajooned ja demograafilised graafikud muudavad arvud loetavamaks nii telefonis kui ka suuremal ekraanil.
 
-## Staatiline avalik kiht operatiivse tuumaga
+## Väike avalik pind, hoolikas andmetöö
 
-Avalikku juhtpaneeli serveeritakse GitHub Pagesi kaudu ilma serverita toodangukeskkonnas, samal ajal kui GitHub Actions uuendab valideeritud andmeid iga nelja tunni tagant.
-
-Projekt eristab allikate kättesaadavust epidemioloogilisest värskusest ning säilitab varasemad hetktõmmised kiireks operatiivseks taastamiseks.
+Avalik sait töötab GitHub Pagesis ilma tootmisrakenduse serverita. GitHub Actions teeb ajastatud uuenduse. Valideerimine, hetktõmmised, muudatuste tuvastamine ja taastamise kontrollid takistavad kättesaamatul või vastuolulisel bülletäänil vaikselt viimast head andmestikku asendada.

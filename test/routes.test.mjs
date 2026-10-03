@@ -192,7 +192,7 @@ test("published writing renders chronologically with article and tag routes", as
   assert.match(article, /datetime="2026-10-03T00:00:00.000Z"/);
   assert.match(article, /Content is an interface/);
   assert.match(article, /href="\/writing\/tags\/architecture"/);
-  assert.match(tag, /1 note in this field/);
+  assert.match(tag, /3 notes in this field/);
   assert.match(tag, /Static sites are operational systems/);
 });
 
