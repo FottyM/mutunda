@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
-    "test": "npm run build --silent && node --test",
+    "test": "npm run build --silent && node --test test/*.test.mjs",
+    "test:e2e": "npm run build && playwright test",
     "test:i18n": "node --test test/i18n.test.mjs",
     "test:links": "node --test test/links.test.mjs",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@playwright/test": "^1.63.0",
     "@types/node": "^22.20.5",
     "typescript": "^6.0.3",
     "wrangler": "4.135.0"

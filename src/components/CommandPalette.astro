@@ -366,6 +366,8 @@ const externalItems = [
     const statusRegion = document.getElementById("command-palette-status") as HTMLElement | null;
 
     if (!dialog || !trigger || !input || !list) return;
+    if (trigger.dataset.initialized === "true") return;
+    trigger.dataset.initialized = "true";
 
     // Platform shortcut detection (replace ⌘ with Ctrl on non-Mac)
     const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent || navigator.platform);
@@ -577,5 +579,6 @@ const externalItems = [
     });
   }
 
+  setupCommandPalette();
   document.addEventListener("astro:page-load", setupCommandPalette);
 </script>

@@ -82,6 +82,8 @@ typings/
 # Nuxt.js build / generate output
 .nuxt
 dist
+playwright-report/
+test-results/
 
 # Gatsby files
 .cache/
