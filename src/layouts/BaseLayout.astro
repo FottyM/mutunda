@@ -1,6 +1,7 @@
 ---
 import "../styles/tokens.css";
 import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
 import LanguageSelector from "../components/LanguageSelector.astro";
 import ThemeControl from "../components/ThemeControl.astro";
 import CommandPalette from "../components/CommandPalette.astro";
@@ -78,14 +79,47 @@ const isCurrent = (href: string) =>
     <meta name="twitter:description" content={description} />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    <ClientRouter />
     <script is:inline>
       (function () {
-        try {
-          var storedTheme = localStorage.getItem("theme");
-          if (storedTheme === "light" || storedTheme === "dark") {
-            document.documentElement.setAttribute("data-theme", storedTheme);
+        function applyStoredTheme() {
+          try {
+            var storedTheme = localStorage.getItem("theme");
+            if (storedTheme === "light" || storedTheme === "dark") {
+              document.documentElement.setAttribute("data-theme", storedTheme);
+            } else {
+              document.documentElement.removeAttribute("data-theme");
+            }
+          } catch (e) {
+            // Keep the server-rendered system theme when storage is unavailable.
           }
-        } catch (e) {}
+        }
+
+        applyStoredTheme();
+        // ClientRouter swaps the <html> element's attributes during navigation.
+        // Restore an explicit preference before the incoming page is painted.
+        document.addEventListener("astro:after-swap", applyStoredTheme);
+
+        // Browser history alone cannot tell whether a primary-nav destination
+        // sits to the left or right of the current section. Give the router a
+        // semantic direction so Home ← Projects ← Writing ← About reads naturally.
+        var primarySections = ["", "projects", "writing", "about"];
+        function primarySectionIndex(url) {
+          var segments = url.pathname.split("/").filter(Boolean);
+          if (segments[0] === "fr" || segments[0] === "et") segments.shift();
+          var section = segments[0] || "";
+          return primarySections.indexOf(section);
+        }
+
+        document.addEventListener("astro:before-preparation", function (event) {
+          var fromIndex = primarySectionIndex(event.from);
+          var toIndex = primarySectionIndex(event.to);
+          if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) {
+            event.direction = "same";
+          } else {
+            event.direction = toIndex > fromIndex ? "next" : "previous";
+          }
+        });
       })();
     </script>
     {structuredDataJson && <script type="application/ld+json" set:html={structuredDataJson} />}
