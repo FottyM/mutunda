@@ -5,10 +5,7 @@
   "scripts": {
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
     "check": "ASTRO_TELEMETRY_DISABLED=1 astro check",
-    "test": "npm run build --silent && node --test test/*.test.mjs",
     "test:e2e": "npm run build && playwright test",
-    "test:i18n": "node --test test/i18n.test.mjs",
-    "test:links": "node --test test/links.test.mjs",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview"
   },

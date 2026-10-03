@@ -39,17 +39,63 @@ test("theme preference survives client-side navigation", async ({ page }) => {
 });
 
 test("language selection retains the equivalent route", async ({ page }) => {
-  await page.goto("/about");
+  await page.goto("/writing/static-sites-are-operational-systems");
 
   await page.locator("#language-selector-trigger").click();
   await page.getByRole("menuitem", { name: /switch to Français/i }).click();
 
-  await expect(page).toHaveURL(/\/fr\/about\/?$/);
+  await expect(page).toHaveURL(/\/fr\/writing\/static-sites-are-operational-systems\/?$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  await expect(page.getByRole("heading", { name: "Les sites statiques sont des systèmes opérationnels" })).toBeVisible();
 });
 
 test("not-found page returns visitors home", async ({ page }) => {
   await page.goto("/not-a-real-route");
 
   await expect(page.getByRole("link", { name: "Return home", exact: true })).toBeVisible();
+});
+
+test("localized writing renders only the selected language", async ({ page }) => {
+  const listings = [
+    {
+      path: "/writing",
+      lang: "en",
+      title: "Static sites are operational systems",
+      absent: "Les sites statiques sont des systèmes opérationnels",
+    },
+    {
+      path: "/fr/writing",
+      lang: "fr",
+      title: "Les sites statiques sont des systèmes opérationnels",
+      absent: "Staatilised veebisaidid on operatiivsed süsteemid",
+    },
+    {
+      path: "/et/writing",
+      lang: "et",
+      title: "Staatilised veebisaidid on operatiivsed süsteemid",
+      absent: "Static sites are operational systems",
+    },
+  ];
+
+  for (const listing of listings) {
+    await page.goto(listing.path);
+    await expect(page.locator("html")).toHaveAttribute("lang", listing.lang);
+    const content = page.locator("main");
+    await expect(content.getByText(listing.title, { exact: true }).first()).toBeVisible();
+    await expect(content.getByText(listing.absent, { exact: true })).toHaveCount(0);
+  }
+});
+
+test("published work exposes its public routes and metadata", async ({ page }) => {
+  await page.goto("/projects/ebola-tracker");
+  await expect(page.getByRole("heading", { name: "Ebola Tracker" })).toBeVisible();
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://mutunda.me/projects/ebola-tracker/",
+  );
+
+  await page.goto("/about");
+  const content = page.locator("main");
+  await expect(content.getByText(/proud husband, dad, and Christian first/i)).toBeVisible();
+  await expect(content.getByRole("link", { name: /LinkedIn/i })).toBeVisible();
 });
