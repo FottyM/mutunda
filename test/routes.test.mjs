@@ -67,6 +67,7 @@ test("the about route provides intentional public content", async () => {
   assert.match(about, /based in Tallinn, Estonia/);
   assert.match(about, /src="\/images\/fortunat\.jpeg"/);
   assert.match(about, /alt="Fortunat Mutunda"/);
+  assert.match(about, /proud husband, dad, and Christian first/);
   assert.match(about, /https:\/\/github\.com\/FottyM/);
   assert.match(about, /https:\/\/www\.linkedin\.com\/in\/fortunat-mutunda\//);
   assert.equal((about.match(/class="profile-link__icon"/g) ?? []).length, 2);
@@ -97,11 +98,15 @@ test("Estonian routes render localized navigation, content, and language metadat
   assert.match(home, /href="\/et\/writing">Kirjutised<\/a>/);
   assert.match(home, /href="\/et\/about">Minust<\/a>/);
   assert.match(about, /Tarkvaraarendus terve süsteemi vaates/);
+  assert.match(about, /uhke abikaasa, isa ja kristlane/);
   assert.match(projects, /Ebola Tracker/);
   assert.match(caseStudy, /Reaalajas epidemioloogiline kaart/);
   assert.match(article, /Staatilised veebisaidid on operatiivsed süsteemid/);
   assert.match(article, /Avaldatud 3\. oktoober 2026/);
   assert.match(article, /rel="alternate" hreflang="et" href="https:\/\/mutunda\.me\/et\/writing\/static-sites-are-operational-systems\/"/);
+
+  const frenchAbout = await readPage("/fr/about");
+  assert.match(frenchAbout, /un mari, un père et un chrétien fier de l'être/);
 });
 
 test("the language selector renders flags and preserves equivalent page navigation", async () => {

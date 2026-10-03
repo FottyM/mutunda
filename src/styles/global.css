@@ -1027,12 +1027,15 @@ h3 {
 
 .about-page__body > .lede {
   margin-top: 0;
+  font-size: clamp(1.0625rem, 1.55vw, 1.1875rem);
+  line-height: 1.55;
 }
 
 .profile-portrait {
-  width: clamp(8rem, 20vw, 11rem);
+  float: left;
+  width: clamp(10rem, 25vw, 13.75rem);
   aspect-ratio: 1;
-  margin: 0 0 var(--space-8);
+  margin: 0.2rem var(--space-6) var(--space-3) 0;
   padding: var(--space-2);
   border: var(--rule);
   border-radius: 28%;
@@ -1056,6 +1059,7 @@ h3 {
 }
 
 .profile-links {
+  clear: both;
   margin-top: var(--space-12);
   padding-top: var(--space-8);
   border-top: var(--rule);
