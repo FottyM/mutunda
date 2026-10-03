@@ -3,6 +3,7 @@ import { LOCALES, LOCALE_LABELS, type Locale } from "../i18n/config";
 import { getLocaleFallbackPath, getLocalizedPath } from "../i18n/utils";
 import { useTranslations } from "../i18n/translations";
 import FlagIcon from "./FlagIcon.astro";
+import Icon from "./Icon.astro";
 
 interface Props {
   currentLocale: Locale;
@@ -56,6 +57,9 @@ const currentLabel = LOCALE_LABELS[currentLocale].nativeName;
                 <FlagIcon locale={locale} />
                 <span class="language-selector__name">{nativeName}</span>
                 <span class="language-selector__badge">{uppercaseCode}</span>
+                <span class="language-selector__check" aria-hidden="true">
+                  <Icon name="Check" size={13} />
+                </span>
               </span>
             ) : (
               <a
@@ -87,6 +91,15 @@ const currentLabel = LOCALE_LABELS[currentLocale].nativeName;
     function openMenu() {
       trigger?.setAttribute("aria-expanded", "true");
       menu?.classList.add("is-open");
+
+      // Close theme menu if open to avoid overlap
+      const themeTrigger = document.getElementById("theme-toggle");
+      const themeMenu = document.getElementById("theme-menu");
+      if (themeTrigger?.getAttribute("aria-expanded") === "true") {
+        themeTrigger.setAttribute("aria-expanded", "false");
+        themeMenu?.classList.remove("is-open");
+      }
+
       const currentOrFirst = (menu?.querySelector(".language-selector__option--current") ||
         menu?.querySelector(".language-selector__option")) as HTMLElement | null;
       currentOrFirst?.focus();

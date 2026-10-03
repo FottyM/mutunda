@@ -148,7 +148,10 @@ test("the site exposes a keyboard-accessible theme control with anti-FOUC script
   // Accessible theme control exists in the header
   assert.match(home, /<div class="theme-control"/);
   assert.match(home, /id="theme-toggle"/);
-  assert.match(home, /aria-label="Toggle color theme"/);
+  assert.match(home, /aria-label="Color theme"/);
+  assert.match(home, /data-theme-set="system"/);
+  assert.match(home, /data-theme-set="light"/);
+  assert.match(home, /data-theme-set="dark"/);
 
   // Tokens CSS supports light, dark, and system preference overrides
   assert.match(tokensCss, /:root\[data-theme="light"\]/);
