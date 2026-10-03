@@ -36,6 +36,17 @@ Both palettes use semantic roles instead of literal color names: background,
 surface, text, muted text, border, accent, focus, code, success, warning, and
 danger. Text and interactive states are selected to meet WCAG AA contrast.
 
+## Command palette navigation
+
+The site provides an accessible, VS Code-inspired command palette navigation surface:
+- **Shortcut activation**: Opened globally via `Shift+Command+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux), as well as `Command+K` / `Ctrl+K`.
+- **Visible trigger**: An accessible button in the site header displays the platform-native shortcut badge and provides discoverability.
+- **Search & filtering**: Real-time query filtering across primary destinations (Home, Projects, Writing, About, Style Guide), case studies, articles, theme actions, and external profiles.
+- **Keyboard navigation**: Full arrow-key cycling (`↑`/`↓`), `Enter` to navigate or execute, and `Esc` to close.
+- **Iconography**: Uses Lucide icons as supporting visual affordances while keeping official brand SVGs for GitHub and LinkedIn.
+- **Modal semantics**: Built on native HTML `<dialog closedby="any">` with focus trapping, `role="combobox"` / `role="listbox"` ARIA patterns, and screen reader live-region announcements.
+
+
 ## Interaction rules
 
 - Navigation and actions respond immediately.

@@ -1,0 +1,537 @@
+---
+import Icon from "./Icon.astro";
+import SocialIcon from "./SocialIcon.astro";
+import type { Locale } from "../i18n/config";
+import { getLocalizedPath } from "../i18n/utils";
+import { useTranslations } from "../i18n/translations";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+
+const navItems = [
+  {
+    id: "nav-home",
+    href: getLocalizedPath("/", locale),
+    title: t("nav.home"),
+    description: t("home.description"),
+    icon: "Home" as const,
+    category: t("palette.group_navigation"),
+    keywords: "home start index accueil avaleht",
+  },
+  {
+    id: "nav-projects",
+    href: getLocalizedPath("/projects", locale),
+    title: t("nav.projects"),
+    description: t("projects.lede"),
+    icon: "FolderGit2" as const,
+    category: t("palette.group_navigation"),
+    keywords: "projects work case studies portfolio projets tööd",
+  },
+  {
+    id: "nav-writing",
+    href: getLocalizedPath("/writing", locale),
+    title: t("nav.writing"),
+    description: t("writing.lede"),
+    icon: "FileText" as const,
+    category: t("palette.group_navigation"),
+    keywords: "writing articles blog notes articles kirjutised",
+  },
+  {
+    id: "nav-about",
+    href: getLocalizedPath("/about", locale),
+    title: t("nav.about"),
+    description: t("about.lede"),
+    icon: "User" as const,
+    category: t("palette.group_navigation"),
+    keywords: "about bio contact resume profil minust",
+  },
+  {
+    id: "nav-style-guide",
+    href: getLocalizedPath("/style-guide", locale),
+    title: t("style_guide.eyebrow"),
+    description: t("style_guide.lede"),
+    icon: "Palette" as const,
+    category: t("palette.group_navigation"),
+    keywords: "style guide design tokens visual system tokens",
+  },
+  {
+    id: "nav-ebola-tracker",
+    href: getLocalizedPath("/projects/ebola-tracker", locale),
+    title: "Ebola Tracker",
+    description: "Real-time epidemiological dashboard and public health response platform.",
+    icon: "Activity" as const,
+    category: t("palette.group_navigation"),
+    keywords: "ebola tracker project case study dashboard epidemiological",
+  },
+  {
+    id: "nav-static-sites",
+    href: getLocalizedPath("/writing/static-sites-are-operational-systems", locale),
+    title: "Static sites are operational systems",
+    description: "Architecture note on predictable publishing and deterministic state.",
+    icon: "Cpu" as const,
+    category: t("palette.group_navigation"),
+    keywords: "static sites operational systems architecture article note",
+  },
+];
+
+const actionItems = [
+  {
+    id: "action-theme-light",
+    action: "theme-light",
+    title: t("palette.action_light"),
+    description: t("theme.light"),
+    icon: "Sun" as const,
+    category: t("palette.group_actions"),
+    keywords: "theme light mode bright claire hele",
+  },
+  {
+    id: "action-theme-dark",
+    action: "theme-dark",
+    title: t("palette.action_dark"),
+    description: t("theme.dark"),
+    icon: "Moon" as const,
+    category: t("palette.group_actions"),
+    keywords: "theme dark mode night sombre tume",
+  },
+  {
+    id: "action-theme-system",
+    action: "theme-system",
+    title: t("palette.action_system"),
+    description: t("theme.system"),
+    icon: "Monitor" as const,
+    category: t("palette.group_actions"),
+    keywords: "theme system preference auto os süsteem",
+  },
+];
+
+const externalItems = [
+  {
+    id: "ext-github",
+    href: "https://github.com/FottyM",
+    title: "GitHub — @FottyM",
+    description: "Open source repositories and software contributions",
+    brand: "github" as const,
+    category: t("palette.group_external"),
+    keywords: "github git code repo repositories open source",
+  },
+  {
+    id: "ext-linkedin",
+    href: "https://linkedin.com/in/fortunat-mutunda",
+    title: "LinkedIn — Fortunat Mutunda",
+    description: "Professional background, career history, and connections",
+    brand: "linkedin" as const,
+    category: t("palette.group_external"),
+    keywords: "linkedin social profile network career professional",
+  },
+];
+---
+
+<button
+  type="button"
+  class="command-palette-trigger"
+  id="command-palette-trigger"
+  aria-haspopup="dialog"
+  aria-expanded="false"
+  aria-controls="command-palette-dialog"
+  title={t("palette.trigger")}
+  aria-label={t("palette.trigger")}
+>
+  <Icon name="Command" size={14} class="command-palette-trigger__icon" />
+  <span class="command-palette-trigger__kbd" aria-hidden="true">
+    <kbd class="command-palette-trigger__key">⌘</kbd>
+    <kbd class="command-palette-trigger__key">⇧</kbd>
+    <kbd class="command-palette-trigger__key">P</kbd>
+  </span>
+</button>
+
+<dialog
+  class="command-palette-dialog"
+  id="command-palette-dialog"
+  closedby="any"
+  aria-label={t("palette.dialog_label")}
+>
+  <div class="command-palette" role="document">
+    <div class="command-palette__search">
+      <Icon name="Search" size={16} class="command-palette__search-icon" />
+      <input
+        type="text"
+        class="command-palette__input"
+        id="command-palette-input"
+        placeholder={t("palette.placeholder")}
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        role="combobox"
+        aria-expanded="true"
+        aria-autocomplete="list"
+        aria-controls="command-palette-list"
+        aria-activedescendant=""
+      />
+      <button
+        type="button"
+        class="command-palette__close"
+        id="command-palette-close"
+        aria-label={t("palette.close")}
+        title={t("palette.close")}
+      >
+        <kbd aria-hidden="true">Esc</kbd>
+      </button>
+    </div>
+
+    <div class="command-palette__body" id="command-palette-body">
+      <ul class="command-palette__list" id="command-palette-list" role="listbox" aria-label={t("palette.dialog_label")}>
+        <!-- Navigation Group -->
+        <li class="command-palette__group" data-group="nav" role="presentation">
+          <span class="command-palette__group-title">{t("palette.group_navigation")}</span>
+          <ul class="command-palette__group-items" role="presentation">
+            {navItems.map((item) => (
+              <li
+                id={item.id}
+                role="option"
+                class="command-palette__item"
+                data-type="link"
+                data-href={item.href}
+                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                aria-selected="false"
+              >
+                <a href={item.href} class="command-palette__link" tabindex="-1">
+                  <span class="command-palette__item-icon">
+                    <Icon name={item.icon} size={16} />
+                  </span>
+                  <span class="command-palette__item-content">
+                    <span class="command-palette__item-title">{item.title}</span>
+                    <span class="command-palette__item-desc">{item.description}</span>
+                  </span>
+                  <span class="command-palette__item-badge" aria-hidden="true">
+                    <Icon name="ArrowRight" size={12} />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+
+        <!-- Actions Group -->
+        <li class="command-palette__group" data-group="actions" role="presentation">
+          <span class="command-palette__group-title">{t("palette.group_actions")}</span>
+          <ul class="command-palette__group-items" role="presentation">
+            {actionItems.map((item) => (
+              <li
+                id={item.id}
+                role="option"
+                class="command-palette__item"
+                data-type="action"
+                data-action={item.action}
+                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                aria-selected="false"
+              >
+                <button type="button" class="command-palette__link command-palette__action-button" tabindex="-1">
+                  <span class="command-palette__item-icon">
+                    <Icon name={item.icon} size={16} />
+                  </span>
+                  <span class="command-palette__item-content">
+                    <span class="command-palette__item-title">{item.title}</span>
+                    <span class="command-palette__item-desc">{item.description}</span>
+                  </span>
+                  <span class="command-palette__item-badge" aria-hidden="true">
+                    <kbd>↵</kbd>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </li>
+
+        <!-- External Profiles Group -->
+        <li class="command-palette__group" data-group="external" role="presentation">
+          <span class="command-palette__group-title">{t("palette.group_external")}</span>
+          <ul class="command-palette__group-items" role="presentation">
+            {externalItems.map((item) => (
+              <li
+                id={item.id}
+                role="option"
+                class="command-palette__item"
+                data-type="link"
+                data-href={item.href}
+                data-external="true"
+                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                aria-selected="false"
+              >
+                <a href={item.href} target="_blank" rel="noopener noreferrer" class="command-palette__link" tabindex="-1">
+                  <span class="command-palette__item-icon">
+                    <SocialIcon name={item.brand} class="command-palette__brand-icon" />
+                  </span>
+                  <span class="command-palette__item-content">
+                    <span class="command-palette__item-title">{item.title}</span>
+                    <span class="command-palette__item-desc">{item.description}</span>
+                  </span>
+                  <span class="command-palette__item-badge" aria-hidden="true">
+                    <Icon name="ExternalLink" size={12} />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </li>
+      </ul>
+
+      <div class="command-palette__empty" id="command-palette-empty" hidden>
+        <Icon name="SearchX" size={24} class="command-palette__empty-icon" />
+        <p>{t("palette.empty")}</p>
+      </div>
+    </div>
+
+    <footer class="command-palette__footer" aria-hidden="true">
+      <span class="command-palette__hint">
+        <kbd class="command-palette__key">↑</kbd>
+        <kbd class="command-palette__key">↓</kbd>
+        <span>{t("palette.hint_navigate")}</span>
+      </span>
+      <span class="command-palette__hint">
+        <kbd class="command-palette__key">↵</kbd>
+        <span>{t("palette.hint_select")}</span>
+      </span>
+      <span class="command-palette__hint">
+        <kbd class="command-palette__key">Esc</kbd>
+        <span>{t("palette.hint_close")}</span>
+      </span>
+    </footer>
+
+    <div class="visually-hidden" role="status" aria-live="polite" id="command-palette-status"></div>
+  </div>
+</dialog>
+
+<script>
+  function setupCommandPalette() {
+    const trigger = document.getElementById("command-palette-trigger") as HTMLButtonElement | null;
+    const dialog = document.getElementById("command-palette-dialog") as HTMLDialogElement | null;
+    const input = document.getElementById("command-palette-input") as HTMLInputElement | null;
+    const closeBtn = document.getElementById("command-palette-close") as HTMLButtonElement | null;
+    const list = document.getElementById("command-palette-list") as HTMLUListElement | null;
+    const emptyState = document.getElementById("command-palette-empty") as HTMLElement | null;
+    const statusRegion = document.getElementById("command-palette-status") as HTMLElement | null;
+
+    if (!dialog || !trigger || !input || !list) return;
+
+    // Platform shortcut detection (replace ⌘ with Ctrl on non-Mac)
+    const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent || navigator.platform);
+    if (!isMac) {
+      const kbdContainer = trigger.querySelector(".command-palette-trigger__kbd");
+      if (kbdContainer) {
+        kbdContainer.innerHTML = '<kbd class="command-palette-trigger__key">Ctrl</kbd><kbd class="command-palette-trigger__key">⇧</kbd><kbd class="command-palette-trigger__key">P</kbd>';
+      }
+    }
+
+    const getAllItems = (): HTMLElement[] => {
+      return Array.from(list.querySelectorAll<HTMLElement>(".command-palette__item"));
+    };
+
+    const getVisibleItems = (): HTMLElement[] => {
+      return getAllItems().filter((item) => item.style.display !== "none");
+    };
+
+    let selectedIndex = 0;
+
+    function updateActiveSelection(newIndex: number, scrollIntoView = true) {
+      const visible = getVisibleItems();
+      if (!visible.length) {
+        input?.setAttribute("aria-activedescendant", "");
+        return;
+      }
+
+      if (newIndex < 0) newIndex = visible.length - 1;
+      if (newIndex >= visible.length) newIndex = 0;
+
+      selectedIndex = newIndex;
+
+      visible.forEach((item, idx) => {
+        const isSelected = idx === selectedIndex;
+        item.setAttribute("aria-selected", isSelected ? "true" : "false");
+        item.classList.toggle("is-active", isSelected);
+        if (isSelected) {
+          input?.setAttribute("aria-activedescendant", item.id);
+          if (scrollIntoView) {
+            item.scrollIntoView({ block: "nearest", behavior: "smooth" });
+          }
+        }
+      });
+    }
+
+    function filterCommands(query: string) {
+      const q = query.trim().toLowerCase();
+      const allItems = getAllItems();
+      let matchCount = 0;
+
+      allItems.forEach((item) => {
+        const text = item.dataset.search || "";
+        const matches = !q || text.includes(q);
+        item.style.display = matches ? "" : "none";
+        if (matches) matchCount++;
+      });
+
+      // Update groups visibility
+      const groups = list?.querySelectorAll<HTMLElement>(".command-palette__group");
+      groups?.forEach((grp) => {
+        const visibleInGroup = grp.querySelectorAll<HTMLElement>('.command-palette__item:not([style*="display: none"])');
+        grp.style.display = visibleInGroup.length > 0 ? "" : "none";
+      });
+
+      if (emptyState) {
+        emptyState.hidden = matchCount > 0;
+      }
+
+      if (statusRegion) {
+        statusRegion.textContent = matchCount === 0 ? "No results" : `${matchCount} results available.`;
+      }
+
+      updateActiveSelection(0, false);
+    }
+
+    function executeItem(item: HTMLElement) {
+      const type = item.dataset.type;
+      if (type === "link") {
+        const href = item.dataset.href;
+        if (href) {
+          if (item.dataset.external === "true") {
+            window.open(href, "_blank", "noopener,noreferrer");
+          } else {
+            window.location.href = href;
+          }
+        }
+      } else if (type === "action") {
+        const action = item.dataset.action;
+        if (action === "theme-light" || action === "theme-dark" || action === "theme-system") {
+          const themeTarget = action.replace("theme-", "") as "light" | "dark" | "system";
+          const targetButton = document.querySelector<HTMLButtonElement>(`[data-theme-set="${themeTarget}"]`);
+          if (targetButton) {
+            targetButton.click();
+          }
+        }
+      }
+      closePalette();
+    }
+
+    let previousActiveElement: HTMLElement | null = null;
+
+    function openPalette() {
+      if (dialog?.open) return;
+      previousActiveElement = document.activeElement as HTMLElement | null;
+      trigger?.setAttribute("aria-expanded", "true");
+      dialog?.showModal();
+      if (input) {
+        input.value = "";
+        filterCommands("");
+        input.focus();
+      }
+    }
+
+    function closePalette() {
+      if (!dialog?.open) return;
+      dialog.close();
+      trigger?.setAttribute("aria-expanded", "false");
+      if (previousActiveElement && typeof previousActiveElement.focus === "function") {
+        previousActiveElement.focus();
+      } else {
+        trigger?.focus();
+      }
+    }
+
+    // Event listeners
+    trigger.addEventListener("click", openPalette);
+    closeBtn?.addEventListener("click", closePalette);
+
+    dialog.addEventListener("close", () => {
+      trigger.setAttribute("aria-expanded", "false");
+    });
+
+    // Native <dialog closedby="any"> fallback for browsers without full closedby support (Safari)
+    if (!("closedBy" in HTMLDialogElement.prototype)) {
+      dialog.addEventListener("click", (e) => {
+        if (e.target !== dialog) return;
+        const rect = dialog.getBoundingClientRect();
+        const isInContent = (
+          rect.top <= e.clientY &&
+          e.clientY <= rect.top + rect.height &&
+          rect.left <= e.clientX &&
+          e.clientX <= rect.left + rect.width
+        );
+        if (!isInContent) {
+          closePalette();
+        }
+      });
+    }
+
+    input.addEventListener("input", (e) => {
+      filterCommands((e.target as HTMLInputElement).value);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      const visible = getVisibleItems();
+      if (!visible.length) return;
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        updateActiveSelection(selectedIndex + 1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        updateActiveSelection(selectedIndex - 1);
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        const selected = visible[selectedIndex];
+        if (selected) executeItem(selected);
+      } else if (e.key === "Home") {
+        e.preventDefault();
+        updateActiveSelection(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        updateActiveSelection(visible.length - 1);
+      }
+    });
+
+    // Global keyboard shortcut
+    const onGlobalKeydown = (e: KeyboardEvent) => {
+      const isP = e.key.toLowerCase() === "p";
+      const isK = e.key.toLowerCase() === "k";
+      const hasModifier = e.metaKey || e.ctrlKey;
+
+      // Shift+Command+P (macOS) or Ctrl+Shift+P (other)
+      if (isP && hasModifier && e.shiftKey) {
+        e.preventDefault();
+        if (dialog.open) {
+          closePalette();
+        } else {
+          openPalette();
+        }
+        return;
+      }
+
+      // Also support Cmd+K / Ctrl+K as secondary affordance
+      if (isK && hasModifier && !e.shiftKey) {
+        e.preventDefault();
+        if (dialog.open) {
+          closePalette();
+        } else {
+          openPalette();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", onGlobalKeydown);
+
+    // Direct item click
+    list.addEventListener("click", (e) => {
+      const item = (e.target as HTMLElement).closest<HTMLElement>(".command-palette__item");
+      if (item) {
+        executeItem(item);
+      }
+    });
+  }
+
+  setupCommandPalette();
+  document.addEventListener("astro:page-load", setupCommandPalette);
+</script>

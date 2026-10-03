@@ -213,3 +213,47 @@ test("the build emits RSS, sitemap, and a crawl policy", async () => {
   assert.match(robots, /User-agent: PerplexityBot\nDisallow: \//);
   assert.match(robots, /Sitemap: https:\/\/mutunda\.me\/sitemap-index\.xml/);
 });
+
+test("the command palette provides accessible, keyboard-operable site search and actions", async () => {
+  const home = await readPage("/");
+  const frenchHome = await readPage("/fr");
+  const estonianHome = await readPage("/et");
+
+  // Visible discoverability trigger exists in header
+  assert.match(home, /id="command-palette-trigger"[^>]*aria-haspopup="dialog"/);
+  assert.match(home, /aria-controls="command-palette-dialog"/);
+  assert.match(home, /aria-label="Command Palette \(⌘⇧P\)"/);
+  assert.match(home, /class="command-palette-trigger__kbd"/);
+
+  // Native modal dialog with light dismiss attribute
+  assert.match(home, /<dialog[^>]*class="command-palette-dialog"[^>]*closedby="any"/);
+
+  // Accessible combobox search input
+  assert.match(home, /<input[^>]*id="command-palette-input"[^>]*role="combobox"/);
+  assert.match(home, /aria-autocomplete="list"/);
+  assert.match(home, /aria-controls="command-palette-list"/);
+
+  // Primary destinations listed (Home, Projects, Writing, About)
+  assert.match(home, /id="nav-home"[^>]*data-href="\/"/);
+  assert.match(home, /id="nav-projects"[^>]*data-href="\/projects"/);
+  assert.match(home, /id="nav-writing"[^>]*data-href="\/writing"/);
+  assert.match(home, /id="nav-about"[^>]*data-href="\/about"/);
+
+  // Actions and brand SVGs
+  assert.match(home, /data-action="theme-light"/);
+  assert.match(home, /data-action="theme-dark"/);
+  assert.match(home, /data-action="theme-system"/);
+  assert.match(home, /class="command-palette__brand-icon"/);
+  assert.match(home, /https:\/\/github\.com\/FottyM/);
+
+  // Localized palettes in French and Estonian
+  assert.match(frenchHome, /aria-label="Palette de commandes \(⌘⇧P\)"/);
+  assert.match(frenchHome, /data-href="\/fr\/projects"/);
+  assert.match(estonianHome, /aria-label="Käsualus \(⌘⇧P\)"/);
+  assert.match(estonianHome, /data-href="\/et\/writing"/);
+
+  // Focus and dialog binding
+  assert.match(home, /id="command-palette-dialog"/);
+  assert.match(home, /class="command-palette__list"/);
+});
+

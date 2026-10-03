@@ -3,6 +3,7 @@ import "../styles/tokens.css";
 import "../styles/global.css";
 import LanguageSelector from "../components/LanguageSelector.astro";
 import ThemeControl from "../components/ThemeControl.astro";
+import CommandPalette from "../components/CommandPalette.astro";
 import { DEFAULT_LOCALE, type Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
 import { getLocaleMetadata, getLocalizedPath } from "../i18n/utils";
@@ -102,6 +103,7 @@ const isCurrent = (href: string) =>
             </ul>
           </nav>
           <div class="site-header__controls">
+            <CommandPalette locale={locale} />
             <ThemeControl locale={locale} />
             <LanguageSelector currentLocale={locale} translations={translations} />
           </div>

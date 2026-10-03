@@ -1,12 +1,13 @@
 ---
 interface Props {
   name: "github" | "linkedin";
+  class?: string;
 }
 
-const { name } = Astro.props;
+const { name, class: className = "profile-link__icon" } = Astro.props;
 ---
 
-<svg class="profile-link__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+<svg class={className} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
   {name === "github" ? (
     <path
       fill="currentColor"
