@@ -61,8 +61,8 @@ const navItems = [
   {
     id: "nav-ebola-tracker",
     href: getLocalizedPath("/projects/ebola-tracker", locale),
-    title: "Ebola Tracker",
-    description: "Real-time epidemiological dashboard and public health response platform.",
+    title: t("palette.item_ebola_title"),
+    description: t("palette.item_ebola_description"),
     icon: "Activity" as const,
     category: t("palette.group_navigation"),
     keywords: "ebola tracker project case study dashboard epidemiological",
@@ -70,8 +70,8 @@ const navItems = [
   {
     id: "nav-static-sites",
     href: getLocalizedPath("/writing/static-sites-are-operational-systems", locale),
-    title: "Static sites are operational systems",
-    description: "Architecture note on predictable publishing and deterministic state.",
+    title: t("palette.item_static_sites_title"),
+    description: t("palette.item_static_sites_description"),
     icon: "Cpu" as const,
     category: t("palette.group_navigation"),
     keywords: "static sites operational systems architecture article note",
@@ -112,8 +112,8 @@ const externalItems = [
   {
     id: "ext-github",
     href: "https://github.com/FottyM",
-    title: "GitHub — @FottyM",
-    description: "Open source repositories and software contributions",
+    title: t("palette.item_github_title"),
+    description: t("palette.item_github_description"),
     brand: "github" as const,
     category: t("palette.group_external"),
     keywords: "github git code repo repositories open source",
@@ -121,8 +121,8 @@ const externalItems = [
   {
     id: "ext-linkedin",
     href: "https://linkedin.com/in/fortunat-mutunda",
-    title: "LinkedIn — Fortunat Mutunda",
-    description: "Professional background, career history, and connections",
+    title: t("palette.item_linkedin_title"),
+    description: t("palette.item_linkedin_description"),
     brand: "linkedin" as const,
     category: t("palette.group_external"),
     keywords: "linkedin social profile network career professional",
@@ -139,13 +139,9 @@ const externalItems = [
   aria-controls="command-palette-dialog"
   title={t("palette.trigger")}
   aria-label={t("palette.trigger")}
+  data-label={t("palette.trigger")}
 >
-  <Icon name="Command" size={14} class="command-palette-trigger__icon" />
-  <span class="command-palette-trigger__kbd" aria-hidden="true">
-    <kbd class="command-palette-trigger__key">⌘</kbd>
-    <kbd class="command-palette-trigger__key">⇧</kbd>
-    <kbd class="command-palette-trigger__key">P</kbd>
-  </span>
+  <Icon name="Command" size={15} class="command-palette-trigger__icon" />
 </button>
 
 <dialog
@@ -320,12 +316,10 @@ const externalItems = [
 
     // Platform shortcut detection (replace ⌘ with Ctrl on non-Mac)
     const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent || navigator.platform);
-    if (!isMac) {
-      const kbdContainer = trigger.querySelector(".command-palette-trigger__kbd");
-      if (kbdContainer) {
-        kbdContainer.innerHTML = '<kbd class="command-palette-trigger__key">Ctrl</kbd><kbd class="command-palette-trigger__key">⇧</kbd><kbd class="command-palette-trigger__key">P</kbd>';
-      }
-    }
+    const shortcutLabel = isMac ? "⌘⇧P" : "Ctrl+Shift+P";
+    const triggerLabel = trigger.dataset.label || trigger.getAttribute("aria-label") || "";
+    trigger.setAttribute("aria-label", `${triggerLabel} (${shortcutLabel})`);
+    trigger.title = `${triggerLabel} (${shortcutLabel})`;
 
     const getAllItems = (): HTMLElement[] => {
       return Array.from(list.querySelectorAll<HTMLElement>(".command-palette__item"));
@@ -407,10 +401,7 @@ const externalItems = [
         const action = item.dataset.action;
         if (action === "theme-light" || action === "theme-dark" || action === "theme-system") {
           const themeTarget = action.replace("theme-", "") as "light" | "dark" | "system";
-          const targetButton = document.querySelector<HTMLButtonElement>(`[data-theme-set="${themeTarget}"]`);
-          if (targetButton) {
-            targetButton.click();
-          }
+          window.dispatchEvent(new CustomEvent("theme:set", { detail: themeTarget }));
         }
       }
       closePalette();
@@ -527,6 +518,7 @@ const externalItems = [
     list.addEventListener("click", (e) => {
       const item = (e.target as HTMLElement).closest<HTMLElement>(".command-palette__item");
       if (item) {
+        e.preventDefault();
         executeItem(item);
       }
     });

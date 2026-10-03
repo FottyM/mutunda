@@ -146,11 +146,9 @@ test("the site exposes a keyboard-accessible theme control with anti-FOUC script
   assert.match(home, /document\.documentElement\.setAttribute\("data-theme"/);
 
   // Accessible theme control exists in the header
-  assert.match(home, /<div class="theme-control"[^>]*role="group"/);
-  assert.match(home, /data-theme-set="system"/);
-  assert.match(home, /data-theme-set="light"/);
-  assert.match(home, /data-theme-set="dark"/);
-  assert.match(home, /aria-label="Color theme"/);
+  assert.match(home, /<div class="theme-control"/);
+  assert.match(home, /id="theme-toggle"/);
+  assert.match(home, /aria-label="Toggle color theme"/);
 
   // Tokens CSS supports light, dark, and system preference overrides
   assert.match(tokensCss, /:root\[data-theme="light"\]/);
@@ -222,8 +220,8 @@ test("the command palette provides accessible, keyboard-operable site search and
   // Visible discoverability trigger exists in header
   assert.match(home, /id="command-palette-trigger"[^>]*aria-haspopup="dialog"/);
   assert.match(home, /aria-controls="command-palette-dialog"/);
-  assert.match(home, /aria-label="Command Palette \(⌘⇧P\)"/);
-  assert.match(home, /class="command-palette-trigger__kbd"/);
+  assert.match(home, /aria-label="Open command palette"/);
+  assert.match(home, /class="command-palette-trigger__icon"/);
 
   // Native modal dialog with light dismiss attribute
   assert.match(home, /<dialog[^>]*class="command-palette-dialog"[^>]*closedby="any"/);
@@ -247,13 +245,14 @@ test("the command palette provides accessible, keyboard-operable site search and
   assert.match(home, /https:\/\/github\.com\/FottyM/);
 
   // Localized palettes in French and Estonian
-  assert.match(frenchHome, /aria-label="Palette de commandes \(⌘⇧P\)"/);
+  assert.match(frenchHome, /aria-label="Ouvrir la palette de commandes"/);
   assert.match(frenchHome, /data-href="\/fr\/projects"/);
-  assert.match(estonianHome, /aria-label="Käsualus \(⌘⇧P\)"/);
+  assert.match(frenchHome, /Les sites statiques sont des systèmes opérationnels/);
+  assert.match(estonianHome, /aria-label="Ava käsualus"/);
   assert.match(estonianHome, /data-href="\/et\/writing"/);
+  assert.match(estonianHome, /Staatilised saidid on operatsioonisüsteemid/);
 
   // Focus and dialog binding
   assert.match(home, /id="command-palette-dialog"/);
   assert.match(home, /class="command-palette__list"/);
 });
-

@@ -11,46 +11,29 @@ const { locale } = Astro.props;
 const t = useTranslations(locale);
 ---
 
-<div class="theme-control" role="group" aria-label={t("theme.label")}>
+<div class="theme-control">
   <button
     type="button"
-    class="theme-control__button"
-    data-theme-set="system"
-    aria-pressed="true"
-    title={t("theme.system")}
-    aria-label={t("theme.system")}
+    class="theme-toggle"
+    id="theme-toggle"
+    title={t("theme.toggle")}
+    aria-label={t("theme.toggle")}
+    data-label-light={t("theme.to_light")}
+    data-label-dark={t("theme.to_dark")}
   >
-    <Icon name="Monitor" size={14} />
-    <span class="visually-hidden">{t("theme.system")}</span>
-  </button>
-  <button
-    type="button"
-    class="theme-control__button"
-    data-theme-set="light"
-    aria-pressed="false"
-    title={t("theme.light")}
-    aria-label={t("theme.light")}
-  >
-    <Icon name="Sun" size={14} />
-    <span class="visually-hidden">{t("theme.light")}</span>
-  </button>
-  <button
-    type="button"
-    class="theme-control__button"
-    data-theme-set="dark"
-    aria-pressed="false"
-    title={t("theme.dark")}
-    aria-label={t("theme.dark")}
-  >
-    <Icon name="Moon" size={14} />
-    <span class="visually-hidden">{t("theme.dark")}</span>
+    <span class="theme-toggle__icon theme-toggle__icon--light" aria-hidden="true">
+      <Icon name="Sun" size={15} />
+    </span>
+    <span class="theme-toggle__icon theme-toggle__icon--dark" aria-hidden="true">
+      <Icon name="Moon" size={15} />
+    </span>
   </button>
 </div>
 
 <script>
-  function setupThemeControls() {
-    const buttons = document.querySelectorAll<HTMLButtonElement>("[data-theme-set]");
-    if (!buttons.length) return;
+  function setupThemeToggle() {
+    const toggle = document.getElementById("theme-toggle") as HTMLButtonElement | null;
+    if (!toggle) return;
 
     function getStoredTheme(): "light" | "dark" | "system" {
       try {
@@ -60,33 +43,40 @@ const t = useTranslations(locale);
       return "system";
     }
 
-    function applyTheme(theme: "light" | "dark" | "system", persist = true) {
+    function getEffectiveTheme(): "light" | "dark" {
+      const stored = getStoredTheme();
+      if (stored === "light" || stored === "dark") return stored;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+
+    function updateAccessibility(currentEffective?: "light" | "dark") {
+      if (!toggle) return;
+      const current = currentEffective || getEffectiveTheme();
+      const nextLabel = current === "dark" ? toggle.dataset.labelLight : toggle.dataset.labelDark;
+      if (nextLabel) {
+        toggle.setAttribute("aria-label", nextLabel);
+        toggle.title = nextLabel;
+      }
+    }
+
+    function applyTheme(theme: "light" | "dark" | "system", withTransition = true) {
       const update = () => {
         if (theme === "system") {
           document.documentElement.removeAttribute("data-theme");
-          if (persist) {
-            try {
-              localStorage.removeItem("theme");
-            } catch (e) {}
-          }
+          try {
+            localStorage.removeItem("theme");
+          } catch (e) {}
         } else {
           document.documentElement.setAttribute("data-theme", theme);
-          if (persist) {
-            try {
-              localStorage.setItem("theme", theme);
-            } catch (e) {}
-          }
+          try {
+            localStorage.setItem("theme", theme);
+          } catch (e) {}
         }
-
-        buttons.forEach((btn) => {
-          const isCurrent = btn.dataset.themeSet === theme;
-          btn.setAttribute("aria-pressed", isCurrent ? "true" : "false");
-          btn.classList.toggle("is-active", isCurrent);
-        });
+        updateAccessibility();
       };
 
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const canTransition = typeof document.startViewTransition === "function" && !prefersReducedMotion && persist;
+      const canTransition = typeof document.startViewTransition === "function" && !prefersReducedMotion && withTransition;
 
       if (canTransition) {
         document.documentElement.classList.add("theme-transitioning");
@@ -99,24 +89,28 @@ const t = useTranslations(locale);
       }
     }
 
-    const currentTheme = getStoredTheme();
-    applyTheme(currentTheme, false);
+    updateAccessibility();
 
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const targetTheme = btn.dataset.themeSet as "light" | "dark" | "system";
-        applyTheme(targetTheme, true);
-      });
+    toggle.addEventListener("click", () => {
+      const current = getEffectiveTheme();
+      const next = current === "dark" ? "light" : "dark";
+      applyTheme(next, true);
     });
+
+    window.addEventListener("theme:set", ((e: CustomEvent<"light" | "dark" | "system">) => {
+      if (e.detail) {
+        applyTheme(e.detail, true);
+      }
+    }) as EventListener);
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     mediaQuery.addEventListener("change", () => {
       if (getStoredTheme() === "system") {
-        applyTheme("system", false);
+        updateAccessibility();
       }
     });
   }
 
-  setupThemeControls();
-  document.addEventListener("astro:page-load", setupThemeControls);
+  setupThemeToggle();
+  document.addEventListener("astro:page-load", setupThemeToggle);
 </script>
