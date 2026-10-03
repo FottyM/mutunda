@@ -1,15 +1,17 @@
 ---
 import Icon from "./Icon.astro";
 import SocialIcon from "./SocialIcon.astro";
-import type { Locale } from "../i18n/config";
-import { getLocalizedPath } from "../i18n/utils";
+import FlagIcon from "./FlagIcon.astro";
+import { LOCALES, LOCALE_LABELS, type Locale } from "../i18n/config";
+import { getLocaleFallbackPath, getLocalizedPath } from "../i18n/utils";
 import { useTranslations } from "../i18n/translations";
 
 interface Props {
   locale: Locale;
+  translations?: Partial<Record<Locale, string>>;
 }
 
-const { locale } = Astro.props;
+const { locale, translations } = Astro.props;
 const t = useTranslations(locale);
 
 const navItems = [
@@ -107,6 +109,26 @@ const actionItems = [
     keywords: "theme system preference auto os süsteem",
   },
 ];
+
+const languageItems = LOCALES.map((langLocale) => {
+  const isCurrent = langLocale === locale;
+  const targetPath = translations?.[langLocale]
+    ?? (translations ? getLocaleFallbackPath(Astro.url.pathname, langLocale) : getLocalizedPath(Astro.url.pathname, langLocale));
+  const nativeName = LOCALE_LABELS[langLocale].nativeName;
+  const uppercaseCode = langLocale.toUpperCase();
+
+  return {
+    id: `lang-${langLocale}`,
+    locale: langLocale,
+    href: targetPath,
+    title: t("palette.lang_switch", { lang: nativeName }),
+    description: `${nativeName} (${uppercaseCode})${isCurrent ? ` — ${t("palette.current")}` : ""}`,
+    isCurrent,
+    badge: uppercaseCode,
+    category: t("palette.group_languages"),
+    keywords: `language switch locale change langue keel ${langLocale} ${uppercaseCode} ${nativeName} english francais eesti french estonian`,
+  };
+});
 
 const externalItems = [
   {
@@ -238,6 +260,37 @@ const externalItems = [
                     <kbd>↵</kbd>
                   </span>
                 </button>
+              </li>
+            ))}
+          </ul>
+        </li>
+
+        <!-- Languages Group -->
+        <li class="command-palette__group" data-group="languages" role="presentation">
+          <span class="command-palette__group-title">{t("palette.group_languages")}</span>
+          <ul class="command-palette__group-items" role="presentation">
+            {languageItems.map((item) => (
+              <li
+                id={item.id}
+                role="option"
+                class="command-palette__item"
+                data-type="link"
+                data-href={item.href}
+                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                aria-selected="false"
+              >
+                <a href={item.href} class="command-palette__link" tabindex="-1">
+                  <span class="command-palette__item-icon">
+                    <FlagIcon locale={item.locale} />
+                  </span>
+                  <span class="command-palette__item-content">
+                    <span class="command-palette__item-title">{item.title}</span>
+                    <span class="command-palette__item-desc">{item.description}</span>
+                  </span>
+                  <span class="command-palette__item-badge" aria-hidden="true">
+                    {item.isCurrent ? <Icon name="Check" size={13} /> : item.badge}
+                  </span>
+                </a>
               </li>
             ))}
           </ul>

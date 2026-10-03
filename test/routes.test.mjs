@@ -65,7 +65,7 @@ test("the about route provides intentional public content", async () => {
   const about = await readPage("/about");
 
   assert.match(about, /based in Tallinn, Estonia/);
-  assert.match(about, /src="https:\/\/avatars\.githubusercontent\.com\/u\/227173828\?v=4"/);
+  assert.match(about, /src="\/images\/fortunat\.jpeg"/);
   assert.match(about, /alt="Fortunat Mutunda"/);
   assert.match(about, /https:\/\/github\.com\/FottyM/);
   assert.match(about, /https:\/\/www\.linkedin\.com\/in\/fortunat-mutunda\//);
@@ -189,6 +189,9 @@ test("public pages expose canonical, social, and structured metadata", async () 
   assert.match(home, /rel="canonical" href="https:\/\/mutunda\.me\/"/);
   assert.match(home, /property="og:title" content="Fortunat Mutunda — Software Engineer"/);
   assert.match(home, /name="twitter:card" content="summary"/);
+  assert.match(home, /rel="icon" type="image\/png" sizes="32x32" href="\/favicon-32x32\.png"/);
+  assert.match(home, /rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png"/);
+  assert.match(home, /rel="manifest" href="\/site\.webmanifest"/);
   assert.match(home, /"@type":"Person"/);
   assert.match(home, /https:\/\/www\.linkedin\.com\/in\/fortunat-mutunda\//);
   assert.match(article, /"@type":"Article"/);
@@ -197,11 +200,12 @@ test("public pages expose canonical, social, and structured metadata", async () 
 });
 
 test("the build emits RSS, sitemap, and a crawl policy", async () => {
-  const [rss, sitemapIndex, sitemap, robots] = await Promise.all([
+  const [rss, sitemapIndex, sitemap, robots, manifest] = await Promise.all([
     readOutput("rss.xml"),
     readOutput("sitemap-index.xml"),
     readOutput("sitemap-0.xml"),
     readOutput("robots.txt"),
+    readOutput("site.webmanifest"),
   ]);
 
   assert.match(rss, /<title>Fortunat Mutunda — Field notes<\/title>/);
@@ -213,6 +217,7 @@ test("the build emits RSS, sitemap, and a crawl policy", async () => {
   assert.match(robots, /User-agent: ClaudeBot\nDisallow: \//);
   assert.match(robots, /User-agent: PerplexityBot\nDisallow: \//);
   assert.match(robots, /Sitemap: https:\/\/mutunda\.me\/sitemap-index\.xml/);
+  assert.match(manifest, /"name": "Fortunat Mutunda"/);
 });
 
 test("the command palette provides accessible, keyboard-operable site search and actions", async () => {
@@ -254,6 +259,12 @@ test("the command palette provides accessible, keyboard-operable site search and
   assert.match(estonianHome, /aria-label="Ava käsualus"/);
   assert.match(estonianHome, /data-href="\/et\/writing"/);
   assert.match(estonianHome, /Staatilised saidid on operatsioonisüsteemid/);
+
+  // Language switcher items in command palette
+  assert.match(home, /id="lang-fr"[^>]*data-href="\/fr"/);
+  assert.match(home, /id="lang-et"[^>]*data-href="\/et"/);
+  assert.match(frenchHome, /id="lang-en"[^>]*data-href="\/"/);
+  assert.match(estonianHome, /id="lang-en"[^>]*data-href="\/"/);
 
   // Focus and dialog binding
   assert.match(home, /id="command-palette-dialog"/);

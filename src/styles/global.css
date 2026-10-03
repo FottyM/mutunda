@@ -527,9 +527,14 @@ nav ul {
   height: 1.25rem;
 }
 
-.command-palette__item-icon svg {
+.command-palette__item-icon svg:not(.flag-icon) {
   width: 1rem;
   height: 1rem;
+}
+
+.command-palette__item-icon .flag-icon {
+  width: 1rem;
+  height: 0.6875rem;
 }
 
 .command-palette__item.is-active .command-palette__item-icon {
@@ -1026,19 +1031,24 @@ h3 {
 
 .profile-portrait {
   width: clamp(8rem, 20vw, 11rem);
+  aspect-ratio: 1;
   margin: 0 0 var(--space-8);
   padding: var(--space-2);
   border: var(--rule);
+  border-radius: 28%;
   background: var(--color-surface);
-  transform: rotate(-2deg);
+  overflow: hidden;
 }
 
 .profile-portrait img {
   display: block;
   width: 100%;
-  aspect-ratio: 1;
+  height: 100%;
+  border-radius: 22%;
   object-fit: cover;
-  filter: grayscale(1) contrast(1.05);
+  object-position: 50% 28%;
+  transform: scale(1.55);
+  transform-origin: 50% 28%;
 }
 
 .about-page__body .button {
@@ -1444,4 +1454,3 @@ html.theme-transitioning::view-transition-new(root) {
     clip-path: polygon(200% 200%, -205% 200%, 200% -205%);
   }
 }
-
