@@ -310,3 +310,57 @@ test("deployment configuration enforces canonical apex domain and production sec
   const nvmrc = (await readFile(new URL("../.nvmrc", import.meta.url), "utf8")).trim();
   assert.equal(nvmrc, "22", ".nvmrc must specify Node 22 Active LTS");
 });
+
+test("navigation implements expressive animations, motion tokens, and reduced-motion accessibility contracts", async () => {
+  const tokensCss = await readFile(new URL("../src/styles/tokens.css", import.meta.url), "utf8");
+  const globalCss = await readFile(new URL("../src/styles/global.css", import.meta.url), "utf8");
+  const layout = await readFile(new URL("../src/layouts/BaseLayout.astro", import.meta.url), "utf8");
+
+  // Motion design tokens
+  assert.match(tokensCss, /--ease-editorial:\s*cubic-bezier\(0\.16,\s*1,\s*0\.3,\s*1\);/);
+  assert.match(tokensCss, /--transition-fast:\s*140ms/);
+  assert.match(tokensCss, /--transition-base:\s*200ms/);
+  assert.match(tokensCss, /--transition-slow:\s*280ms/);
+
+  // Primary navigation link underline animation and subtle lift
+  assert.match(globalCss, /nav a::after\s*\{[\s\S]*?transform:\s*scaleX\(0\)/);
+  assert.match(globalCss, /nav a::after\s*\{[\s\S]*?transform-origin:\s*right center/);
+  assert.match(globalCss, /nav a:hover::after\s*\{[\s\S]*?transform:\s*scaleX\(1\)/);
+  assert.match(globalCss, /nav a:hover::after\s*\{[\s\S]*?transform-origin:\s*left center/);
+  assert.match(globalCss, /nav a:hover\s*\{[\s\S]*?transform:\s*translateY\(-1px\)/);
+  assert.match(globalCss, /nav a:focus-visible\s*\{[\s\S]*?outline:\s*2px solid var\(--color-focus\)/);
+
+  // Active route styling
+  assert.match(globalCss, /nav a\[aria-current="page"\]\s*\{[\s\S]*?font-weight:\s*600/);
+  assert.match(globalCss, /nav a\[aria-current="page"\]::after\s*\{[\s\S]*?transform:\s*scaleX\(1\)/);
+  assert.match(globalCss, /nav a\[aria-current="page"\]::after\s*\{[\s\S]*?opacity:\s*1/);
+
+  // Header control tactile feedback
+  assert.match(globalCss, /\.command-palette-trigger:active[\s\S]*?transform:\s*translateY\(0\)\s*scale\(0\.95\)/);
+  assert.match(globalCss, /\.theme-toggle:hover \.theme-toggle__icon\s*\{[\s\S]*?transform:\s*rotate\(12deg\)/);
+
+  // Dropdown menu transitions and options
+  assert.match(globalCss, /\.theme-menu,\s*\.language-selector__menu\s*\{[\s\S]*?transform:\s*translateY\(-6px\)\s*scale\(0\.96\)/);
+  assert.match(globalCss, /\.theme-menu\.is-open,\s*\.language-selector__menu\.is-open\s*\{[\s\S]*?transform:\s*translateY\(0\)\s*scale\(1\)/);
+  assert.match(globalCss, /\.theme-menu__option:hover[\s\S]*?transform:\s*translateX\(3px\)/);
+  assert.match(globalCss, /@keyframes checkmark-pop/);
+
+  // Mobile overflow clearance
+  assert.match(globalCss, /\.site-header nav\[aria-label="Primary"\][\s\S]*?scrollbar-width:\s*none/);
+  assert.match(globalCss, /\.site-header nav\[aria-label="Primary"\][\s\S]*?padding-block:\s*2px/);
+
+  // Reduced motion safeguards
+  assert.match(globalCss, /@media \(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?nav a[\s\S]*?transition:\s*none !important/);
+  assert.match(globalCss, /@media \(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?nav a\[aria-current="page"\]::after\s*\{[\s\S]*?opacity:\s*1 !important/);
+
+  // Astro's client router preserves navigation state and animates route changes.
+  assert.match(layout, /import \{ ClientRouter \} from "astro:transitions"/);
+  assert.match(layout, /<ClientRouter\s*\/>/);
+  assert.match(layout, /document\.addEventListener\("astro:after-swap", applyStoredTheme\)/);
+  assert.match(layout, /event\.direction = toIndex > fromIndex \? "next" : "previous"/);
+  assert.match(globalCss, /html\[data-astro-transition="next"\]::view-transition-new\(root\)/);
+  assert.match(globalCss, /@keyframes route-in-forward/);
+  assert.match(globalCss, /html\[data-astro-transition="previous"\]::view-transition-new\(root\)/);
+  assert.match(globalCss, /html\[data-astro-transition="same"\]::view-transition-new\(root\)/);
+  assert.match(globalCss, /@media \(prefers-reduced-motion:\s*reduce\)\s*\{[\s\S]*?html\[data-astro-transition\]::view-transition-new\(root\)[\s\S]*?animation:\s*none !important/);
+});
