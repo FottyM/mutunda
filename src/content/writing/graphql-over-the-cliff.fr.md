@@ -122,9 +122,7 @@ const results = await Promise.all(
 
 Les appels ont toujours lieu. Cela limite le nombre d'opérations exécutées simultanément ; cela ne les regroupe pas par lots et ne réduit pas leur quantité. Le plafond est partagé par les tâches utilisant ce limiteur dans ce processus, et non par chaque serveur d'un déploiement.[^7]
 
-Je n'ai pas ici de profil mémoire démontrant la cause exacte de notre panne. Ces extraits expliquent la dispersion des appels et le contrôle de concurrence, pas l'incident dans son intégralité.
-
-Mais c'est la partie qui me frustre. Pour comprendre un seul champ, je me retrouve à examiner une requête en amont, un résolveur d'extension et des requêtes HTTP vers cinq autres services. La requête initiale en façade ne me donne presque aucun indice sur cet itinéraire.
+C'est exactement ce qui me frustre au plus haut point avec cette technologie. Pour comprendre ce que fait un seul champ, on doit remonter une requête amont, un résolveur personnalisé et des requêtes HTTP vers cinq services distincts. La requête en façade ne dit presque rien de ce qui se passe réellement.
 
 DataLoader est un autre élément à comprendre dans cette même configuration. Il peut regrouper les chargements par lots et mettre en cache les résultats au sein d'une instance, mais cela ne signifie pas que chaque appel en aval est automatiquement regroupé. Sa documentation recommande des instances cantonnées aux requêtes individuelles.[^8]
 
@@ -137,6 +135,8 @@ Je me rappelle un champ qui fuyait dans une autre requête parce que nous n'avio
 Voilà les expériences qui nourrissent mon avis. Je trouve qu'une API REST avec des statuts utiles et un filtrage suffisant est plus facile à appréhender. REST peut dissimuler du travail lui aussi, mais je n'ai pas eu le sentiment d'avoir besoin de toute cette délégation pour obtenir le filtrage et les relations que je souhaitais.
 
 J'ai le sentiment que de meilleurs services, la mise en cache et les réseaux modernes ont répondu à bon nombre des problèmes que GraphQL était censé résoudre. Pendant ce temps, travailler avec cette configuration est devenu un cauchemar pour moi. Je ne l'aime vraiment plus du tout. Je le déteste.
+
+Je n'étais d'ailleurs pas le seul à perdre mes illusions. Voir Harry Wolff expliquer sur YouTube pourquoi il a arrêté d'utiliser GraphQL a fait écho à ma propre lassitude face à cet écosystème. Même Theo (t3.gg), un créateur que je ne supporte vraiment pas, soulevait des arguments contre la surcharge inutile et l'ingénierie excessive de GraphQL auxquels je ne pouvais honnêtement pas donner tort.
 
 Il y a un autre aspect dans cette histoire : notre outil interne inspiré de Hasura. Je le déteste aussi, et il pèse lourd dans ce que je ressens envers GraphQL. Mais c'est une histoire pour un autre jour.
 
