@@ -16,7 +16,7 @@ technologies:
   - TanStack Charts
   - GitHub Actions
 cover:
-  src: /images/projects/ebola-tracker-cover.png
+  src: ../../assets/images/projects/ebola-tracker-cover.png
   alt: Vue sur ordinateur de la carte et du tableau de bord de situation Ebola Tracker.
 links:
   live: https://fottym.github.io/ebola-tracker/

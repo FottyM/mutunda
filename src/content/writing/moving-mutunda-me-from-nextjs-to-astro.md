@@ -8,22 +8,20 @@ tags:
   - blogging
 draft: false
 cover:
-  src: /images/writing/mutunda-nextjs-to-astro-cover.png
+  src: ../../assets/images/writing/mutunda-nextjs-to-astro-cover.png
   alt: A browser window clearing the first hurdle on the way to a calmer publishing system.
 locale: en
 ---
 
-![A browser window clearing the first hurdle on the way to a calmer publishing system.](/images/writing/mutunda-nextjs-to-astro-cover.png)
-
 This began with a small, awkward question: where should I put my writing?
 
-dev.to was an obvious answer. People already go there to read about software, and I do not yet have an audience of my own. But I also had a domain and an old portfolio that had begun to feel like a locked room. It was a single page built with Next.js 12, React 18 and Emotion. It listed experience and technologies, but it had placeholder text and no real place for an article to live.
+dev.to was an obvious answer.[^1] People already go there to read about software, and I do not yet have an audience of my own. But I also had a domain and an old portfolio that had begun to feel like a locked room. It was a single page built with Next.js 12,[^2] React 18,[^3] and Emotion.[^4] It listed experience and technologies, but it had placeholder text and no real place for an article to live.
 
 Before I could send anyone to my writing, I needed a home worth sending them to.
 
 ## Why Astro
 
-Nothing about the site needed a full React application. I wanted to publish articles, a biography and project notes. Astro suited that job because it stays out of the way. I can write a page in MDX, build the site and publish it. I do not need extra systems around a personal portfolio.
+Nothing about the site needed a full React application. I wanted to publish articles, a biography and project notes. Astro suited that job because it stays out of the way.[^5] I can write a page in MDX,[^6] build the site and publish it. I do not need extra systems around a personal portfolio.
 
 Next.js can do this work perfectly well. This was not an escape from a bad tool. I wanted adding an article to feel like adding an article, rather than changing an application. Astro makes static pages that search engines can read. If the site later needs pages made on the server, Astro can do that too. For now, it does not need to.
 
@@ -39,7 +37,7 @@ Static output and Markdown answered most of it. There is still JavaScript where 
 
 The new site has separate places for writing, projects and the about page. That gives each piece room to breathe. A project is no longer a name beside a technology logo. It can hold the problem, the decisions and what I learned. An article has a stable address and a place in the archive.
 
-The content lives in Markdown files, with Astro Content Collections checking the front matter when the site builds. Git suits the way I work. I can review a change, find an older version and take the writing elsewhere if I ever need to. A Markdown file is not a promise that moving will be painless, but it does mean the words are not trapped behind one interface.
+The content lives in Markdown files, with Astro Content Collections checking the front matter when the site builds.[^7] Git suits the way I work. I can review a change, find an older version and take the writing elsewhere if I ever need to. A Markdown file is not a promise that moving will be painless, but it does mean the words are not trapped behind one interface.
 
 That modest bit of checking has already proved useful. A missing title or a bad date fails near the change that caused it. I would rather meet that problem in a build than discover it after publishing.
 
@@ -51,7 +49,7 @@ The shared tokens and style guide keep the pages from drifting as the site grows
 
 ## Checking more than whether it builds
 
-Static does not mean untested. A page can build with a broken link, a draft can wander into the archive and a translated route can quietly lead to the wrong place. The project checks Astro and TypeScript, builds the site, checks links and covers the main journeys in a browser: moving around the site, changing language, keeping a theme and recovering from a missing page. The RSS feed and sitemap are made as part of the build, not remembered at the end.
+Static does not mean untested. A page can build with a broken link, a draft can wander into the archive and a translated route can quietly lead to the wrong place. The project checks Astro and TypeScript, builds the site, checks links and covers the main journeys in a browser: moving around the site, changing language, keeping a theme and recovering from a missing page.[^8] The RSS feed[^9] and sitemap[^10] are made as part of the build, not remembered at the end.
 
 I have no performance victory story to sell here. I did not measure the old site against the new one. A framework name is not evidence. What I have is a site that is simpler to publish to, easier to return to and ready to hold the work I want to share.
 
@@ -63,6 +61,21 @@ I left out the parts that did not solve a real problem, including a database-bac
 
 ## Where dev.to fits
 
-I still plan to use dev.to for discovery, publishing on mutunda.me first and cross-posting selected pieces with a canonical link back home. Owning a domain does not create an audience. It does give me a consistent place to keep the work while I earn one.
+I still plan to use dev.to for discovery, publishing on mutunda.me first and cross-posting selected pieces with a canonical link back home.[^11] Owning a domain does not create an audience. It does give me a consistent place to keep the work while I earn one.
 
-The next part of this story is about moving the finished site from Vercel to Cloudflare Workers: [from Vercel to Cloudflare Workers](/writing/moving-mutunda-me-from-vercel-to-cloudflare-workers/).
+The next part of this story is about moving the finished site from Vercel to Cloudflare Workers.[^12]
+
+## Notes
+
+[^1]: [dev.to](https://dev.to).
+[^2]: [Next.js documentation](https://nextjs.org/docs).
+[^3]: [React 18 release notes](https://react.dev/blog/2022/03/29/react-v18).
+[^4]: [Emotion documentation](https://emotion.sh/docs/introduction).
+[^5]: [Astro documentation](https://docs.astro.build).
+[^6]: [Astro MDX integration](https://docs.astro.build/en/guides/integrations-guide/mdx/).
+[^7]: [Astro Content Collections](https://docs.astro.build/en/guides/content-collections/).
+[^8]: [Playwright documentation](https://playwright.dev/docs/intro).
+[^9]: [Astro RSS feed generation](https://docs.astro.build/en/guides/rss/).
+[^10]: [Astro Sitemap integration](https://docs.astro.build/en/guides/integrations-guide/sitemap/).
+[^11]: [Consolidate duplicate URLs with canonical links](https://developers.google.com/search/docs/crawling-indexing/canonicalization).
+[^12]: [Moving mutunda.me from Vercel to Cloudflare Workers](/writing/moving-mutunda-me-from-vercel-to-cloudflare-workers).

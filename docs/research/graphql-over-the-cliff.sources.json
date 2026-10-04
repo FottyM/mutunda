@@ -1,0 +1,243 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": 1,
+      "url": "https://loopback.io/doc/en/lb3/Querying-data.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "Instead of the standard REST syntax described above, you can also use “stringified JSON” in REST queries.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "url": "https://loopback.io/doc/en/lb3/Fields-filter.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "filter specifies properties (fields) to include or exclude from the results.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "url": "https://loopback.io/doc/en/lb3/Include-filter.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "you need to add the relation foreign key in the",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "url": "https://raw.githubusercontent.com/strongloop/strong-remoting/master/README.md",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "Makes local functions remotable, exported over adapters.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "url": "https://raw.githubusercontent.com/strongloop/loopback-connector-remote/master/README.md",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "The connector uses [Strong Remoting](Strong-Remoting.html).",
+          "added": "2026-10-04"
+        },
+        {
+          "text": "**THIS CONNECTOR DOES NOT SUPPORT LOOPBACK 4**",
+          "added": "2026-10-04"
+        },
+        {
+          "text": "The connector will generate models on the myRemoteDataSource datasource object based on the models/methods exposed from the remote service.  Those models will have methods attached that are\nfrom the model's remote methods.  So if the model `foo` exposes a remote method called `bar`,\nthe connector will automatically generate the following:\n\n`app.datasources.myRemoteDataSource.models.foo.bar()`",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "url": "https://loopback.io/doc/en/lb3/REST-connector.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "The LoopBack REST connector enables applications to interact with other",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "url": "https://loopback.io/doc/en/lb4/Include-filter.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "add the relation foreign key in the",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "url": "https://graphql.github.io/graphql-over-http/draft",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "A server MUST support\nGraphQL-over-HTTP request\nvia\nPOST\n, and MAY support\nGraphQL-over-HTTP request\nvia other HTTP methods, such as\nGET",
+          "added": "2026-10-04"
+        },
+        {
+          "text": "GET requests MUST NOT be used for executing mutation operations. If the values of\nquery\nand\noperationName\nindicate that a mutation operation is to be executed, the server MUST respond with an appropriate\n4xx\nstatus code and halt execution; status code\n405\n(Method Not Allowed) is RECOMMENDED. This restriction is necessary to conform with the long-established semantics of safe methods within HTTP.",
+          "added": "2026-10-04"
+        },
+        {
+          "text": "If the\nGraphQL result\ncontains the\ndata\nentry and it is not\nnull\n, then the server MUST reply with a\n2xx\nstatus code.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "url": "https://spec.graphql.org/September2025",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "This is distinct from a\nrequest error\nwhich results in a\nrequest error result\nwith no data.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "url": "https://fetch.spec.whatwg.org",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "The\nok\ngetter steps are to return true if\nthis\n’s\nresponse\n’s\nstatus\nis an\nok status\n;\notherwise false.",
+          "added": "2026-10-04"
+        },
+        {
+          "text": "An\nok status\nis a\nstatus\nin the range 200 to 299, inclusive.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "url": "https://raw.githubusercontent.com/graphql/dataloader/main/README.md",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "DataLoader provides a memoization cache for all loads which occur in a single\nrequest to your application.",
+          "added": "2026-10-04"
+        },
+        {
+          "text": "#### Caching Per-Request\n\nDataLoader caching _does not_ replace Redis, Memcache, or any other shared\napplication-level cache. DataLoader is first and foremost a data loading mechanism,\nand its cache only serves the purpose of not repeatedly loading the same data in\nthe context of a single request to your Application. To do this, it maintains a\nsimple in-memory memoization cache (more accurately: `.load()` is a memoized function).\n\nAvoid multiple requests from different users using the DataLoader instance, which\ncould result in cached data incorrectly appearing in each request. Typically,\nDataLoader instances are created when a Request begins, and are not used once the\nRequest ends.\n\nFor example, when using with [express][]:",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "url": "https://loopback.io/doc/en/lb4/Controller.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "automatically creates the\nPaths Item Object\nfor OpenAPI spec, which also handles request routing.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "url": "https://loopback.io/doc/en/lb4/Repository.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "Repositories are adding behavior to Models. Models describe the shape of data, Repositories provide behavior like CRUD operations. This is different from LoopBack 3.x where models implement behavior too.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "url": "https://loopback.io/doc/en/lb4/Relations.html",
+      "title": "",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "LoopBack 4 creates a different inclusion resolver for\neach relation type.",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "url": "https://raw.githubusercontent.com/sindresorhus/p-limit/main/readme.md",
+      "title": "p-limit README",
+      "accessed": "2026-10-04",
+      "quotes": [
+        {
+          "text": "This package is only about limiting the number of concurrent executions",
+          "added": "2026-10-04"
+        },
+        {
+          "text": "### limit.activeCount\n\nThe number of promises that are currently running.\n\n### limit.pendingCount\n\nThe number of promises that are waiting to run (i.e. their internal `fn` was not called yet).",
+          "added": "2026-10-04"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "url": "https://hasura.io/docs/2.0/remote-schemas/overview",
+      "title": "",
+      "accessed": "2026-10-04"
+    },
+    {
+      "id": 19,
+      "url": "https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions",
+      "title": "",
+      "accessed": "2026-10-04"
+    },
+    {
+      "id": 20,
+      "url": "https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas",
+      "title": "",
+      "accessed": "2026-10-04"
+    },
+    {
+      "id": 21,
+      "url": "https://hono.dev/docs/getting-started/basic",
+      "title": "",
+      "accessed": "2026-10-04"
+    },
+    {
+      "id": 22,
+      "url": "https://www.graphql-js.org/api-v16/graphql",
+      "title": "",
+      "accessed": "2026-10-04"
+    }
+  ]
+}

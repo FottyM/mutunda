@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProgressiveImage from "../components/ProgressiveImage.astro";
+import crtImage from "../assets/images/okapi-crt.png";
 import { LOCALES, type Locale } from "../i18n/config";
 import { getLocalizedPath } from "../i18n/utils";
 import { useTranslations } from "../i18n/translations";
@@ -39,7 +41,7 @@ const errorCopy = Object.fromEntries(LOCALES.map((copyLocale) => {
         <span data-error-index>{t("404.index")}</span>
       </div>
       <figure class="error-page__tv" aria-hidden="true">
-        <img src="/images/okapi-crt.png" alt="" width="1296" height="1187" />
+        <ProgressiveImage src={crtImage} alt="" loading="lazy" />
       </figure>
       <div class="error-page__content">
         <p class="error-page__code" aria-hidden="true">404</p>

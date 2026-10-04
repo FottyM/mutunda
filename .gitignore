@@ -105,3 +105,9 @@ test-results/
 
 # TernJS port file
 .tern-port
+
+# Editor directories
+.vscode/
+
+# Local agent configuration and skills
+.agents/

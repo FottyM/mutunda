@@ -3,6 +3,7 @@ import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ButtonLink from "../components/ButtonLink.astro";
 import Callout from "../components/Callout.astro";
+import ProgressiveImage from "../components/ProgressiveImage.astro";
 import Tag from "../components/Tag.astro";
 import type { Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
@@ -23,7 +24,12 @@ const t = useTranslations(locale);
 const localizedArticlePath = getLocalizedPath(`/writing/${slug}/`, locale);
 const canonical = entry.data.canonicalUrl ?? new URL(localizedArticlePath, Astro.site);
 const canonicalUrl = typeof canonical === "string" ? canonical : canonical.href;
-const coverUrl = entry.data.cover && new URL(entry.data.cover.src, Astro.site ?? Astro.url).href;
+const coverSrc = entry.data.cover
+  ? typeof entry.data.cover.src === "string"
+    ? entry.data.cover.src
+    : entry.data.cover.src.src
+  : undefined;
+const coverUrl = coverSrc && new URL(coverSrc, Astro.site ?? Astro.url).href;
 
 const articleStructuredData = {
   "@context": "https://schema.org",
@@ -84,6 +90,17 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
       <Callout title={t("common.language_notice")} tone="warning">
         <p>{t("writing.fallback_notice")}</p>
       </Callout>
+    )}
+
+    {entry.data.cover && (
+      <figure class="article-cover">
+        <ProgressiveImage
+          src={entry.data.cover.src}
+          alt={entry.data.cover.alt}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </figure>
     )}
 
     <article class="prose article-body">

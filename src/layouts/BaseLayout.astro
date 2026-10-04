@@ -8,6 +8,7 @@ import CommandPalette from "../components/CommandPalette.astro";
 import { DEFAULT_LOCALE, type Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
 import { getLocaleMetadata, getLocalizedPath } from "../i18n/utils";
+import type { ImageMetadata } from "astro";
 
 interface Props {
   title: string;
@@ -16,7 +17,7 @@ interface Props {
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
   openGraphType?: "website" | "article";
   publishedTime?: string;
-  image?: string;
+  image?: string | ImageMetadata;
   imageAlt?: string;
   locale?: Locale;
   translations?: Partial<Record<Locale, string>>;
@@ -38,7 +39,8 @@ const {
 const t = useTranslations(locale);
 const { canonicalUrl, alternates } = getLocaleMetadata(Astro.site, Astro.url.pathname, translations);
 const finalCanonical = canonical ? (typeof canonical === "string" ? canonical : canonical.href) : canonicalUrl;
-const imageUrl = image && new URL(image, Astro.site ?? Astro.url).href;
+const imageSrc = typeof image === "object" && image !== null && "src" in image ? image.src : image;
+const imageUrl = imageSrc && new URL(imageSrc, Astro.site ?? Astro.url).href;
 const structuredDataJson = structuredData && JSON.stringify(structuredData).replace(/</g, "\\u003c");
 
 const navItems = [
@@ -63,7 +65,7 @@ const isCurrent = (href: string) =>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="canonical" href={finalCanonical} />
     {alternates.map(({ hreflang, href }) => (
       <link rel="alternate" hreflang={hreflang} href={href} />
@@ -129,6 +131,34 @@ const isCurrent = (href: string) =>
             event.direction = toIndex > fromIndex ? "next" : "previous";
           }
         });
+      })();
+    </script>
+    <script is:inline>
+      (function () {
+        function markLoaded(img) {
+          img.classList.add("is-loaded");
+          var container = img.closest(".progressive-image");
+          if (container) container.classList.add("is-loaded");
+        }
+
+        function checkImages() {
+          var targets = document.querySelectorAll(".progressive-image__target, .prose img");
+          for (var i = 0; i < targets.length; i++) {
+            var img = targets[i];
+            if (img.complete && img.naturalWidth > 0) {
+              markLoaded(img);
+            } else {
+              img.addEventListener("load", function (e) { markLoaded(e.target); }, { once: true });
+            }
+          }
+        }
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", checkImages);
+        } else {
+          checkImages();
+        }
+        document.addEventListener("astro:page-load", checkImages);
       })();
     </script>
     {structuredDataJson && <script type="application/ld+json" set:html={structuredDataJson} />}

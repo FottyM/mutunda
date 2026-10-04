@@ -16,6 +16,7 @@ test("primary navigation uses client-side routing", async ({ page }) => {
 
 test("command palette supports its keyboard shortcut and selection", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("#command-palette-trigger")).toBeVisible();
 
   await page.keyboard.press("Control+Shift+P");
   const dialog = page.getByRole("dialog");
@@ -178,3 +179,87 @@ test("case studies provide top and footer back buttons returning to selected wor
   await expect(page).toHaveURL(/\/fr\/projects\/?$/);
   await expect(page.getByRole("heading", { name: "Sélection de projets" })).toBeVisible();
 });
+
+test("GraphQL field note renders in English, French, and Estonian with back links", async ({ page }) => {
+  await page.goto("/writing/graphql-over-the-cliff");
+  await expect(page.getByRole("heading", { name: "How my love for GraphQL fell off a cliff" })).toBeVisible();
+  await expect(page.locator(".back-link")).toHaveText(/Back to field notes/);
+  await expect(page.locator(".prose")).toContainText(/I do not fancy that a single moment/);
+  await expect(page.locator(".prose")).toContainText("strong-remoting");
+
+  await page.goto("/fr/writing/graphql-over-the-cliff");
+  await expect(page.getByRole("heading", { name: "Comment mon amour pour GraphQL est tombé de la falaise" })).toBeVisible();
+  await expect(page.locator(".back-link")).toHaveText(/Retour aux notes de terrain/);
+
+  await page.goto("/et/writing/graphql-over-the-cliff");
+  await expect(page.getByRole("heading", { name: "Kuidas mu armastus GraphQL-i vastu kaljult alla kukkus" })).toBeVisible();
+  await expect(page.locator(".back-link")).toHaveText(/Tagasi väljamärkmete juurde/);
+});
+
+test("site header is isolated from body route transitions to prevent navigation flicker", async ({ page }) => {
+  await page.goto("/");
+
+  const headerTransitionName = await page.locator(".site-header").evaluate((el) => {
+    return window.getComputedStyle(el).viewTransitionName;
+  });
+  expect(headerTransitionName).toBe("site-header");
+
+  const mainTransitionName = await page.locator("main").evaluate((el) => {
+    return window.getComputedStyle(el).viewTransitionName;
+  });
+  expect(mainTransitionName).toBe("main-content");
+
+  const headerZIndex = await page.locator(".site-header").evaluate((el) => {
+    return window.getComputedStyle(el).zIndex;
+  });
+  expect(headerZIndex).toBe("20");
+
+  // Verify smooth client-side navigation with stable header
+  await page.getByRole("link", { name: "Projects", exact: true }).click();
+  await expect(page).toHaveURL(/\/projects\/?$/);
+  await expect(page.locator(".site-header nav a[aria-current='page']")).toHaveText("Projects");
+
+  await page.getByRole("link", { name: "Writing", exact: true }).click();
+  await expect(page).toHaveURL(/\/writing\/?$/);
+  await expect(page.locator(".site-header nav a[aria-current='page']")).toHaveText("Writing");
+});
+
+test("editorial images render with progressive blur-up and gradual resolution", async ({ page }) => {
+  // 1. About page portrait
+  await page.goto("/about");
+  const portraitContainer = page.locator(".profile-portrait .progressive-image");
+  await expect(portraitContainer).toBeVisible();
+  const portraitPlaceholder = portraitContainer.locator(".progressive-image__placeholder");
+  await expect(portraitPlaceholder).toHaveAttribute("src", /(_image\?.*f=webp|\/_astro\/.*\.webp)/);
+  const portraitPicture = portraitContainer.locator("picture");
+  await expect(portraitPicture.locator('source[type="image/avif"]')).toHaveCount(1);
+  await expect(portraitPicture.locator('source[type="image/webp"]')).toHaveCount(1);
+  const portraitTarget = portraitContainer.locator(".progressive-image__target");
+  await expect(portraitTarget).toHaveClass(/is-loaded/);
+
+  // 2. Case study cover
+  await page.goto("/projects/ebola-tracker");
+  const caseStudyContainer = page.locator(".case-study__cover .progressive-image");
+  await expect(caseStudyContainer).toBeVisible();
+  const caseStudyPlaceholder = caseStudyContainer.locator(".progressive-image__placeholder");
+  await expect(caseStudyPlaceholder).toHaveAttribute("src", /(_image\?.*f=webp|\/_astro\/.*\.webp)/);
+  const caseStudyPicture = caseStudyContainer.locator("picture");
+  await expect(caseStudyPicture.locator('source[type="image/avif"]')).toHaveCount(1);
+  await expect(caseStudyPicture.locator('source[type="image/webp"]')).toHaveCount(1);
+  const caseStudyTarget = caseStudyContainer.locator(".progressive-image__target");
+  await expect(caseStudyTarget).toHaveClass(/is-loaded/);
+
+  // 3. Writing article cover
+  await page.goto("/writing/graphql-over-the-cliff");
+  const articleContainer = page.locator(".article-cover .progressive-image");
+  await expect(articleContainer).toBeVisible();
+  const articlePlaceholder = articleContainer.locator(".progressive-image__placeholder");
+  await expect(articlePlaceholder).toHaveAttribute("src", /(_image\?.*f=webp|\/_astro\/.*\.webp)/);
+  const articlePicture = articleContainer.locator("picture");
+  await expect(articlePicture.locator('source[type="image/avif"]')).toHaveCount(1);
+  await expect(articlePicture.locator('source[type="image/webp"]')).toHaveCount(1);
+  const articleTarget = articleContainer.locator(".progressive-image__target");
+  await expect(articleTarget).toHaveClass(/is-loaded/);
+});
+
+

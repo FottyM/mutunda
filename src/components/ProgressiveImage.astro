@@ -1,0 +1,104 @@
+---
+import { getImage, Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  src: ImageMetadata | string;
+  alt: string;
+  width?: number;
+  height?: number;
+  widths?: number[];
+  sizes?: string;
+  formats?: ("avif" | "webp" | "png" | "jpeg")[];
+  loading?: "lazy" | "eager";
+  fetchpriority?: "high" | "low" | "auto";
+  class?: string;
+  imageClass?: string;
+  aspectRatio?: string;
+  decoding?: "async" | "sync" | "auto";
+}
+
+const {
+  src,
+  alt,
+  width,
+  height,
+  widths = [400, 800, 1400],
+  sizes = "(max-width: 768px) 100vw, 800px",
+  formats = ["avif", "webp"],
+  loading = "lazy",
+  fetchpriority,
+  class: className = "",
+  imageClass = "",
+  aspectRatio: customAspectRatio,
+  decoding = "async",
+} = Astro.props;
+
+const isMetadata = typeof src === "object" && src !== null;
+const resolvedWidth = width ?? (isMetadata ? src.width : undefined);
+const resolvedHeight = height ?? (isMetadata ? src.height : undefined);
+const resolvedAspectRatio =
+  customAspectRatio ?? (resolvedWidth && resolvedHeight ? `${resolvedWidth} / ${resolvedHeight}` : undefined);
+
+// Low-resolution placeholder generated at build-time using Astro Assets / Sharp
+const placeholder = isMetadata
+  ? await getImage({
+      src,
+      width: 32,
+      quality: 20,
+      format: "webp",
+    })
+  : null;
+---
+
+<div
+  class:list={["progressive-image", className]}
+  style={resolvedAspectRatio ? `aspect-ratio: ${resolvedAspectRatio};` : undefined}
+>
+  {placeholder && (
+    <img
+      src={placeholder.src}
+      alt=""
+      aria-hidden="true"
+      class="progressive-image__placeholder"
+      width={resolvedWidth}
+      height={resolvedHeight}
+      decoding="async"
+    />
+  )}
+  {isMetadata ? (
+    <Picture
+      src={src}
+      widths={widths}
+      sizes={sizes}
+      formats={formats}
+      alt={alt}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding={decoding}
+      class:list={["progressive-image__target", imageClass]}
+      onload="this.classList.add('is-loaded')"
+    />
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      width={resolvedWidth}
+      height={resolvedHeight}
+      loading={loading}
+      fetchpriority={fetchpriority}
+      decoding={decoding}
+      class:list={["progressive-image__target", imageClass]}
+      onload="this.classList.add('is-loaded')"
+    />
+  )}
+  <noscript>
+    <img
+      src={isMetadata ? src.src : src}
+      alt={alt}
+      width={resolvedWidth}
+      height={resolvedHeight}
+      class:list={["progressive-image__target", "is-loaded", imageClass]}
+    />
+  </noscript>
+</div>
