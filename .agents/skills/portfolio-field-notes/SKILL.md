@@ -39,8 +39,10 @@ This skill governs the editorial, technical, and architectural standards for wri
 - **GraphQL-specific field note guidelines**:
   - Describe the query as *"seemingly harmless"*, not *"stupid"*.
   - Acknowledge that the author already found GraphQL odd in a complex setup before the incident.
-  - Accurately represent the extension architecture: `src/graphql/extensions/Query/types/[typename]/resolver.ts` and `Mutation/types/[typename]/`, where resolvers can delegate to an underlying subschema, execute GraphQL over HTTP, or make plain HTTP `fetch` calls.
+  - Represent the extension architecture with custom resolvers without dumping raw internal directory structures into prose; resolvers can delegate to an underlying subschema, execute GraphQL over HTTP, or make plain HTTP `fetch` calls.
   - In fan-out incidents, show the resolver making plain HTTP calls in `Promise.all`, explain the arithmetic (e.g., 20 entities × 5 requests = 100 downstream calls), and show the concurrency limiter (`p-limit`).
+  - Keep the tone personal and candid (focus on genuine feelings and real friction towards the tech rather than an overly defensive technical postmortem).
+  - Acknowledge external inspirations where relevant (Harry Wolff on YouTube, Theo / t3.gg).
 - **Endings**: Conclude on a concrete observation or next step, never a moral lesson or canned summary.
 
 ---

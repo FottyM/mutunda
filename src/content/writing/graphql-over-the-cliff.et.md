@@ -122,9 +122,7 @@ const results = await Promise.all(
 
 Väljakutsed toimuvad endiselt. See piirab samaaegselt töötavate mähitud operatsioonide arvu; see ei rühmita neid ega vähenda nende arvu. Ülempiiri jagavad seda piirajat kasutavad toimingud selles protsessis, mitte iga server klastris.[^7]
 
-Mul ei ole siin mäluprofiili, mis tõestaks meie rikke täpset põhjust. Need koodijupid selgitavad väljakutsete hargnemist ja samaaegsuse juhtimist, mitte kogu intsidenti.
-
-Kuid see on osa, mis mind frustreerib. Ühe välja mõistmiseks vaatan nüüd ülemist päringut, laienduslahendajat ja HTTP-päringuid viide teise teenusesse. Päring eesotsas annab mulle sellest teekonnast väga vähe teada.
+See ongi see, mis mind selle tehnoloogia juures nii väga frustreerib. Üheainsa välja mõistmiseks tuleb lahti harutada ülemine päring, kohandatud lahendaja ja HTTP-kõned viide eraldi teenusesse. Päring eesotsas ei ütle peaaegu midagi selle kohta, mis tegelikult toimub.
 
 DataLoader on teine asi, mida samas seadistuses mõista. See saab laadimisi rühmitada ja tulemusi eksemplari sees vahemällu salvestada, kuid see ei tähenda, et iga allavoolu kõne rühmitatakse automaatselt. Selle dokumentatsioon soovitab eksemplare, mis on seotud üksikute päringutega.[^8]
 
@@ -137,6 +135,8 @@ Mäletan, et üks väli lekkis teise päringusse, sest me polnud asju õigesti s
 Need on kogemused minu arvamuse taga. Minu meelest on kasulike olekute ja piisava filtreerimisega REST API-st lihtsam aru saada. Ka REST võib tööd peita, kuid ma ei tundnud, et vajan soovitud filtreerimise ja seoste saamiseks kogu seda delegeerimist.
 
 Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. Ma tõesti ei armasta seda enam. Ma vihkan seda.
+
+Ma polnud ka ainus, kes sellest vaimustusest välja kasvas. Näha Harry Wolffit YouTube'is selgitamas, miks ta loobus GraphQL-i kasutamisest, tabas täpselt minu enda tüdimust selle ökosüsteemi vastu. Isegi Theo (t3.gg), looja, keda ma tõesti ei salli, tõi välja argumendid GraphQL-i tarbetu keerukuse ja tohutu lisakulu kohta, millele ma ei saanud ausalt vastu vaielda.
 
 Selles on veel üks osa: meie majasisene Hasura-laadne tööriist. Ma vihkan ka seda ja see mõjutab tugevalt minu suhtumist GraphQL-i. Kuid see on lugu teiseks päevaks.
 

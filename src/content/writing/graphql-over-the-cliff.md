@@ -124,9 +124,7 @@ const results = await Promise.all(
 
 The calls still happen. This limits how many wrapped operations run at once; it does not batch them or reduce their number. The cap is shared by work using this limiter in this process, not by every server in a deployment.[^7]
 
-I do not have a memory profile here that proves the precise cause of our failure. These snippets explain the fan-out and the concurrency control, not the whole incident.
-
-But this is the part that frustrates me. To understand one field, I am now looking at an upstream query, an extension resolver, and HTTP calls to five other services. The query at the front gives me very little of that route.
+That is the heart of what frustrates me with this tech. To understand a single field, you are tracing an upstream query, a custom resolver, and HTTP requests to five different services. The query at the front tells you almost nothing about what is actually happening.
 
 DataLoader is another thing to understand in the same setup. It can batch loads and cache results within an instance, but that does not mean every downstream call is automatically batched. Its documentation recommends instances scoped to individual requests.[^8]
 
@@ -139,6 +137,8 @@ I remember a field leaking into another query because we had not configured thin
 These are the experiences behind my opinion. I find a REST API with useful statuses and sufficient filtering easier to reason about. REST can hide work too, but I did not feel I needed all this delegation to get the filtering and relationships I wanted.
 
 I feel that better services, caching, and networking have addressed a lot of the problems GraphQL was meant to solve. Meanwhile, working with this setup became a nightmare for me. I really don't love it anymore. I hate it.
+
+I was not alone in falling out of love with it either. Seeing Harry Wolff talk on YouTube about why he stopped using GraphQL captured so much of my own exhaustion with the ecosystem. Even Theo (t3.gg), a creator I really cannot stand, made points about GraphQL's sheer overhead and overengineering that I could not honestly dispute.
 
 There is another part of this: our in-house Hasura-like tool. I hate that too, and it contributes to how I feel about GraphQL. But that is a story for another day.
 
