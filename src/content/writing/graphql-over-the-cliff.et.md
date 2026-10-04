@@ -72,7 +72,7 @@ return result.data;
 
 See on üks poliitika, mitte ainus. Ekraan võib soovida näidata õnnestunud osi, sel juhul peab see säilitama nii andmed kui ka vead. GraphQL lubab täitmisvigu koos osaliste andmetega.[^4]
 
-Samuti ei tagasta iga GraphQL-i tõrge koodi 200 ega nõua iga päring POST-i. Need üksikasjad sõltuvad tõrkest ja HTTP käsitlusest.[^5] Minu etteheide puudutab keskkonda, kus ma töötasin: olek üksi ei öelnud mulle piisavalt ja ma pidin uurima enamat, enne kui teadsin, mis ebaõnnestus.
+GraphQL-i server võib valideerimistõrgete või lüüsi krahhi korral tehniliselt tagastada koodi 400 või 500 ning päringuid saab põhimõtteliselt teha ka GET-iga.[^5] Kuid meie seadistuses oli iga päring POST ning täitmistõrked saabusid reeglina pakituna HTTP 200 sisse. HTTP olek üksi ei öelnud mulle midagi. Pidin vastuse keha lahti pakkima ainuüksi selleks, et teada saada, kas päring ebaõnnestus.
 
 Ja siis pidin veel leidma, kus see oli ebaõnnestunud.
 

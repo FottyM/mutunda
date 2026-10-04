@@ -72,7 +72,7 @@ return result.data;
 
 C'est une politique possible, pas la seule. Un écran peut vouloir afficher les parties réussies, auquel cas il doit conserver à la fois les données et les erreurs. GraphQL autorise des erreurs d'exécution aux côtés de données partielles.[^4]
 
-De même, chaque défaillance GraphQL ne renvoie pas un code 200, et chaque requête n'exige pas un POST. Ces détails dépendent de la défaillance et de la gestion HTTP.[^5] Mon grief porte sur l'environnement dans lequel je travaillais : le statut seul ne me disait pas assez de choses, et je devais inspecter davantage d'éléments avant de savoir ce qui avait échoué.
+Un serveur GraphQL peut techniquement renvoyer une erreur 400 ou 500 en cas d'erreur de validation ou de plantage de la passerelle, et des requêtes peuvent être exécutées en GET.[^5] Mais dans notre configuration, chaque requête était un POST, et les erreurs d'exécution arrivaient régulièrement enveloppées dans un code HTTP 200. Le statut HTTP seul ne me disait rien. Je devais analyser le corps de la réponse rien que pour savoir si une requête avait échoué.
 
 Et je devais encore trouver où cela avait échoué.
 

@@ -74,7 +74,7 @@ return result.data;
 
 That is one policy, not the only policy. A screen might still show the successful parts, in which case it needs to keep both the data and the errors. GraphQL permits execution errors alongside partial data.[^4]
 
-Nor does every GraphQL failure return 200, or every query require POST. Those details depend on the failure and HTTP handling.[^5] My complaint is about the setup I was working in: the status alone did not tell me enough, and I had more to inspect before I knew what had failed.
+A GraphQL server can technically return a 400 or 500 for validation errors or gateway crashes, and queries can technically run over GET.[^5] But in our setup, every query was a POST, and execution errors regularly arrived wrapped inside an HTTP 200. The HTTP status alone told me nothing. I had to unpack the body just to know whether a request had failed.
 
 Then I still had to find where it had failed.
 
