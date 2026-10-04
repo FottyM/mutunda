@@ -80,7 +80,7 @@ Et je devais encore trouver où cela avait échoué.
 
 C'est ici que cette page de vingt entités revient dans l'histoire. La requête était courte. Le travail dissimulé derrière ses champs d'extension n'était pas évident à la lecture.
 
-Dans notre architecture, les extensions étaient organisées par opération et par type sous `src/graphql/extensions/` : `Query/types/[typename]` et `Mutation/types/[typename]`, chacun avec son `resolver.ts` et son `typeDefs.ts`. Dans ces résolveurs, un champ pouvait déléguer à un autre schéma,[^6] exécuter une requête GraphQL par HTTP ou effectuer de simples requêtes HTTP vers des services en aval.
+Dans notre architecture, nous étendions le schéma avec des résolveurs personnalisés.[^6] Dans ces résolveurs, un champ pouvait déléguer à un autre schéma, exécuter une requête GraphQL par HTTP ou effectuer de simples requêtes HTTP vers des services en aval.
 
 Dans notre cas, le résolveur effectuait de simples requêtes HTTP vers cinq autres services pour chaque entité.
 

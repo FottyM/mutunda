@@ -82,7 +82,7 @@ Then I still had to find where it had failed.
 
 This is where that page of twenty entities comes back into the story. The query was small. The work behind its extension fields was not obvious from reading it.
 
-In our setup, extensions were organised by operation and type under `src/graphql/extensions/`: `Query/types/[typename]` and `Mutation/types/[typename]`, each with its own `resolver.ts` and `typeDefs.ts`. Inside those resolvers, a field could delegate to another schema,[^6] run a GraphQL query over HTTP, or make plain HTTP requests to downstream services.
+In our setup, we extended the schema with custom resolvers.[^6] Inside those resolvers, a field could delegate to another schema, run a GraphQL query over HTTP, or make plain HTTP requests to downstream services.
 
 In our case, the resolver was making plain HTTP requests to five other services for each entity.
 
