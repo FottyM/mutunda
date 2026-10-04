@@ -1,6 +1,6 @@
 ---
 title: Kuidas mu armastus GraphQL-i vastu kaljult alla kukkus
-description: The Net Ninja õpetusest LoopBacki filtriteni, GraphQL-i silumiseni tööl ja põgusa pilguni Hasurale.
+description: Net Ninja õpetusest LoopBacki filtriteni, GraphQL-i silumiseni tööl ja põgusa pilguni Hasurale.
 date: 2026-10-04
 tags:
   - graphql
@@ -14,167 +14,144 @@ locale: et
 slug: graphql-over-the-cliff
 ---
 
-Mäletan üht lolli päringut: ühel lehel oli umbes 20 olemit ja igal olemil oli laiendus, mis tegi umbes viis päringut teise teenusesse. Väljalaskel sai mälu otsa ja pidime selle p-limitiga korda tegema. Pagan, ma vihkan GraphQL-i.
+Mäletan ühte pealtnäha süütut päringut. Leht umbes kahekümne olemiga, millest igaühel olid laiendused, mis tegid umbes viis päringut teise teenusesse. Väljalase põrkus mälupuuduse tõrkega (OOMKill) ja me lõpetasime `p-limit`i kasutamisega.
 
-Umbes 2018. aastal, kui GraphQL hakkas levima,  ma tegelikult ei tea, millal see levima hakkas,, tegin läbi ühe The Net Ninja õpetuse ja olin vaimustuses. See oli lahe. Võimalus pärida välju ja pesastatud andmeid oli tõesti mõnus.
+Selleks ajaks tundus tootmisseadistus mulle juba kummaline. Seal oli skeemide kokkuõmblemine (stitching), delegeerimine, laienduspunktid, fragmendid ja DataLoader. Väike päring võis nõuda pikka süvenemist enne, kui sain aru, mis tegelikult toimub.
 
-Siis sain 2018. aastal töökoha, kus kasutasime IBMi/StrongLoopi veebiraamistikku LoopBack. Pean silmas LoopBack 3 ja 4.
+See oli kaugel sellest, mis mind algselt GraphQL-i juures köitis.
 
-Seal oli midagi, mida võiks nimetada päringukoostajaks. Määratlesid mudeli, kirje, andmebaasiga seotud olemi. Päringu URL-i päringustringis sai kaasa anda filtri ja saada tagasi just need väljad, mida tahtsid.
+## Enne seda kõike ma armastasin seda
 
-Minu arvates lahendas see juba osa probleemidest, mida GraphQL püüdis lahendada.
+Umbes 2018. aastal vaatasin [Net Ninja](https://www.youtube.com/watch?v=Y0lDGjwRYKw&list=PL4cUxeGkcC9iK6Qhn-QLcXCXPQUov1U7f) õpetust ja olin GraphQL-ist vaimustuses. Väljade valimine ja pesastatud andmete pärimine oli väga meeldiv. Sain kirjeldada, mida tahtsin, ja saada täpselt selle kuju tagasi.
 
-Kaasata sai ka seoseid. Selles lahenduses, millega mina töötasin, saime isegi pärida ja filtreerida eri teenuste eri mudeleid. Mäletan, et strong-remoting oli sellega seotud, kuigi ma pole kindel, kas see on õige nimi sellele osale, mis selle võimalikuks tegi.
+Seejärel sain töökoha, kus kasutati LoopBacki, IBM/StrongLoopi raamistikku. See võimaldas defineerida andmebaasiga seotud mudeleid ja anda päringustringis filtreid kaasa. Saime valida välju ja kaasata ka seoseid.
 
-Hiljuti läksin tagasi GraphQL-i juurde, sest sain uue töökoha, kus seda kasutatakse läbivalt.
-
-Esimene asi, mida meie lahenduse puhul märkasin, oli see, et päringud olid POST-päringud. HTTP olekukoodist polnud vigu näha: said 200 ja siis vastuses veaobjektid. Mõnikord õnnestus päring osaliselt.
-
-Siis on veel skeemide delegeerimine, skeemide kokkuõmblemine ja DataLoader. Minu jaoks on seda palju.
-
-Päringud näevad üldiselt süütud välja. Näed väikest päringut, aga sees võib olla rohkem filtreerimist, rohkem välju, skeemide kokkuõmblemist ja skeemide delegeerimist. Asi läheb segaseks, kui pead vigu otsima ja aru saama, mis kuhu läheb.
-
-Oli veel üks juhtum, kus väli lekkis teise päringusse, sest me polnud asju korralikult seadistanud. Ja siis olid enum'id, millel olid samad väärtused, aga erinevad nimed. Tulemus ei ilmunudki enne, kui kohendasin enum'i tüübistust või vastendust. Nii ma seda mäletan; täpset parandust mul siin pole.
-
-Mõnikord võtab see palju aega võrreldes korraliku REST API päringuga, mis annab kasuliku olekukoodi. Ja kui filtreerimissüsteem on piisavalt hea, siis ma ei tunne, et mul kogu seda maagilist delegeerimist vaja oleks.
-
-Mulle tundub, et paljud probleemid, mida GraphQL püüdis lahendada, on paremate teenuste, vahemälu ja võrguühendustega juba lahendatud. Sellega töötamine on minu jaoks muutunud õudusunenäoks. Ma tõesti ei armasta seda enam. Ma vihkan seda.
-
-### Tehniline märkus: filtrid ja väljad
-
-LoopBack 3 võtab vastu JSON-kujul `filter`-päringuparameetri; `where` filtreerib kirjeid, `fields` valib omadused ja `include` laadib määratletud seosed.[^1][^2][^3] Väljade valimisel koos seose kaasamisega võib olla vaja alles jätta seose võtmed: dokumentatsiooni `belongsTo`-näites säilitatakse `categoryId`.[^3] LoopBack 4 dokumentatsioonis on sama hoiatus.[^4]
-
-See on illustreeriv näide brauseri `fetch`-iga, mitte kood minu töökohast. See eeldab LoopBack 3 `Post`-mudelit näidatud väljade ja seadistatud `category`-seosega. ID-d on meelega alles jäetud.
+Siin on näitlik LoopBack 3 päring, mitte kood sellest töökohast. Oletame `Post` mudelit seotud `category` seosega:
 
 ```js
-async function getPosts() {
-  const filter = {
-    where: { published: true },
-    fields: { id: true, title: true, categoryId: true },
-    include: { relation: "category", scope: { fields: ["id", "name"] } },
-    limit: 10,
-  };
-  const params = new URLSearchParams({ filter: JSON.stringify(filter) });
-  const response = await fetch(`/api/posts?${params}`);
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
-}
+const filter = {
+  where: { published: true },
+  fields: { id: true, title: true, categoryId: true },
+  include: { relation: "category" },
+  limit: 10,
+};
+
+const params = new URLSearchParams({
+  filter: JSON.stringify(filter),
+});
+const response = await fetch(`/api/posts?${params}`);
+if (!response.ok) throw new Error(`HTTP ${response.status}`);
+const posts = await response.json();
 ```
 
-### Tehniline märkus: mida strong-remoting teeb
+Filter valib avaldatud postitused, küsib konkreetsed väljad ja kaasab kategooria. Jätsin alles `categoryId`, sest seose laadimine võib vajada selle sidumisvõtit.[^1]
 
-See mälestus on usutav: `strong-remoting` teeb JavaScripti meetodid transpordiadapterite kaudu kaugelt kutsutavaks ning `loopback-connector-remote` kasutab seda sõnaselgelt teise LoopBacki rakenduse avaldatud mudelimeetodite kutsumiseks.[^5][^6] See erineb `loopback-connector-rest`-ist, mis kasutab teiste REST API-dega suhtlemiseks ressursioperatsioone või päringumalle.[^7] Need allikad ei näita, millist konnektorit meie rakendus kasutas või kuidas me teenusteüleseid päringuid koostasime.
+See kattis juba osa sellest, mis mulle GraphQL-i juures muljet avaldas. See oli filter HTTP-päringul ja nende vajaduste jaoks piisas mulle sellest täiesti.
 
-LoopBack 4 vastavad osad on HTTP-kontrollerid, andmetele ligipääsu repositories ning seoste kaasamise lahendajad ehk inclusion resolvers.[^8][^9][^10] See ei tähenda, et sellel oleksid LoopBack 3-ga samad remoting'u sisemised mehhanismid: remote-konnektor ütleb sõnaselgelt, et see ei toeta LoopBack 4.[^6]
+Meie seadistuses saime mudeleid pärida ja filtreerida ka teenuste vahel. Mäletan, et selles osales Strong Remoting. LoopBacki kaugkonnektor kasutab seda teise LoopBacki rakenduse avaldatud mudelimeetodite väljakutsumiseks, kuigi ma ei suuda sellest mälestusest meie täpset ühendust taastada.[^2]
 
-### Tehniline märkus: HTTP edu ja GraphQL-i edu
+Olen seda lugu rääkides maininud LoopBack 3 ja 4, kuid neid ei tohiks siin omavahel segi ajada. See kaugkonnektor ei toeta selgesõnaliselt LoopBack 4.[^2]
 
-Ülal kirjeldatud POST ja 200 puudutavad meie lahendust. GraphQL-over-HTTP mustand nõuab POST-i tuge ning lubab GET-i lugemispäringute, mitte mutatsioonide jaoks.[^11] GraphQL eristab enne täitmist tekkivaid päringuvigu (ilma `data`-ta) täitmisvigadest, millega võib kaasneda osaline `data`.[^12] Kõik vead ei anna 200: HTTP olekukoodide kasutus sõltub vea tekkimise etapist ja vastuse meediatüübist; HTTP dokument on endiselt mustand.[^11]
+## Tagasi tootmisseadistuses
 
-`fetch`-i `response.ok` kontrollib ainult seda, kas HTTP olekukood jääb vahemikku 200–299; see ei uuri GraphQL-i `errors`-välja.[^13] See teine illustreeriv brauserinäide eeldab näidatud skeemi. See **lükkab osalised andmed teadlikult tagasi**, kui `errors` pole tühi, isegi eduka HTTP vastuse korral. Osalisi andmeid aktsepteeriv kasutajaliides vajab teistsugust reeglit: säilitada nii `data` kui ka `errors` ning näidata, millised osad ebaõnnestusid.[^12]
+Kui naasin GraphQL-i juurde teises töökohas, kasutasime kasutajaliidese poolel Apollot ja tagaosas GraphQL Yogat. Seal muutus korraldus minu jaoks kummaliseks: kokkuõmblemine, delegeerimine, laiendused, fragmendid ja kogu vaev, mida oli vaja päringu jälgimiseks läbi nende.
+
+Isegi päringu õnnestumise kontrollimine vajas rohkem tähelepanu. Meie seadistuses olid päringud POST-id ja HTTP 200 võis sisaldada vigu või ainult osa küsitud andmetest.
+
+Käsuga `fetch` kontrollib `response.ok` ainult HTTP olekut. See ei kontrolli GraphQL-i vigu.[^3] Pärast seda kontrolli vajab klient, mis keeldub osalistest tulemustest, midagi sellist:
 
 ```js
-async function getPosts() {
-  const response = await fetch("/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/graphql-response+json, application/json",
-    },
-    body: JSON.stringify({ query: "{ posts { id title category { id name } } }" }),
-  });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const result = await response.json();
-  if (result.errors?.length) {
-    throw new Error(result.errors.map(error => error.message).join("; "));
-  }
-  return result.data;
+const result = await response.json();
+
+if (result.errors?.length) {
+  throw new Error(result.errors.map((error) => error.message).join("; "));
 }
+
+return result.data;
 ```
 
-Need koodilõigud näitavad päringute kuju ja veakontrolle, mitte samaväärset filtreerimist ega tootmiskõlblikke kliente. GraphQL-i päringul pole filtreerimis- ega piiranguargumente; need sõltuksid skeemist. Autentimine ja kasutajaliidese veakäsitlus on välja jäetud. Mitte-2xx vastus lükatakse tagasi enne selle sisu lugemist; täielikum klient võiks säilitada ka serveri diagnostika.
+See on üks poliitika, mitte ainus. Ekraan võib soovida näidata õnnestunud osi, sel juhul peab see säilitama nii andmed kui ka vead. GraphQL lubab täitmisvigu koos osaliste andmetega.[^4]
 
-### Tehniline märkus: DataLoaderi vahemälu
+Samuti ei tagasta iga GraphQL-i tõrge koodi 200 ega nõua iga päring POST-i. Need üksikasjad sõltuvad tõrkest ja HTTP käsitlusest.[^5] Minu etteheide puudutab keskkonda, kus ma töötasin: olek üksi ei öelnud mulle piisavalt ja ma pidin uurima enamat, enne kui teadsin, mis ebaõnnestus.
 
-DataLoader koondab laadimised ning jätab tulemused ühe eksemplari piires meelde. Dokumentatsioon soovitab luua eksemplarid iga päringu jaoks eraldi, mitte jagada vahemällu salvestatud väärtusi eri kasutajate vahel. See vahemälu ei asenda jagatud vahemälu, näiteks Redist.[^14]
+Ja siis pidin veel leidma, kus see oli ebaõnnestunud.
 
-### Tehniline märkus: samaaegsus ei ole päringute arv
+## Pealtnäha süütu päringu jälitamine
 
-`p-limit` piirab korraga käivitatavate mähitud operatsioonide arvu; see ei koonda neid kutseid ega eemalda kordusi, seega ei kõrvalda pelgalt samaaegsuse piiramine N+1-laadset kutsete paljunemist.[^15] Piirang kehtib samale piirajale antud tööle: iga saabuva päringu jaoks loodud piiraja piirab selle päringu tööd, protsessis jagatud piiraja aga talle antud tööd selle protsessi päringute lõikes, mitte kõigis serverites.[^15] Ülaltoodud arvud ja mälu otsasaamine on minu mälestus, mitte mõõdetud mäluprofiil ega algpõhjuse rekonstruktsioon.
+Siin tuleb see kahekümne olemiga leht loosse tagasi. Päring oli väike. Selle laiendusväljade taga olev töö ei olnud seda lugedes ilmne.
 
-### Illustreeriv märkus: Hasura Hono taga
-
-Hasura v2-l on oma Remote Schemas funktsioon.[^16] See näide paneb aga Hasura ette **kohandatud JavaScripti lüüsi**; see ei väida, et Hasura kasutaks sisemiselt GraphQL Toolsi.
-
-Siin on `hasura` seadistatud `{ schema, executor }` alamskeem Hasura lõpp-punkti jaoks, mis avaldab `entity`-tabeli. Skeem võib tulla introspektsioonist või etteantud SDL-ist; executor saadab operatsioonid taustateenusele.[^17] `stitchSchemas` lisab `page` ja `extras`; `delegateToSchema` edastab valitud olemiväljad ning `selectionSet` hangib laiendusele vajaliku ID.[^18] Hono käsitleb HTTP-d ja `graphql()` täidab kokkuliidetud skeemi.[^19][^20]
+Selle kaudsuse illustreerimiseks on siin lihtsustatud GraphQL Toolsi delegeerimislahendaja. See ei ole meie tootmiskood. See näitab, kuidas väli saab suunata töö alusskeemile:
 
 ```js
-import { Hono } from "hono";
-import { graphql } from "graphql";
-import { stitchSchemas } from "@graphql-tools/stitch";
+// resolvers.js
 import { delegateToSchema } from "@graphql-tools/delegate";
-import pLimit from "p-limit";
 
-const limit = pLimit(5);
-export function gateway(hasura, extraClients) {
-  const schema = stitchSchemas({
-    subschemas: [hasura],
-    typeDefs: `
-      extend type Query { page: [entity!] }
-      extend type entity { extras: [String] }
-    `,
-    resolvers: {
-      Query: {
-        page: (_, args, context, info) => delegateToSchema({
-          schema: hasura, operation: "query", fieldName: "entity",
-          args: { limit: 20, order_by: [{ id: "asc" }] }, context, info,
-        }),
-      },
-      entity: {
-        extras: {
-          selectionSet: "{ id }",
-          resolve: (row, args, context) => extraClients.map(client =>
-            limit(() => client(row.id, context))),
-        },
-      },
-    },
-  });
-  const app = new Hono();
-  app.post("/graphql", async c => {
-    const { query, variables } = await c.req.json();
-    return c.json(await graphql({
-      schema, source: query, variableValues: variables, contextValue: {},
-    }));
-  });
-  return app;
-}
+export const resolvers = {
+  Query: {
+    page: (_parent, args, context, info) =>
+      delegateToSchema({
+        schema: subschema,
+        operation: "query",
+        fieldName: "entity",
+        args,
+        context,
+        info,
+      }),
+  },
+  Entity: {
+    extras: (entity) =>
+      Promise.all(extraClients.map((client) => client(entity.id))),
+  },
+};
 ```
 
-`extraClients` on etteantud massiiv viiest asünkroonsest teenusekliendist, millest igaüks tagastab stringi. `{ page { extras } }` võib seega 20 rea jaoks ajastada 100 kutset, kuigi selle mooduli piiraja lubab ühes protsessis päringute peale kokku viis aktiivset kutset. Ülejäänud jäävad järjekorda. See on illustratsioon, mitte meie juhtumi rekonstruktsioon. Testiti ainult kohalikke testteenuseid, mitte päris Hasura serverit. Näitest puuduvad taustateenuse seadistus, autentimine, ajalimiidid, koormuse vastuvõtu piiramine ja täielik GraphQL-over-HTTP käsitlus; ära avalda seda sellisel kujul.
+See väljavõte eeldab konfigureeritud ülemist alamskeemi, mis avaldab olemi `entity`. Delegeerimine saadab töö sellele alusskeemile; laienduslahendaja saab seejärel lisada oma töö.[^6] Apollo ja Yoga kirjeldavad meie seadistuse kliendi- ja serveriosi, mitte iga sammu, mida päring teeb saabumise ja tulemuse tagastamise vahel.
 
-Aga siis vaatasin korraks Hasurat ja olin vaimustuses.
+Oletame, et laiendus kasutab iga tagastatud olemi jaoks viit teenuseklienti. Nii võib kahekümne olemiga leht ajastada sada allavoolu väljakutset enne esialgse ülemise päringu arvestamist.
 
-Nüüd ma pole kindel, kas see tuleb mu armastusest LoopBacki filtrite vastu või lihtsalt sellest, kui lihtne nähtu oli. Ma ei tea veel, miks mulle Hasura meeldib.
+Meie väljalaset tabas mälupuuduse tõrge ja me kasutasime samaaegsuse piiramiseks `p-limit`it. Näitlik laienduslahendaja saaks piirajat jagada nii:
+
+```js
+// Väljaspool lahendajat, jagatud selles protsessis.
+const limit = pLimit(5);
+
+// Laienduslahendaja sees.
+return Promise.all(
+  extraClients.map((client) => limit(() => client(entity.id))),
+);
+```
+
+Väljakutsed toimuvad endiselt. See piirab samaaegselt töötavate mähitud operatsioonide arvu; see ei rühmita neid ega vähenda nende arvu. Ülempiiri jagavad seda piirajat kasutavad toimingud selles protsessis, mitte iga server klastris.[^7]
+
+Mul ei ole siin mäluprofiili, mis tõestaks meie rikke täpset põhjust. Need koodijupid selgitavad väljakutsete hargnemist ja samaaegsuse juhtimist, mitte kogu intsidenti.
+
+Kuid see on osa, mis mind frustreerib. Ühe välja mõistmiseks vaatan nüüd ülemist päringut, delegeeritud lahendajat, laiendust ja kõnesid teise teenusesse. Päring eesotsas annab mulle sellest teekonnast väga vähe teada.
+
+DataLoader on teine asi, mida samas seadistuses mõista. See saab laadimisi rühmitada ja tulemusi eksemplari sees vahemällu salvestada, kuid see ei tähenda, et iga allavoolu kõne rühmitatakse automaatselt. Selle dokumentatsioon soovitab eksemplare, mis on seotud üksikute päringutega.[^8]
+
+Pean teadma, kus me seda kasutasime, samamoodi nagu pean teadma, kus me skeeme kokku õmblesime või laienduspunkte lisasime. Kui midagi läheb valesti, lakkavad need üksikasjad olemast taustal tehtud teostusvalikud.
+
+## Ja oli ka teisi intsidente
+
+Mäletan, et üks väli lekkis teise päringusse, sest me polnud asju õigesti seadistanud. Oli ka samade väärtuste, kuid erinevate nimedega enume. Tulemust ei kuvatud enne, kui tegin midagi, mida kirjeldasin tüüpide ümbervalamisena. Mul pole siin täpset parandust käepärast, seega ei teeskle ma teadvat, kas tegu oli tüübiteisenduse või käitusaja vastendusega.
+
+Need on kogemused minu arvamuse taga. Minu meelest on kasulike olekute ja piisava filtreerimisega REST API-st lihtsam aru saada. Ka REST võib tööd peita, kuid ma ei tundnud, et vajan soovitud filtreerimise ja seoste saamiseks kogu seda delegeerimist.
+
+Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. Ma tõesti ei armasta seda enam. Ma vihkan seda.
+
+Selles on veel üks osa: meie majasisene Hasura-laadne tööriist. Ma vihkan ka seda ja see mõjutab tugevalt minu suhtumist GraphQL-i. Kuid see on lugu teiseks päevaks.
+
+See tööriist oli põhjus, miks läksin ja vaatasin Hasurat ennast. Ja pärast põgusat pilku olin sellest vaimustuses.
+
+Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või sellest, kui lihtne nähtu oli. Olin vaid korraks vaadanud, kuid see meeldis mulle.
 
 ## Notes
 
-[^1]: [Querying data](https://loopback.io/doc/en/lb3/Querying-data.html).
-[^2]: [Fields filter](https://loopback.io/doc/en/lb3/Fields-filter.html).
-[^3]: [Include filter](https://loopback.io/doc/en/lb3/Include-filter.html).
-[^4]: [Include filter](https://loopback.io/doc/en/lb4/Include-filter.html).
-[^5]: [strong remoting documentation](https://raw.githubusercontent.com/strongloop/strong-remoting/master/README.md).
-[^6]: [loopback connector remote documentation](https://raw.githubusercontent.com/strongloop/loopback-connector-remote/master/README.md).
-[^7]: [REST connector](https://loopback.io/doc/en/lb3/REST-connector.html).
-[^8]: [Controller](https://loopback.io/doc/en/lb4/Controller.html).
-[^9]: [Repository](https://loopback.io/doc/en/lb4/Repository.html).
-[^10]: [Relations](https://loopback.io/doc/en/lb4/Relations.html).
-[^11]: [draft](https://graphql.github.io/graphql-over-http/draft).
-[^12]: [September2025](https://spec.graphql.org/September2025).
-[^13]: [fetch.spec.whatwg.org](https://fetch.spec.whatwg.org).
-[^14]: [dataloader documentation](https://raw.githubusercontent.com/graphql/dataloader/main/README.md).
-[^15]: [readme.md](https://raw.githubusercontent.com/sindresorhus/p-limit/main/readme.md).
-[^16]: [overview](https://hasura.io/docs/2.0/remote-schemas/overview).
-[^17]: [remote subschemas](https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas).
-[^18]: [schema extensions](https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions).
-[^19]: [basic](https://hono.dev/docs/getting-started/basic).
-[^20]: [graphql](https://www.graphql-js.org/api-v16/graphql).
+[^1]: LoopBack 3: [andmete pärimine](https://loopback.io/doc/en/lb3/Querying-data.html) ning [seoste kaasamine ja sidumisväljade säilitamine](https://loopback.io/doc/en/lb3/Include-filter.html).
+[^2]: [LoopBacki kaugkonnektor](https://github.com/strongloop/loopback-connector-remote), sealhulgas selle Strong Remotingi kasutus ja LoopBack 4 toe puudumine.
+[^3]: [Fetch standard: vastuse `ok`](https://fetch.spec.whatwg.org/#dom-response-ok).
+[^4]: [GraphQL-i spetsifikatsioon: vastus](https://spec.graphql.org/September2025/#sec-Response).
+[^5]: [GraphQL over HTTP mustand](https://graphql.github.io/graphql-over-http/draft/): meetodid, vastuse meediatüübid ja olekukäsitlus.
+[^6]: GraphQL Tools: [kaug-alamskeemid](https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas) ja [skeemilaiendused](https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions).
+[^7]: [`p-limit`i dokumentatsioon](https://github.com/sindresorhus/p-limit).
+[^8]: [DataLoader: rühmitamine ja päringupõhine vahemälu](https://github.com/graphql/dataloader).
