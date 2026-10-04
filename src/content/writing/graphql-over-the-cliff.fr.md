@@ -14,7 +14,7 @@ locale: fr
 slug: graphql-over-the-cliff
 ---
 
-Je me souviens d'une requête *en apparence inoffensive*. Une page d'environ vingt entités, chacune dotée d'extensions effectuant environ cinq requêtes vers un autre service. La version mise en production a subi une panne d'épuisement de mémoire **(OOMKill)**, et nous avons fini par utiliser `p-limit`.
+Je me souviens d'une requête *en apparence inoffensive* qui a provoqué un arrêt brutal par épuisement de mémoire **(OOMKill)** en production. En surface, il s'agissait d'une simple page de données, mais les rouages sous-jacents se sont transformés en un déferlement incontrôlé d'appels.
 
 À cette époque, je trouvais déjà la configuration de production singulière. Il y avait de la **couture de schémas (stitching)**, de la **délégation**, des **points d'extension**, des **fragments** et **DataLoader**. Une petite requête pouvait m'imposer un long chemin de lecture avant de comprendre ce qui se passait.
 
@@ -48,15 +48,11 @@ Le filtre sélectionne les articles publiés, demande des champs spécifiques et
 
 Cela couvrait déjà une partie de ce qui m'avait séduit dans GraphQL. C'était un filtre sur une requête HTTP, et pour ces besoins, je trouvais cela *bien suffisant*.
 
-Dans notre infrastructure, nous pouvions aussi interroger et filtrer des modèles entre plusieurs services. Je me rappelle que Strong Remoting (`strong-remoting`) entrait en jeu. Le connecteur distant de LoopBack l'utilise pour appeler des méthodes de modèle exposées dans une autre application LoopBack, bien que je ne puisse reconstituer notre câblage exact à partir de ce seul souvenir.[^2]
-
-J'ai mentionné LoopBack 3 et 4 en racontant cette histoire, mais **il ne faut pas les mélanger ici**. Ce connecteur distant ne prend explicitement pas en charge LoopBack 4.[^2]
+Dans notre infrastructure, nous pouvions aussi interroger et filtrer des modèles entre plusieurs services. Je me rappelle que Strong Remoting (`strong-remoting`) entrait en jeu. Le connecteur distant de LoopBack l'utilise pour appeler des méthodes de modèle exposées dans une autre application, bien que ce connecteur appartienne strictement à LoopBack 3 et ne prenne explicitement pas en charge LoopBack 4.[^2]
 
 ## De retour dans une architecture de production
 
-Quand je suis revenu à GraphQL dans un autre emploi, nous utilisions Apollo côté interface et GraphQL Yoga côté serveur. C'est là que j'ai trouvé l'agencement étrange : couture de schémas, délégation, extensions, fragments, et tout le travail nécessaire pour suivre une requête à travers eux.
-
-Même vérifier si une requête avait réussi demandait plus d'attention. Dans notre configuration, les requêtes étaient des POST, et un code HTTP 200 pouvait contenir des erreurs ou seulement une partie des données demandées.
+Quand je suis revenu à GraphQL dans un autre emploi, nous associions Apollo côté client et GraphQL Yoga côté serveur. D'emblée, vérifier le succès d'une requête est devenu une épreuve. Dans notre configuration, les requêtes étaient des POST, et un code HTTP 200 pouvait contenir des erreurs ou seulement une partie des données demandées.
 
 Avec `fetch`, vérifier `response.ok` ne contrôle que le statut HTTP. Cela n'inspecte pas les erreurs GraphQL.[^3] Après cette vérification, un client qui refuse les résultats partiels a besoin de quelque chose comme ceci :
 
@@ -78,7 +74,7 @@ Et je devais encore trouver *où* cela avait échoué.
 
 ## Suivre la requête en apparence inoffensive
 
-C'est ici que cette page de vingt entités revient dans l'histoire. La requête était courte. Le travail dissimulé derrière ses champs d'extension n'était pas évident à la lecture.
+C'est ici que cette requête en apparence inoffensive refait surface. Elle demandait une page de vingt entités, mais le travail dissimulé derrière ses champs d'extension était totalement invisible pour l'appelant.
 
 Dans notre architecture, nous étendions le schéma avec des résolveurs personnalisés.[^6] Dans ces résolveurs, un champ pouvait déléguer à un autre schéma, exécuter une requête GraphQL par HTTP ou effectuer de simples requêtes HTTP vers des services en aval.
 
@@ -108,7 +104,7 @@ export const resolver = {
 
 Cette extension exécutait cinq requêtes HTTP pour chaque entité renvoyée. Quand un client demandait une page de vingt entités, cette unique requête GraphQL planifiait une **centaine de requêtes HTTP en aval**, avant même de compter le travail pour récupérer la page d'origine.
 
-Notre mise en production a subi une panne d'épuisement de mémoire, et nous avons utilisé `p-limit` pour réguler la concurrence. Un résolveur illustratif pouvait encadrer ces requêtes en aval ainsi :
+La mise en production a subi une panne d'épuisement de mémoire, c'est pourquoi nous avons utilisé `p-limit` pour réguler la concurrence. Un résolveur illustratif pouvait encadrer ces requêtes en aval ainsi :
 
 ```js
 // En dehors du résolveur, partagé au sein de ce processus.
@@ -142,9 +138,7 @@ Assis dans son sous-sol au milieu de cartons de déménagement, Harry expliquait
 
 Il y a un autre aspect dans cette histoire : notre outil interne inspiré de Hasura. Je le déteste aussi, et il pèse lourd dans ce que je ressens envers GraphQL. Mais c'est une histoire pour un autre jour.
 
-C'est cet outil qui m'a poussé à aller voir Hasura lui-même. Et, après un bref coup d'œil, *j'ai adoré*.
-
-Je ne sais toujours pas si cela venait de mon attachement aux filtres LoopBack ou de la simplicité de ce que j'ai vu. Je n'y avais jeté qu'un regard rapide, mais cela m'a plu.
+C'est cet outil qui m'a poussé à aller voir Hasura lui-même. J'ignore encore si cela venait de mon attachement aux filtres LoopBack ou de la pure simplicité de ce que j'ai vu, mais après un bref coup d'œil, *j'ai adoré*.
 
 ## Notes
 
