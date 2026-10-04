@@ -7,6 +7,9 @@ tags:
   - livraison
   - architecture
 draft: false
+cover:
+  src: /images/writing/mutunda-vercel-to-cloudflare-cover.png
+  alt: Des pages statiques franchissent un obstacle vers une passerelle dans le nuage.
 locale: fr
 slug: moving-mutunda-me-from-vercel-to-cloudflare-workers
 ---

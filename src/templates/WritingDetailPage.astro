@@ -23,6 +23,7 @@ const t = useTranslations(locale);
 const localizedArticlePath = getLocalizedPath(`/writing/${slug}/`, locale);
 const canonical = entry.data.canonicalUrl ?? new URL(localizedArticlePath, Astro.site);
 const canonicalUrl = typeof canonical === "string" ? canonical : canonical.href;
+const coverUrl = entry.data.cover && new URL(entry.data.cover.src, Astro.site ?? Astro.url).href;
 
 const articleStructuredData = {
   "@context": "https://schema.org",
@@ -33,6 +34,7 @@ const articleStructuredData = {
   mainEntityOfPage: canonicalUrl,
   url: canonicalUrl,
   keywords: entry.data.tags,
+  ...(coverUrl && { image: coverUrl }),
   inLanguage: locale,
   author: {
     "@type": "Person",
@@ -51,6 +53,8 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
   structuredData={articleStructuredData}
   openGraphType="article"
   publishedTime={entry.data.date.toISOString()}
+  image={entry.data.cover?.src}
+  imageAlt={entry.data.cover?.alt}
   locale={locale}
   translations={translations}
 >

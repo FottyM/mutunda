@@ -15,6 +15,12 @@ const writing = defineCollection({
     tags: z.array(z.string().min(1)).min(1),
     draft: z.boolean().default(false),
     canonicalUrl: z.url().optional(),
+    cover: z
+      .object({
+        src: z.string().min(1),
+        alt: z.string().min(1),
+      })
+      .optional(),
     locale: z.enum(["en", "fr", "et"]).default("en"),
     slug: z.string().optional(),
     translationKey: z.string().optional(),
