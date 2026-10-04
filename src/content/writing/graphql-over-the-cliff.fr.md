@@ -1,6 +1,6 @@
 ---
-title: J'aimais GraphQL, jusqu'au jour où j'ai dû le déboguer
-description: Une réflexion sur la séduction de GraphQL, les filtres LoopBack et le coût d'inspection d'une requête au sein d'un système distribué.
+title: Comment mon amour pour GraphQL est tombé de la falaise
+description: D'un tutoriel de The Net Ninja aux filtres LoopBack, au débogage de GraphQL au travail et à un bref coup d'œil à Hasura.
 date: 2026-10-04
 tags:
   - graphql
@@ -16,88 +16,30 @@ slug: graphql-over-the-cliff
 
 ![Une feuille de requête stylisée basculant d'une falaise vers un réseau de conduits et de nœuds de services.](/images/writing/graphql-over-the-cliff-cover.png)
 
-Vers 2018, j'ai suivi un tutoriel GraphQL de The Net Ninja et j'ai adoré instantanément. Je pouvais demander exactement les champs dont j'avais besoin, naviguer dans les relations et recevoir une réponse propre et imbriquée en un seul appel. C'était précis. C'était moderne. J'avais enfin l'impression que l'API cessait de se quereller avec le client.
+Voyons comment mon amour pour GraphQL est tombé de la falaise.
 
-À l'époque, j'étais fasciné par la requête elle-même. Un schéma compact à l'écran semblait promettre une charge de travail tout aussi réduite en coulisses.
+Vers 2018, quand GraphQL commençait à se faire connaître — en fait, je ne sais pas quand ça a commencé —, j'ai suivi un tutoriel de The Net Ninja et j'ai adoré. C'était cool. Pouvoir demander des champs et des données imbriquées, c'était vraiment bien.
 
-C'était une erreur, bien que parfaitement compréhensible.
+Puis j'ai trouvé un emploi en 2018 où on utilisait LoopBack, le framework web d'IBM/StrongLoop. Je parle de LoopBack 3 et 4.
 
-## L'outil moins tendance qui fonctionnait
+Il proposait ce qu'on pourrait appeler un constructeur de requêtes. On définissait un modèle, un enregistrement, une entité rattachée à une base de données. Dans une requête, on pouvait passer un filtre dans la chaîne de requête de l'URL et récupérer les champs précis qu'on voulait.
 
-Mon premier emploi m'a confronté à LoopBack 3, puis plus tard à LoopBack 4.[^1] L'outil venait de StrongLoop et d'IBM plutôt que du versant le plus exaltant de l'écosystème JavaScript, mais il nous apportait des éléments précieux : des modèles, des relations et des filtres.
+À mon avis, ça résolvait déjà certains des problèmes que GraphQL essayait de résoudre.
 
-Un point de terminaison pouvait exposer un modèle et accepter un filtre. Je pouvais sélectionner des champs, contraindre un résultat et inclure un modèle associé. Ce n'était pas aussi élégant qu'une requête GraphQL, mais l'essentiel de l'utilité s'y trouvait déjà.
+On pouvait aussi inclure des relations. Dans la configuration sur laquelle je travaillais, on pouvait même interroger et filtrer différents modèles provenant de différents services. Je me souviens que strong-remoting intervenait là-dedans, même si je ne suis pas sûr que ce soit le bon nom pour la partie qui permettait ça.
 
-```text
-GET /customers?filter={
-  "fields": ["id", "name"],
-  "where": {"active": true},
-  "include": ["orders"]
-}
-```
+Récemment, je suis revenu à GraphQL à cause d'un nouvel emploi où ils l'utilisent partout.
 
-La documentation de LoopBack détaille clairement la sélection de champs, les filtres et l'inclusion de modèles associés.[^2] La syntaxe peut devenir lourde, notamment dès lors qu'une chaîne de requête doit véhiculer du JSON encodé, mais le travail reste explicite. Je vois la ressource, la condition et la relation que j'ai demandées.
+La première chose que j'ai remarquée dans notre configuration, c'est que les requêtes étaient des requêtes POST. Les erreurs n'étaient pas visibles dans le statut HTTP : on recevait un 200, puis des objets d'erreur dans la réponse. Parfois, on avait une réussite partielle.
 
-Cela a fait évoluer ma perception initiale de GraphQL. J'ai cessé de croire que « GraphQL est l'unique moyen d'éviter les API inefficaces ». Une API REST bien pensée, munie de filtres et de relations, répond à une part surprenante de ces mêmes besoins.
+Ensuite, il y a la délégation de schémas, l'assemblage de schémas et DataLoader. Pour moi, ça fait beaucoup.
 
-## La requête simple qui ne l'était pas
+Les requêtes ont généralement l'air inoffensives. On voit une petite requête, mais en interne, il peut y avoir davantage de filtrage, davantage de champs, de l'assemblage de schémas et de la délégation de schémas. Ça devient le bazar quand il faut déboguer et comprendre ce qui va où.
 
-Des années plus tard, j'ai rejoint une équipe qui utilisait GraphQL de bout en bout. J'étais ravi au début : la technologie que j'avais tant admirée était désormais exploitée à grande échelle.
+Parfois, ça prend beaucoup de temps par rapport à une requête d'API REST bien faite qui donne un statut utile. Et si le système de filtrage est assez bon, je n'ai pas l'impression d'avoir besoin de toute cette délégation magique.
 
-Puis j'ai dû comprendre pourquoi une requête était lente, incomplète ou erronée.
+J'ai l'impression que beaucoup des problèmes que GraphQL essayait de résoudre ont déjà été réglés par de meilleurs services, de la mise en cache et de meilleures communications réseau. Travailler avec est devenu un cauchemar pour moi. Vraiment, je ne l'aime plus. Je le déteste.
 
-De l'extérieur, une requête peut paraître admirablement concise :
+Mais ensuite, j'ai regardé Hasura juste une seconde, et j'ai adoré.
 
-```graphql
-query CustomerOrder {
-  customer(id: "42") {
-    name
-    orders { id total }
-  }
-}
-```
-
-Mais cette forme ne révèle presque rien du chemin sous-jacent. `customer` peut être un résolveur. `orders` peut interroger un autre service. Une passerelle (gateway) peut déléguer une partie de la sélection à un second schéma. Un DataLoader peut regrouper une série de lectures, pendant qu'un autre résolveur continue d'émettre un appel distinct pour chaque enregistrement. La requête paraît bien plus sereine que l'armada technique qui la porte.
-
-Aucune de ces idées n'est absurde. DataLoader existe pour regrouper et mettre en cache les requêtes d'une même passe d'exécution.[^3] L'assemblage de schémas (schema stitching) permet de présenter plusieurs services au travers d'un schéma unifié, et la délégation de schéma est le mécanisme qui achemine une fraction de requête vers le service en mesure d'y répondre.[^4] Ce sont de vraies réponses à de vraies problématiques.
-
-Ce sont aussi autant d'endroits supplémentaires où chercher quand la réponse tarde.
-
-La difficulté pour moi n'était pas que GraphQL rendait le système complexe. Le système l'était déjà. GraphQL permettait simplement à cette complexité de se dissimuler derrière une requête d'apparence inoffensive.
-
-## Un code de statut vert n'empêche pas un long après-midi
-
-L'autre surprise concernait les pannes. Dans le système avec lequel je travaillais, de nombreuses opérations transitaient en POST et renvoyaient un code HTTP 200 même lorsqu'une partie du travail demandé avait échoué. La réponse utile pouvait côtoyer un tableau `errors`, ou s'effacer derrière un résultat partiel.
-
-```json
-{
-  "data": { "customer": { "name": "Ada", "orders": null } },
-  "errors": [{ "message": "Orders service timed out" }]
-}
-```
-
-Cette réponse constitue un comportement GraphQL tout à fait valide, et non un défaut en soi. La spécification GraphQL-over-HTTP distingue formellement une réponse GraphQL syntaxiquement correcte du succès de chacun des champs qui la composent.[^5] Cependant, cela a bouleversé mon premier réflexe en phase de diagnostic. Un code 200 ne suffisait plus à me garantir que l'opération s'était bien déroulée. Il me fallait inspecter le corps de la réponse, remonter la trace des champs, puis déterminer quel service avait réellement rencontré l'échec.
-
-REST peut aussi dissimuler le désordre derrière un point de terminaison. Il est parfaitement possible de concevoir un service REST aux routes imprécises, aux codes de statut mal employés et ponctué d'appels internes impossibles à retracer. Le protocole ne protège personne des mauvaises frontières.
-
-Pour autant, j'ai plus de facilité à appréhender mentalement une requête REST bien conçue. Je sais quelle opération j'analyse. J'ai une ressource, une méthode, un statut, et généralement une liste plus courte de points de départ. Le filtrage ne rend pas le point de terminaison magique ; il le rend simplement plus utile.
-
-Dans mon travail, cette forme de sobriété est devenue une vertu.
-
-## L'exception qui m'a fait hésiter
-
-Plus tard, je me suis penché brièvement sur Hasura.[^6] J'ai accroché presque immédiatement, ce qui était un peu déroutant après toutes ces réticences.
-
-Je ne l'ai pas utilisé assez longuement pour affirmer qu'il résout les problèmes évoqués plus haut. Ce qui a capté mon attention m'était familier : un lien direct entre le modèle de données et l'API, avec filtres et relations déjà prêts à l'emploi. Son modèle relationnel m'a rappelé le côté pragmatique que j'avais apprécié dans LoopBack.[^7]
-
-Peut-être que je ne rejette pas tant GraphQL que la nécessité de devoir fouiller un graphe d'exécution pour élucider une requête d'allure anodine. Hasura n'a pas encore emporté mon jugement définitif, mais il a clairement mérité que je m'y attarde à nouveau.
-
-## Notes
-
-[^1]: [Documentation de LoopBack 3](https://loopback.io/doc/en/lb3/) et [documentation de LoopBack 4](https://loopback.io/doc/en/lb4/).
-[^2]: [Filtre de champs dans LoopBack 4](https://loopback.io/doc/en/lb4/Fields-filter.html), [filtres de requêtes](https://loopback.io/doc/en/lb4/Querying-data.html) et [filtre d'inclusion](https://loopback.io/doc/en/lb4/Include-filter.html).
-[^3]: [DataLoader](https://github.com/graphql/dataloader).
-[^4]: [Assemblage et délégation de schémas avec GraphQL Tools](https://the-guild.dev/graphql/stitching/docs).
-[^5]: [Spécification GraphQL over HTTP](https://http-spec.graphql.org/draft/).
-[^6]: [Hasura](https://hasura.io/).
-[^7]: [Relations dans Hasura](https://hasura.io/learn/graphql/hasura/relationships/).
+Maintenant, je ne sais pas si c'est à cause de mon amour pour les filtres LoopBack ou simplement de la simplicité de ce que j'ai vu. Je ne sais pas encore pourquoi j'aime Hasura.

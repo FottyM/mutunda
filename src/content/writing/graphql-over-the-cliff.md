@@ -1,6 +1,6 @@
 ---
-title: I loved GraphQL until I had to debug it
-description: A note on GraphQL's pleasant surface, LoopBack filters, and the cost of following a request through a composed system.
+title: How my love for GraphQL fell off a cliff
+description: From a Net Ninja tutorial to LoopBack filters, debugging GraphQL at work, and a brief look at Hasura.
 date: 2026-10-04
 tags:
   - graphql
@@ -15,88 +15,30 @@ locale: en
 
 ![An abstract query sheet tipping over a cliff into a network of pipes and service nodes.](/images/writing/graphql-over-the-cliff-cover.png)
 
-Around 2018, I took one of The Net Ninja's GraphQL tutorials and loved it straight away. I could ask for the fields I wanted, follow relationships, and receive a neat, nested answer in one request. It felt precise. It felt modern. It felt like the API had finally stopped arguing with the client.
+Let's see how my love for GraphQL fell off a cliff.
 
-At the time, I was taken with the query itself. A small shape on the screen seemed to promise a small amount of work behind it.
+Around 2018, when GraphQL was becoming a thing—I don't actually know when it became a thing—I took a tutorial from The Net Ninja and loved it. It was cool. Being able to query fields and nested data was really nice.
 
-That was a mistake, although a very understandable one.
+Then I got a job in 2018 where we were using LoopBack, the web framework from IBM/StrongLoop. I'm talking about LoopBack 3 and 4.
 
-## The less fashionable thing that worked
+It had what you could call a query builder. You defined a model, a record, an entity attached to a database. From a request, you could pass a filter in the query string and get back the specific fields you wanted.
 
-My first job put me in front of LoopBack 3, then later LoopBack 4.[^1] It came from StrongLoop and IBM rather than the exciting new corner of the JavaScript world, but it gave us useful things: models, relations, and filters.
+In my opinion, that already solved some of the problems GraphQL was trying to solve.
 
-An endpoint could expose a model and accept a filter. I could choose fields, constrain a result, and include a related model. It was not as elegant as a GraphQL query, but much of the useful part was already there.
+You could include relationships too. In the setup I worked with, we could even query and filter different models from different services. I remember strong-remoting being involved, although I'm not sure that's the right name for the part that made this work.
 
-```text
-GET /customers?filter={
-  "fields": ["id", "name"],
-  "where": {"active": true},
-  "include": ["orders"]
-}
-```
+Recently, I moved back to GraphQL because of a new job where they use it fully.
 
-LoopBack documents field selection, filters, and related-model inclusion plainly.[^2] The syntax can become clumsy, especially once a query string must carry encoded JSON, but the work remains visible. I can see the resource, the condition, and the relation I asked for.
+The first thing I noticed in our setup was that the requests were POST requests. Errors weren't apparent from the HTTP status: you'd get a 200, then error objects in the response. Sometimes you'd get a partial success.
 
-That changed my first impression of GraphQL. I no longer thought, “GraphQL is the only way to avoid wasteful APIs.” A thoughtful REST API with filtering and relationships can answer a surprisingly large share of the same needs.
+Then you have schema delegation, schema stitching, and DataLoader. To me, that's a lot.
 
-## The simple request that was not simple
+The requests generally look harmless. You see a small request, but internally there can be more filtering, more fields, schema stitching, and schema delegation. It becomes a mess when you need to troubleshoot and figure out what is going where.
 
-Years later, I joined a team that used GraphQL throughout. I was pleased at first. Here was the thing I had admired, now in serious use.
+Sometimes that takes a long time compared with a proper REST API request that gives you a useful status. And if the filtering system is good enough, I don't feel I need all that magical delegation.
 
-Then I had to find out why a request was slow, incomplete, or wrong.
+I feel like a lot of the problems GraphQL was trying to solve have already been addressed by better services, caching, and networking. Working with it has become a nightmare for me. I really don't love it anymore. I hate it.
 
-From the outside, a query can be wonderfully small:
+But then I looked at Hasura for just a second, and I loved it.
 
-```graphql
-query CustomerOrder {
-  customer(id: "42") {
-    name
-    orders { id total }
-  }
-}
-```
-
-But that shape tells me very little about the path beneath it. `customer` may be a resolver. `orders` may call another service. A gateway may delegate part of the selection to a second schema. A DataLoader may batch one set of lookups, while another resolver still makes a separate call for every record. The request looks calmer than the machinery carrying it.
-
-None of these ideas is foolish. DataLoader exists to batch and cache request-scoped loads.[^3] Schema stitching can present several services through one schema, and schema delegation is the mechanism that forwards part of a query to the service that can answer it.[^4] Those are real answers to real problems.
-
-They are also more places to look when the answer is late.
-
-The difficulty for me was not that GraphQL made the system complicated. The system already was complicated. GraphQL made it easier for that complexity to hide behind a request that looked harmless.
-
-## A green status code can still be a long afternoon
-
-The other surprise was failure. In the system I worked with, many operations arrived over POST and returned HTTP 200 even when part of the requested work had failed. The useful answer could sit beside an `errors` array, or disappear behind a partial result.
-
-```json
-{
-  "data": { "customer": { "name": "Ada", "orders": null } },
-  "errors": [{ "message": "Orders service timed out" }]
-}
-```
-
-That response is valid GraphQL behaviour, not a flaw in itself. The GraphQL-over-HTTP specification distinguishes a well-formed GraphQL response from the success of every field within it.[^5] But it changed my first move while troubleshooting. A 200 was no longer enough to tell me that the operation had gone well. I had to inspect the response, then trace the fields, then learn which service had actually done the failing work.
-
-REST can hide a mess behind an endpoint too. It is perfectly possible to build a REST service with vague routes, poor status codes and a trail of internal calls nobody can follow. The protocol does not save anyone from bad boundaries.
-
-Still, I find a well-designed REST request easier to hold in my head. I know the operation I am investigating. I have a resource, a method, a status, and usually a shorter list of places to begin. Filtering does not make the endpoint magical. It merely makes it more useful.
-
-For my work, that kind of boredom has become a virtue.
-
-## The exception that made me pause
-
-Then I looked briefly at Hasura.[^6] I liked it almost immediately, which was awkward after all this complaining.
-
-I have not used it deeply enough to claim it solves the problems above. What caught my attention was familiar: a direct relationship between the data model and the API, with filtering and relationships already available. Its relationship model reminded me of the practical part I had liked in LoopBack.[^7]
-
-Perhaps I do not dislike GraphQL as much as I dislike excavating an execution path to understand one innocent-looking request. Hasura has not earned a verdict from me. It has earned a second look.
-
-## Notes
-
-[^1]: [LoopBack 3 documentation](https://loopback.io/doc/en/lb3/) and [LoopBack 4 documentation](https://loopback.io/doc/en/lb4/).
-[^2]: [LoopBack 4 fields filter](https://loopback.io/doc/en/lb4/Fields-filter.html), [query filters](https://loopback.io/doc/en/lb4/Querying-data.html), and [include filter](https://loopback.io/doc/en/lb4/Include-filter.html).
-[^3]: [DataLoader](https://github.com/graphql/dataloader).
-[^4]: [GraphQL Tools schema stitching and delegation](https://the-guild.dev/graphql/stitching/docs).
-[^5]: [GraphQL over HTTP specification](https://http-spec.graphql.org/draft/).
-[^6]: [Hasura](https://hasura.io/).
-[^7]: [Hasura relationships](https://hasura.io/learn/graphql/hasura/relationships/).
+Now I'm not sure whether that's because of my love for LoopBack filters or just the simplicity of what I saw. I don't know yet why I like Hasura.
