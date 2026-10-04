@@ -15,6 +15,12 @@ const writing = defineCollection({
     tags: z.array(z.string().min(1)).min(1),
     draft: z.boolean().default(false),
     canonicalUrl: z.url().optional(),
+    cover: z
+      .object({
+        src: z.string().min(1),
+        alt: z.string().min(1),
+      })
+      .optional(),
     locale: z.enum(["en", "fr", "et"]).default("en"),
     slug: z.string().optional(),
     translationKey: z.string().optional(),
@@ -37,6 +43,12 @@ const projects = defineCollection({
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
     technologies: z.array(z.string().min(1)).min(1),
+    cover: z
+      .object({
+        src: z.string().min(1),
+        alt: z.string().min(1),
+      })
+      .optional(),
     links: z.object({
       live: z.url().optional(),
       repository: z.url().optional(),

@@ -7,6 +7,9 @@ tags:
   - delivery
   - architecture
 draft: false
+cover:
+  src: /images/writing/mutunda-vercel-to-cloudflare-cover.png
+  alt: Staatilised lehed ületavad tõkke teel pilveväravani.
 locale: et
 slug: moving-mutunda-me-from-vercel-to-cloudflare-workers
 ---

@@ -7,6 +7,9 @@ tags:
   - delivery
   - architecture
 draft: false
+cover:
+  src: /images/writing/mutunda-vercel-to-cloudflare-cover.png
+  alt: Static pages clear a hurdle into a cloud gateway.
 locale: en
 ---
 

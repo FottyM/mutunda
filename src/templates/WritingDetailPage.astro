@@ -23,6 +23,7 @@ const t = useTranslations(locale);
 const localizedArticlePath = getLocalizedPath(`/writing/${slug}/`, locale);
 const canonical = entry.data.canonicalUrl ?? new URL(localizedArticlePath, Astro.site);
 const canonicalUrl = typeof canonical === "string" ? canonical : canonical.href;
+const coverUrl = entry.data.cover && new URL(entry.data.cover.src, Astro.site ?? Astro.url).href;
 
 const articleStructuredData = {
   "@context": "https://schema.org",
@@ -33,6 +34,7 @@ const articleStructuredData = {
   mainEntityOfPage: canonicalUrl,
   url: canonicalUrl,
   keywords: entry.data.tags,
+  ...(coverUrl && { image: coverUrl }),
   inLanguage: locale,
   author: {
     "@type": "Person",
@@ -51,11 +53,18 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
   structuredData={articleStructuredData}
   openGraphType="article"
   publishedTime={entry.data.date.toISOString()}
+  image={entry.data.cover?.src}
+  imageAlt={entry.data.cover?.alt}
   locale={locale}
   translations={translations}
 >
   <main id="main-content" class="article-page">
     <header class="article-header">
+      <nav aria-label="Breadcrumb" class="article-breadcrumb">
+        <a href={getLocalizedPath("/writing", locale)} class="back-link">
+          ← {t("writing.back_to_index")}
+        </a>
+      </nav>
       <p class="eyebrow">{t("writing.meta_field_note")}</p>
       <h1>{entry.data.title}</h1>
       <p class="lede">{entry.data.description}</p>
@@ -83,7 +92,7 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
 
     <footer class="article-footer">
       <ButtonLink href={getLocalizedPath("/writing", locale)} variant="secondary">
-        {t("writing.back_to_index")}
+        ← {t("writing.back_to_index")}
       </ButtonLink>
     </footer>
   </main>

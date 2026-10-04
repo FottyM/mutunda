@@ -7,6 +7,9 @@ tags:
   - architecture
   - blogging
 draft: false
+cover:
+  src: /images/writing/mutunda-nextjs-to-astro-cover.png
+  alt: Brauseriaken ületab esimese tõkke teel rahulikuma avaldamissüsteemi poole.
 locale: et
 slug: moving-mutunda-me-from-nextjs-to-astro
 ---

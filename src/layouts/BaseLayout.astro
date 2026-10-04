@@ -16,6 +16,8 @@ interface Props {
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
   openGraphType?: "website" | "article";
   publishedTime?: string;
+  image?: string;
+  imageAlt?: string;
   locale?: Locale;
   translations?: Partial<Record<Locale, string>>;
 }
@@ -27,6 +29,8 @@ const {
   structuredData,
   openGraphType = "website",
   publishedTime,
+  image,
+  imageAlt,
   locale = (Astro.currentLocale as Locale) ?? DEFAULT_LOCALE,
   translations,
 } = Astro.props;
@@ -34,6 +38,7 @@ const {
 const t = useTranslations(locale);
 const { canonicalUrl, alternates } = getLocaleMetadata(Astro.site, Astro.url.pathname, translations);
 const finalCanonical = canonical ? (typeof canonical === "string" ? canonical : canonical.href) : canonicalUrl;
+const imageUrl = image && new URL(image, Astro.site ?? Astro.url).href;
 const structuredDataJson = structuredData && JSON.stringify(structuredData).replace(/</g, "\\u003c");
 
 const navItems = [
@@ -73,10 +78,14 @@ const isCurrent = (href: string) =>
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={finalCanonical} />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    {imageUrl && imageAlt && <meta property="og:image:alt" content={imageAlt} />}
     {publishedTime && <meta property="article:published_time" content={publishedTime} />}
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
+    {imageUrl && imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <ClientRouter />

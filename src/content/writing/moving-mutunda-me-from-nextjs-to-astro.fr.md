@@ -7,6 +7,9 @@ tags:
   - architecture
   - blogging
 draft: false
+cover:
+  src: /images/writing/mutunda-nextjs-to-astro-cover.png
+  alt: Une fenêtre de navigateur franchit le premier obstacle vers un système de publication plus calme.
 locale: fr
 slug: moving-mutunda-me-from-nextjs-to-astro
 ---
