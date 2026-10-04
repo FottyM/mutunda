@@ -14,6 +14,7 @@ body {
   min-height: 100vh;
   margin: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: auto 1fr auto;
   font-size: 1rem;
   line-height: 1.65;
@@ -89,6 +90,7 @@ a:hover {
 .site-footer__inner,
 main {
   width: min(100% - var(--space-8), var(--content-width));
+  min-width: 0;
   margin-inline: auto;
 }
 
@@ -1707,6 +1709,7 @@ h3 {
 
 .prose {
   max-width: var(--reading-width);
+  min-width: 0;
   font-size: 1.0625rem;
 }
 
@@ -1898,6 +1901,7 @@ h3 {
 }
 
 .prose pre {
+  min-width: 0;
   max-width: 100%;
   padding: var(--space-6);
   overflow-x: auto;
