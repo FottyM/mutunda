@@ -14,11 +14,11 @@ locale: et
 slug: moving-mutunda-me-from-vercel-to-cloudflare-workers
 ---
 
-Tee Vercelist Cloudflare Workersisse algas märgiga, mida ma ei usaldanud. Vercel ehitas saidi edukalt, kuid GitHub märkis väljalaske ebaõnnestunuks. Probleem ei olnud Astro koostes. Kaks välist väljalaskekontrolli olid jõudnud Verceli Hobby paketi piirini.
+Tee Vercelist Cloudflare Workersisse algas märgiga, mida ma ei usaldanud. Vercel ehitas saidi edukalt, kuid GitHub märkis väljalaske ebaõnnestunuks. Probleem ei olnud Astro koostes. Kaks välist väljalaskekontrolli olid jõudnud Verceli Hobby paketi piirini.[^1]
 
 Roheline kooste ja punane väljalaske olek on halb mõistatus. Kas uus sait jõudis avalikku domeeni? Kas oli eelvaade, mida kontrollida? Kas tõrge tuli minu koodist või ainult konto piirangust? Ma ei tahtnud, et iga avaldamine algaks sellise arvamisega.
 
-Cloudflare oli juba tuttav maa. Kasutan seda teiste projektide jaoks, seega ei tundunud tööriistad ja haldusvaated nagu järjekordne kuningriik oma kummaliste tavadega. Arendajakogemus oli töö jaoks, mida tahtsin teha, selgem ja meeldivam. Tasuta pakett andis sellele väikesele saidile kolimise ajal ka rohkem ruumi. See võib muutuda, kuid sel hetkel oli see oluline.
+Cloudflare oli juba tuttav maa.[^2] Kasutan seda teiste projektide jaoks, seega ei tundunud tööriistad ja haldusvaated nagu järjekordne kuningriik oma kummaliste tavadega. Arendajakogemus oli töö jaoks, mida tahtsin teha, selgem ja meeldivam. Tasuta pakett andis sellele väikesele saidile kolimise ajal ka rohkem ruumi. See võib muutuda, kuid sel hetkel oli see oluline.
 
 Cloudflare toob samasse kohta ka DNS-i, teenusetõkestusrünnete kaitse ja muud äärevõrgu turvavõimalused. Isiklik sait ei vaja kindlust, kuid hea on teada, et müürid on olemas. Kõige rohkem tahtsin platvormi, mis sobib minu tööga ja teeb tee Git commitist avaliku leheni selgelt nähtavaks.
 
@@ -30,7 +30,7 @@ Süsteem on piisavalt lihtne, et seda peas hoida. GitHubis on lähtekood. `npm r
 
 ## Workeri nimi ei ole domeeninimi
 
-Esimene takistus oli nimeviga. Panin Workeri nimeks `mutunda.me` ja Wrangler keeldus sellest. Workeri nimes kasutatakse väiketähti, numbreid ja kriipse. Punkt kuulub domeeni, mitte Workeri nimesse.
+Esimene takistus oli nimeviga. Panin Workeri nimeks `mutunda.me` ja Wrangler keeldus sellest.[^3] Workeri nimes kasutatakse väiketähti, numbreid ja kriipse. Punkt kuulub domeeni, mitte Workeri nimesse.
 
 Worker sai nimeks `mutunda`, kuid `mutunda.me` jäi külastajate kasutatavaks aadressiks. Need nimed näivad piisavalt sarnased, et neid segi ajada, kuid nad kuuluvad süsteemi eri osadesse. Worker käitab saiti. DNS juhib domeeni sinna. Selle üleskirjutamine muutis ülejäänud kolimise vähem libedaks.
 
@@ -38,21 +38,21 @@ Cloudflare'i seadistuskäsk suutis Astro ära tunda ja pakkuda vaikimisi väärt
 
 ## Kooste ja artefakt
 
-Cloudflare Workers Builds käivitab tuttava käsu `npm run build`, seejärel avaldab Wrangler tulemuse. Hoidsin koostamise ühes kohas. Uus kooste avaldamise ajal oleks muutnud jälje raskemini järgitavaks ja oleks võinud luua teistsuguse artefakti kui juba üle vaadatud versioon.
+Cloudflare Workers Builds käivitab tuttava käsu `npm run build`, seejärel avaldab Wrangler tulemuse.[^4] Hoidsin koostamise ühes kohas. Uus kooste avaldamise ajal oleks muutnud jälje raskemini järgitavaks ja oleks võinud luua teistsuguse artefakti kui juba üle vaadatud versioon.
 
-Hoidla kirjeldab toetatud Node'i versioone ning Cloudflare salvestab valitud versiooni koostelogisse. Lukufail, paketihaldur ja Node'i versioon on ennustatava koostamise osa sama palju kui raamistik. Logi märkis ka `esbuild`i paigaldusjärgset skripti. See oli oodatud, kuid eelistan teada, et see käivitus, mitte lasta sellel muusse logimürasse kaduda.
+Hoidla kirjeldab toetatud Node'i versioone ning Cloudflare salvestab valitud versiooni koostelogisse. Lukufail, paketihaldur ja Node'i versioon on ennustatava koostamise osa sama palju kui raamistik. Logi märkis ka `esbuild`i paigaldusjärgset skripti.[^5] See oli oodatud, kuid eelistan teada, et see käivitus, mitte lasta sellel muusse logimürasse kaduda.
 
 ## Puuduv eelvaate URL
 
 Eelvaated olid tähtsad, sest suur osa saidist on visuaalne. Artikli illustratsioon, väikese ekraani paigutus, keelevalik ja lehe üleminek vajavad brauserit, mitte ainult failide võrdlust.
 
-Esimene eelvaade ehitati edukalt, kuid commitil puudus kasutatav URL. Sait oli olemas, kuid seda ei olnud kusagil külastada. Seadistuses oli vaja plokki `previews` ja väärtust `preview_urls: true`. Ka Workeri vastav versiooni-URL-ide säte tuli sisse lülitada. Kui need osad kokku said, oli järgmisel commitil päris eelvaade.
+Esimene eelvaade ehitati edukalt, kuid commitil puudus kasutatav URL. Sait oli olemas, kuid seda ei olnud kusagil külastada. Seadistuses oli vaja plokki `previews` ja väärtust `preview_urls: true`. Ka Workeri vastav versiooni-URL-ide säte tuli sisse lülitada.[^6] Kui need osad kokku said, oli järgmisel commitil päris eelvaade.
 
-Piirasin Cloudflare Accessi ainult eelvaadetega. Harutöö jääb privaatseks, kuid avalik sait jääb avalikuks. See väike piir oli mulle oluline.
+Piirasin Cloudflare Accessi ainult eelvaadetega.[^7] Harutöö jääb privaatseks, kuid avalik sait jääb avalikuks. See väike piir oli mulle oluline.
 
 ## DNS on osa avaldamisest
 
-DNS vajas rohkem hoolt kui kooste. Tsoonis olid kirjed teenuste jaoks, mis portfoolioga ei seotud, sealhulgas e-post. Need jäid paika. Eemaldasin ainult vanad saidi marsruutimise kirjed ning ühendasin avaliku domeeninime uue Workeriga.
+DNS vajas rohkem hoolt kui kooste. Tsoonis olid kirjed teenuste jaoks, mis portfoolioga ei seotud, sealhulgas e-post. Need jäid paika. Eemaldasin ainult vanad saidi marsruutimise kirjed ning ühendasin avaliku domeeninime uue Workeriga.[^8]
 
 DNS-tsoon on väike kaart, mille eri kirjed teenivad eri eesmärke. Kontrollisin, et vana marsruut oli kadunud ja uus olemas, enne kui ootasin, et avalik tulemus sellele järele jõuaks. Kolimine ei nõudnud kogu kaardi kustutamist ja uuesti joonistamist.
 
@@ -64,4 +64,16 @@ See vaoshoitus oli oluline, sest haldusvaade on alati valmis seadistama rohkem, 
 
 Tulemuseks on rahulikum avaldamistee. GitHubis on lähtekood, Astro loob artefakti, Worker `mutunda` avaldab selle ja DNS juhib avaliku domeeni sinna. Tõmbetaotlused võivad saada kaitstud eelvaate URL-id. Cloudflare'il on oma teravad nurgad, kuid igal osal on nüüd eraldi roll. Seda ma tahtsingi: vähem mõistatusi valmis artikli ja selle loetavaks saamise vahel.
 
-See märkus on kolimise teine osa. Esimene räägib, miks kolisin saidi Next.js-ist Astrosse: [Next.js-ist Astrosse](/et/writing/moving-mutunda-me-from-nextjs-to-astro/).
+See märkus on kolimise teine osa. Esimene räägib, miks kolisin saidi Next.js-ist Astrosse.[^9]
+
+## Notes
+
+[^1]: [Verceli limiidid](https://vercel.com/docs/limits).
+[^2]: [Cloudflare Workersi dokumentatsioon](https://developers.cloudflare.com/workers/).
+[^3]: [Wrangleri konfiguratsioon](https://developers.cloudflare.com/workers/wrangler/configuration/).
+[^4]: [Cloudflare Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/).
+[^5]: [esbuildi dokumentatsioon](https://esbuild.github.io/).
+[^6]: [Cloudflare Workersi eelvaated ja versiooni-URL-id](https://developers.cloudflare.com/workers/configuration/previews/).
+[^7]: [Cloudflare Accessi dokumentatsioon](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/self-hosted-apps/).
+[^8]: [Cloudflare Workersi kohandatud domeenid](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/).
+[^9]: [mutunda.me kolimine Next.js-ist Astrosse](/et/writing/moving-mutunda-me-from-nextjs-to-astro).

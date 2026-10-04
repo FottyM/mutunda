@@ -16,13 +16,13 @@ slug: moving-mutunda-me-from-nextjs-to-astro
 
 Kõik algas väikese ja veidi ebamugava küsimusega: kuhu ma oma kirjutised panen?
 
-dev.to tundus ilmne vastus. Arendajad käivad seal juba lugemas ja mul ei ole veel oma publikut. Kuid mul oli ka domeen ning vana portfoolio, mis oli hakanud meenutama lukustatud tuba. See oli üks leht, mis oli ehitatud Next.js 12, React 18 ja Emotioniga. Seal olid kogemus ja tehnoloogiad, aga ka ajutine tekst ning puudus päris koht, kus artikkel saaks elada.
+dev.to tundus ilmne vastus.[^1] Arendajad käivad seal juba lugemas ja mul ei ole veel oma publikut. Kuid mul oli ka domeen ning vana portfoolio, mis oli hakanud meenutama lukustatud tuba. See oli üks leht, mis oli ehitatud Next.js 12,[^2] React 18[^3] ja Emotioniga.[^4] Seal olid kogemus ja tehnoloogiad, aga ka ajutine tekst ning puudus päris koht, kus artikkel saaks elada.
 
 Enne kui sain kedagi oma kirjutiste juurde saata, oli mul vaja kohta, kuhu neid tasuks saata.
 
 ## Miks Astro
 
-Miski selle saidi juures ei vajanud täismahus Reacti rakendust. Tahtsin avaldada artikleid, lühikest tutvustust ja projektimärkmeid. Astro sobis selleks, sest see ei jää ette. Saan kirjutada lehe MDX-is, saidi kokku ehitada ja selle avaldada. Isikliku portfoolio ümber ei ole vaja lisasüsteeme.
+Miski selle saidi juures ei vajanud täismahus Reacti rakendust. Tahtsin avaldada artikleid, lühikest tutvustust ja projektimärkmeid. Astro sobis selleks, sest see ei jää ette.[^5] Saan kirjutada lehe MDX-is,[^6] saidi kokku ehitada ja selle avaldada. Isikliku portfoolio ümber ei ole vaja lisasüsteeme.
 
 Next.js saab selle tööga väga hästi hakkama. See ei olnud põgenemine halva tööriista eest. Tahtsin, et artikli lisamine oleks lihtsalt artikli lisamine, mitte rakenduse muutmine. Astro teeb staatilisi lehti, mida otsingumootorid saavad lugeda. Kui saidil on kunagi vaja serveris loodud lehti, saab Astro ka seda teha. Praegu ei ole seda vaja.
 
@@ -38,7 +38,7 @@ Staatiline väljund ja Markdown vastasid suuremale osale sellest vajadusest. Jav
 
 Uuel saidil on eraldi kohad kirjutistele, projektidele ja lehele „Minust“. Nii saab iga osa ruumi. Projekt ei ole enam nimi tehnoloogialogo kõrval. Seal saab kirja panna probleemi, otsused ja õpitu. Artiklil on püsiv aadress ning koht arhiivis.
 
-Sisu elab Markdowni failides. Astro sisukogud kontrollivad metaandmeid saidi koostamisel. Git sobib minu tööviisiga. Saan muudatuse üle vaadata, vana versiooni leida ja kirjutised vajaduse korral mujale kaasa võtta. Markdowni fail ei luba, et kolimine on alati kerge, kuid see tähendab, et sõnad ei jää ühe liidese sisse lukku.
+Sisu elab Markdowni failides. Astro sisukogud kontrollivad metaandmeid saidi koostamisel.[^7] Git sobib minu tööviisiga. Saan muudatuse üle vaadata, vana versiooni leida ja kirjutised vajaduse korral mujale kaasa võtta. Markdowni fail ei luba, et kolimine on alati kerge, kuid see tähendab, et sõnad ei jää ühe liidese sisse lukku.
 
 See väike kontroll on juba kasulik olnud. Puuduv pealkiri või vale kuupäev peatab koostamise muudatuse lähedal. Eelistan selle probleemiga kohtuda enne avaldamist.
 
@@ -50,7 +50,7 @@ Jagatud muutujad ja stiilijuhend hoiavad lehti saidi kasvades ühtsena. Jätsin 
 
 ## Kontrollida tuleb enamat kui koostamist
 
-Ka staatiline sait võib katki minna. Leht võib valmida katkise lingiga, mustand võib sattuda arhiivi ja tõlgitud marsruut võib vaikselt valesse kohta viia. Projekt kontrollib Astrot ja TypeScripti, ehitab saidi, kontrollib linke ning katab brauseris peamised teed: liikumise saidil, keele vahetamise, teema säilimise ja puuduvalt lehelt tagasitee leidmise. RSS-voog ja saidikaart sünnivad koostamise ajal, mitte hiljem lisatava ülesandena.
+Ka staatiline sait võib katki minna. Leht võib valmida katkise lingiga, mustand võib sattuda arhiivi ja tõlgitud marsruut võib vaikselt valesse kohta viia. Projekt kontrollib Astrot ja TypeScripti, ehitab saidi, kontrollib linke ning katab brauseris peamised teed: liikumise saidil, keele vahetamise, teema säilimise ja puuduvalt lehelt tagasitee leidmise.[^8] RSS-voog[^9] ja saidikaart[^10] sünnivad koostamise ajal, mitte hiljem lisatava ülesandena.
 
 Mul ei ole siin müüa jõudlusvõitu. Ma ei mõõtnud vana saiti uue vastu. Raamistiku nimi ei ole tõend. Mul on lihtsalt sait, mida on lihtsam avaldada, lihtsam hiljem uuesti kätte võtta ja mis on valmis vastu võtma töö, mida tahan jagada.
 
@@ -62,6 +62,21 @@ Jätsin kõrvale asjad, mis ei lahendanud päris probleemi, sealhulgas andmebaas
 
 ## dev.to koht selles loos
 
-Soovin dev.to-d endiselt kasutada leitavuse jaoks. Avaldan esmalt mutunda.me-s ning avaldan valitud tekste mujal koos kanoonilise lingiga algse teksti juurde. Oma domeeni omamine ei tekita publikut. See annab mulle vähemalt ühtse koha, kus tööd hoida, kuni publikut ehitan.
+Soovin dev.to-d endiselt kasutada leitavuse jaoks. Avaldan esmalt mutunda.me-s ning avaldan valitud tekste mujal koos kanoonilise lingiga algse teksti juurde.[^11] Oma domeeni omamine ei tekita publikut. See annab mulle vähemalt ühtse koha, kus tööd hoida, kuni publikut ehitan.
 
-Järgmine osa räägib valmis saidi kolimisest Vercelist Cloudflare Workersi: [Vercelist Cloudflare Workersisse](/et/writing/moving-mutunda-me-from-vercel-to-cloudflare-workers/).
+Järgmine osa räägib valmis saidi kolimisest Vercelist Cloudflare Workersi.[^12]
+
+## Notes
+
+[^1]: [dev.to](https://dev.to).
+[^2]: [Next.js dokumentatsioon](https://nextjs.org/docs).
+[^3]: [React 18 väljalaskemärkmed](https://react.dev/blog/2022/03/29/react-v18).
+[^4]: [Emotioni dokumentatsioon](https://emotion.sh/docs/introduction).
+[^5]: [Astro dokumentatsioon](https://docs.astro.build).
+[^6]: [Astro MDX integratsioon](https://docs.astro.build/en/guides/integrations-guide/mdx/).
+[^7]: [Astro sisukogud](https://docs.astro.build/en/guides/content-collections/).
+[^8]: [Playwrighti dokumentatsioon](https://playwright.dev/docs/intro).
+[^9]: [Astro RSS-voo loomine](https://docs.astro.build/en/guides/rss/).
+[^10]: [Astro sitemapi integratsioon](https://docs.astro.build/en/guides/integrations-guide/sitemap/).
+[^11]: [Kanooniliste linkidega duplikaat-URL-ide koondamine](https://developers.google.com/search/docs/crawling-indexing/canonicalization).
+[^12]: [mutunda.me kolimine Vercelist Cloudflare Workersisse](/et/writing/moving-mutunda-me-from-vercel-to-cloudflare-workers).
