@@ -10,6 +10,7 @@ interface Props {
 
 const { name, size = 16, class: className, strokeWidth = 2 } = Astro.props;
 const iconNodes = icons[name];
+const kebabName = name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 ---
 
 {iconNodes && (
@@ -23,7 +24,7 @@ const iconNodes = icons[name];
     stroke-width={strokeWidth}
     stroke-linecap="round"
     stroke-linejoin="round"
-    class={className}
+    class:list={["lucide", `lucide-${kebabName}`, className]}
     aria-hidden="true"
     focusable="false"
   >
