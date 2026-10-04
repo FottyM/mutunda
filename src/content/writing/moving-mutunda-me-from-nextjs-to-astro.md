@@ -64,7 +64,7 @@ I left out the parts that did not solve a real problem, including a database-bac
 I still plan to use dev.to for discovery, publishing on mutunda.me first and cross-posting selected pieces with a canonical link back home.[^11] Owning a domain does not create an audience. It does give me a consistent place to keep the work while I earn one.
 
 The next part of this story is about moving the finished site from Vercel to Cloudflare Workers.[^12]
----
+
 ## Notes
 
 [^1]: [dev.to](https://dev.to).
