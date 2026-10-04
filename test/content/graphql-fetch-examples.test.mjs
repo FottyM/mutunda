@@ -8,8 +8,8 @@ const contentRoot = new URL("../../src/content/writing/", import.meta.url);
 async function snippets(locale = "") {
   const file = process.env.ARTICLE_EXAMPLE_FILE || new URL(`graphql-over-the-cliff${locale}.md`, contentRoot);
   const text = await readFile(file, "utf8");
-  return [...text.matchAll(/    ```js\n([\s\S]*?)    ```/g)]
-    .map(match => match[1].replace(/^    /gm, ""));
+  return [...text.matchAll(/^```js\n([\s\S]*?)^```/gm)]
+    .map(match => match[1]);
 }
 
 // Local HTTP fixtures exercise the published snippets, not a real LoopBack or GraphQL deployment.
