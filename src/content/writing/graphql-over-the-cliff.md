@@ -138,7 +138,7 @@ These are the experiences behind my opinion. I find a REST API with useful statu
 
 I feel that better services, caching, and networking have addressed a lot of the problems GraphQL was meant to solve. Meanwhile, working with this setup became a nightmare for me. I really don't love it anymore. I hate it.
 
-I was not alone in falling out of love with it either. Seeing Harry Wolff talk on YouTube about why he stopped using GraphQL captured so much of my own exhaustion with the ecosystem. Even Theo (t3.gg), a creator I really cannot stand, made points about GraphQL's sheer overhead and overengineering that I could not honestly dispute.
+I was not alone in falling out of love with it either. Seeing Harry Wolff talk on YouTube about getting off the GraphQL hype train captured so much of my own exhaustion.[^9] He talked about how that apparent frontend simplicity hides a deep well of backend complexity, moves everything to POSTs while giving up standard HTTP caching, and solves problems for Facebook's scale rather than normal teams. Even Theo (t3.gg), a creator I really cannot stand, made arguments about GraphQL's sheer overhead and overengineering that I could not honestly dispute.[^10]
 
 There is another part of this: our in-house Hasura-like tool. I hate that too, and it contributes to how I feel about GraphQL. But that is a story for another day.
 
@@ -156,3 +156,5 @@ I still do not know whether that was my fondness for LoopBack filters or the sim
 [^6]: GraphQL Tools: [remote subschemas](https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas) and [schema extensions](https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions).
 [^7]: [`p-limit` documentation](https://github.com/sindresorhus/p-limit).
 [^8]: [DataLoader: batching and per-request caching](https://github.com/graphql/dataloader).
+[^9]: Harry Wolff: [Why I'm Off The GraphQL Hype Train](https://www.youtube.com/watch?v=S1wQ0WvJK64).
+[^10]: Theo - t3.gg: [Six Years Later, I'm Over GraphQL](https://www.youtube.com/watch?v=kS540w6R588).

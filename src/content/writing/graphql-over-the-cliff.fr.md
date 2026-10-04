@@ -136,7 +136,7 @@ Voilà les expériences qui nourrissent mon avis. Je trouve qu'une API REST avec
 
 J'ai le sentiment que de meilleurs services, la mise en cache et les réseaux modernes ont répondu à bon nombre des problèmes que GraphQL était censé résoudre. Pendant ce temps, travailler avec cette configuration est devenu un cauchemar pour moi. Je ne l'aime vraiment plus du tout. Je le déteste.
 
-Je n'étais d'ailleurs pas le seul à perdre mes illusions. Voir Harry Wolff expliquer sur YouTube pourquoi il a arrêté d'utiliser GraphQL a fait écho à ma propre lassitude face à cet écosystème. Même Theo (t3.gg), un créateur que je ne supporte vraiment pas, soulevait des arguments contre la surcharge inutile et l'ingénierie excessive de GraphQL auxquels je ne pouvais honnêtement pas donner tort.
+Je n'étais d'ailleurs pas le seul à perdre mes illusions. Voir Harry Wolff expliquer sur YouTube pourquoi il descendait du train de la hype GraphQL a fait écho à ma propre lassitude.[^9] Il décrivait comment l'apparente simplicité côté client dissimule un gouffre de complexité côté serveur, bascule tout en POST en abandonnant la mise en cache HTTP standard, et prétend résoudre des problèmes taillés pour l'échelle de Facebook plutôt que pour des équipes ordinaires. Même Theo (t3.gg), un créateur que je ne supporte vraiment pas, soulevait des arguments contre la surcharge inutile et l'ingénierie excessive de GraphQL auxquels je ne pouvais honnêtement pas donner tort.[^10]
 
 Il y a un autre aspect dans cette histoire : notre outil interne inspiré de Hasura. Je le déteste aussi, et il pèse lourd dans ce que je ressens envers GraphQL. Mais c'est une histoire pour un autre jour.
 
@@ -154,3 +154,5 @@ Je ne sais toujours pas si cela venait de mon attachement aux filtres LoopBack o
 [^6]: GraphQL Tools : [sous-schémas distants](https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas) et [extensions de schéma](https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions).
 [^7]: [Documentation de `p-limit`](https://github.com/sindresorhus/p-limit).
 [^8]: [DataLoader : regroupement par lots et cache par requête](https://github.com/graphql/dataloader).
+[^9]: Harry Wolff : [Why I'm Off The GraphQL Hype Train](https://www.youtube.com/watch?v=S1wQ0WvJK64).
+[^10]: Theo - t3.gg : [Six Years Later, I'm Over GraphQL](https://www.youtube.com/watch?v=kS540w6R588).
