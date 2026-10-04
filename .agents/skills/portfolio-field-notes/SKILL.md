@@ -36,6 +36,11 @@ This skill governs the editorial, technical, and architectural standards for wri
   3. Explain its immediate consequence.
   4. Continue the story.
   - Never exile explanations or code to an isolated technical appendix.
+- **Anti-Redundancy & Narrative Progression**:
+  - *Opening hook pacing*: Introduce the mystery and failure (such as an out-of-memory crash from a runaway fan-out) without spoiling the granular arithmetic upfront (e.g., 20 entities × 5 requests = 100 downstream calls, `p-limit`). Let the full arithmetic land with genuine impact when inspecting the resolver code.
+  - *No repeated concept catalogs*: Do not repeat laundry lists of architectural mechanisms (e.g., "stitching, delegation, extension points, fragments") across multiple sections.
+  - *Avoid sentiment loops*: Do not repeat the same sentiment and premise in consecutive sentences (e.g., "after a brief look, I loved it" followed immediately by "I had only taken a quick look, but I liked it").
+  - *Strip meta-narrative scaffolding*: Avoid conversational asides explaining how the story is told (e.g., "when telling this story, but they should not be mixed together here"). State technical boundaries directly.
 - **GraphQL-specific field note guidelines**:
   - Describe the query as *"seemingly harmless"*, not *"stupid"*.
   - Acknowledge that the author already found GraphQL odd in a complex setup before the incident.
@@ -46,7 +51,24 @@ This skill governs the editorial, technical, and architectural standards for wri
 
 ---
 
-## 3. Accuracy, Privacy & Primary Grounding
+## 3. Typography & Semantic Highlighting
+
+- **Italics (`*term*`)**: Use for personal emphasis, tone inflection, or coined terms (e.g., *loved*, *good enough*, *“retypecast”*).
+- **Bold (`**term**`)**: Use sparingly for technical milestones, architectural primitives, or critical failure states (e.g., **OOMKill**, **schema stitching**, **five other services**).
+- **Highlights (`<mark>text</mark>`)**: Use for core thematic realizations, epiphanies, or memorable punchlines (e.g., `<mark>the promise of frontend simplicity hides a deep well of backend complexity</mark>`).
+- **Styling contract**: `.prose mark` is styled via `src/styles/global.css` using `color-mix()` against `--color-accent` and `--color-surface` with rounded corners and subtle border definition.
+
+---
+
+## 4. Mobile Viewport & Code Block Resilience
+
+- **Viewport meta tag**: Every HTML layout must specify `initial-scale=1` (`<meta name="viewport" content="width=device-width, initial-scale=1" />`). Omission causes mobile browsers (iOS Safari, Android Chrome) to zoom out the entire page whenever wide code blocks exist, shrinking body fonts to unreadable sizes.
+- **CSS Grid overflow traps**: Inside `display: grid` containers (such as `body`), grid tracks default to `minmax(auto, max-content)` and items default to `min-width: auto`. This prevents `<pre>` blocks with `overflow-x: auto` from shrinking, expanding the document to the widest line of code and shrinking mobile typography.
+- **Enforce min-width: 0**: Grid columns must use `minmax(0, 1fr)` and containers (`main`, `.prose`, `.prose pre`) must enforce `min-width: 0` so code blocks scroll internally without expanding document width.
+
+---
+
+## 5. Accuracy, Privacy & Primary Grounding
 
 - **Privacy & safety**: Never expose real internal hostnames, private IPs, raw DNS records, secrets, tokens, customer data, or proprietary infrastructure.
 - **Time-bound claims**: Keep pricing, plan limits, and feature tiers explicitly time-bound (e.g., "at the time of the move").
@@ -56,7 +78,7 @@ This skill governs the editorial, technical, and architectural standards for wri
 
 ---
 
-## 4. Repository Structure & Front Matter
+## 6. Repository Structure & Front Matter
 
 Articles live in `src/content/writing/`:
 - English: `<slug>.md`
@@ -92,7 +114,7 @@ For French and Estonian editions, include `slug: <slug>` matching the English fi
 
 ---
 
-## 5. Footnotes & Documentation Citations
+## 7. Footnotes & Documentation Citations
 
 - **GFM Footnotes**: Use inline `[^N]` markers and numbered references at the end of the document.
 - **Section Heading**: End the article with `## Notes` (matching the archive's established standard).
@@ -107,7 +129,7 @@ For French and Estonian editions, include `slug: <slug>` matching the English fi
 
 ---
 
-## 6. Multilingual Parity (English, French, Estonian)
+## 8. Multilingual Parity (English, French, Estonian)
 
 When writing or revising articles:
 1. Maintain strict 1:1 structural and technical parity across all three locales.
@@ -117,7 +139,7 @@ When writing or revising articles:
 
 ---
 
-## 7. Mandatory Verification Checklist
+## 9. Mandatory Verification Checklist
 
 Before considering any field note ready:
 
@@ -125,7 +147,8 @@ Before considering any field note ready:
 2. **Em-Dash Scan**: Run `grep -n "—" <files>` and ensure zero occurrences.
 3. **Internal Link & Syntax Check**: Run `npm run check` (Astro type/content check, must pass with 0 errors).
 4. **End-to-End Suite**: Run `npm run test:e2e` (all Playwright browser tests must pass).
-5. **Git Discipline**:
+5. **Mobile Viewport Integrity**: Verify that document scroll width matches window inner width on mobile viewports (e.g. 390px on iPhone 13, 412px on Pixel 7) with zero horizontal page blowout.
+6. **Git Discipline**:
    - `git fetch` and check status.
    - Commit with a standard conventional commit message (e.g., `docs(writing): ...`).
    - Push to the designated topic branch.
