@@ -136,6 +136,10 @@ Voilà les expériences qui nourrissent mon avis. Je trouve qu'une API REST avec
 
 J'ai le sentiment que de meilleurs services, la mise en cache et les réseaux modernes ont répondu à bon nombre des problèmes que GraphQL était censé résoudre. Pendant ce temps, travailler avec cette configuration est devenu un cauchemar pour moi. Je ne l'aime vraiment plus du tout. Je le déteste.
 
+Il y a des années, j'avais regardé la vidéo de Harry Wolff expliquant pourquoi il descendait du train de la hype GraphQL.[^9] À l'époque, je ne la comprenais pas vraiment. GraphQL m'apparaissait encore comme une panacée élégante. Mais le fait d'avoir vécu cette configuration a éclairé chacun de ses arguments d'un jour nouveau.
+
+Assis dans son sous-sol au milieu de cartons de déménagement, Harry expliquait comment la promesse de simplicité côté client dissimule en réalité un gouffre de complexité côté serveur. Le client peut choisir sans peine les cartons qu'il souhaite, mais faire fonctionner tout cela de manière performante s'apparente à l'installation d'une climatisation : régler le thermostat à l'étage a l'air enfantin, mais poser les conduits, les tuyaux et la plomberie représente un travail colossal et invisible. Il détaillait les véritables compromis : la complexité reportée de manière disproportionnée sur le backend, les requêtes obligatoirement envoyées en POST qui renoncent à la mise en cache HTTP des navigateurs, les résolveurs naïfs qui provoquent des avalanches N+1 silencieuses sur les bases de données, et le fait que cette solution ait été conçue pour l'échelle organisationnelle de Facebook plutôt que pour les besoins d'équipes ordinaires. Il concluait en disant qu'il dormait bien plus tranquille avec REST. Je ne pourrais pas être plus d'accord.
+
 Il y a un autre aspect dans cette histoire : notre outil interne inspiré de Hasura. Je le déteste aussi, et il pèse lourd dans ce que je ressens envers GraphQL. Mais c'est une histoire pour un autre jour.
 
 C'est cet outil qui m'a poussé à aller voir Hasura lui-même. Et, après un bref coup d'œil, j'ai adoré.
@@ -152,3 +156,4 @@ Je ne sais toujours pas si cela venait de mon attachement aux filtres LoopBack o
 [^6]: GraphQL Tools : [sous-schémas distants](https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas) et [extensions de schéma](https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions).
 [^7]: [Documentation de `p-limit`](https://github.com/sindresorhus/p-limit).
 [^8]: [DataLoader : regroupement par lots et cache par requête](https://github.com/graphql/dataloader).
+[^9]: Harry Wolff : [Why I'm Off The GraphQL Hype Train](https://www.youtube.com/watch?v=S1wQ0WvJK64).
