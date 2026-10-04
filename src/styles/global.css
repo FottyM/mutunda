@@ -1696,6 +1696,42 @@ h3 {
   font-weight: 650;
 }
 
+.prose [data-footnote-ref] {
+  margin-inline-start: 0.15em;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.prose .footnotes {
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+  font-size: 0.875rem;
+}
+
+.prose .footnotes ol {
+  margin: 0;
+  padding-inline-start: 1.75rem;
+}
+
+.prose .footnotes li {
+  margin-block: var(--space-3);
+  padding-inline-start: var(--space-2);
+}
+
+.prose .footnotes p {
+  margin: 0;
+}
+
+.prose [data-footnote-backref] {
+  margin-inline-start: var(--space-2);
+  font-family: var(--font-mono);
+  text-decoration: none;
+}
+
 .prose img {
   display: block;
   width: 100%;
