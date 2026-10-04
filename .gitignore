@@ -109,3 +109,5 @@ test-results/
 # Editor directories
 .vscode/
 
+# Local agent configuration and skills
+.agents/

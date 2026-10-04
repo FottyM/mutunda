@@ -130,15 +130,13 @@ Mäletan, et üks väli lekkis valeseadistuse tõttu teise päringusse. Samuti o
 
 Need on kogemused minu arvamuse taga. Minu meelest on kasulike olekute ja piisava filtreerimisega REST API-st lihtsam aru saada. Ka REST võib tööd peita, kuid ma ei tundnud, et vajan soovitud filtreerimise ja seoste saamiseks kogu seda delegeerimist.
 
-Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. **Ma tõesti ei armasta seda enam. Ma vihkan seda.**
+Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. **See ei meeldi mulle ainsatki hetke.**
 
 Aastaid tagasi vaatasin Harry Wolffit selgitamas oma videos, miks ta astus maha GraphQL-i vaimustuse rongilt.[^9] Tollal ei saanud ma sellest päriselt aru. GraphQL tundus ikka veel geniaalse imerohuna. Kuid selle seadistuse läbielamine tõi iga tema välja toodud punkti kristallselgelt esile.
 
 Istumise ajal oma keldris keset kolimiskaste selgitas Harry, kuidas <mark>kasutajaliidese lihtsuse lubadus peidab tegelikult tohutut taustaprogrammi keerukust</mark>. Klient saab hõlpsasti valida täpselt need kastid, mida soovib, kuid selle toimima saamine nõuab sarnast vaeva nagu kliimaseadme paigaldamine: termostaadi reguleerimine teisel korrusel näeb välja vaevatu, kuid ventilatsioonitorude ja torustiku vedamine nõuab tohutut nähtamatut tööd. Ta võttis kokku tõelised kitsaskohad: kuidas keerukus nihkub ebaühtlaselt taustaprogrammi, kuidas POST-i kaudu tehtavad päringud loobuvad veebilehitseja tavalisest HTTP vahemälust, kuidas naiivsed lahendajad tekitavad andmebaasidele märkamatuid N+1 ülekoormusi ning kuidas see loodi eelkõige Facebooki organisatsioonilise mastaabi lahendamiseks, mitte tavaliste meeskondade vajadusteks. Ta lõpetas tõdemusega, et *puhkab REST-iga märksa rahulikumalt*. Ma ei saaks rohkem nõustuda.
 
-Selles on veel üks osa: meie majasisene Hasura-laadne tööriist. Ma vihkan ka seda ja see mõjutab tugevalt minu suhtumist GraphQL-i. Kuid see on lugu teiseks päevaks.
-
-See tööriist oli põhjus, miks läksin ja vaatasin Hasurat ennast. Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või sellest, kui lihtne nähtu oli, kuid pärast põgusat pilku *olin sellest vaimustuses*.
+See uudishimu viis mind lõpuks Hasurat ennast vaatama. Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või sellest, kui lihtne nähtu oli, kuid pärast põgusat pilku *olin sellest vaimustuses*.
 
 ## Notes
 

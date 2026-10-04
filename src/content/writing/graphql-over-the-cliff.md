@@ -132,15 +132,13 @@ I remember a field leaking into another query because we had misconfigured thing
 
 These are the experiences behind my opinion. I find a REST API with useful statuses and sufficient filtering easier to reason about. REST can hide work too, but I did not feel I needed all this delegation to get the filtering and relationships I wanted.
 
-I feel that better services, caching, and networking have addressed a lot of the problems GraphQL was meant to solve. Meanwhile, working with this setup became a nightmare for me. **I really don't love it anymore. I hate it.**
+I feel that better services, caching, and networking have addressed a lot of the problems GraphQL was meant to solve. Meanwhile, working with this setup became a nightmare for me. **I do not fancy that a single moment.**
 
 Years ago, I watched Harry Wolff's video on getting off the GraphQL hype train.[^9] Back then, I did not really understand it. GraphQL still seemed like a clever panacea. But living through this setup brought every point he made into sharp focus.
 
 Sitting in his basement surrounded by moving boxes, Harry explained how <mark>the promise of frontend simplicity hides a deep well of backend complexity</mark>. The client can easily ask for whatever box it wants, but getting that to work performantly is like installing air conditioning: adjusting the thermostat upstairs looks effortless, but running the vents, pipes, and plumbing downstairs takes an enormous amount of unseen work. He went through the real trade-offs: how GraphQL moves complexity unevenly to the backend, how queries forced over POST discard built-in HTTP browser caching, how naive resolvers trigger silent N+1 stampedes on databases, and how it was ultimately engineered to solve Facebook's internal organizational scale rather than the needs of everyday teams. He concluded that he simply *rests easier with REST*. I could not agree more.
 
-There is another part of this: our in-house Hasura-like tool. I hate that too, and it contributes to how I feel about GraphQL. But that is a story for another day.
-
-That tool was why I went and looked at Hasura itself. I still do not know whether it was my fondness for LoopBack filters or the clean simplicity of what I saw, but after a brief look, *I loved it*.
+That curiosity was why I went and looked at Hasura itself. I still do not know whether it was my fondness for LoopBack filters or the clean simplicity of what I saw, but after a brief look, *I loved it*.
 
 ## Notes
 

@@ -184,7 +184,7 @@ test("GraphQL field note renders in English, French, and Estonian with back link
   await page.goto("/writing/graphql-over-the-cliff");
   await expect(page.getByRole("heading", { name: "How my love for GraphQL fell off a cliff" })).toBeVisible();
   await expect(page.locator(".back-link")).toHaveText(/Back to field notes/);
-  await expect(page.locator(".prose")).toContainText(/I really don['’]t love it anymore\. I hate it\./);
+  await expect(page.locator(".prose")).toContainText(/I do not fancy that a single moment/);
   await expect(page.locator(".prose")).toContainText("strong-remoting");
 
   await page.goto("/fr/writing/graphql-over-the-cliff");
