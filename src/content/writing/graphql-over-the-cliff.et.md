@@ -136,7 +136,7 @@ Need on kogemused minu arvamuse taga. Minu meelest on kasulike olekute ja piisav
 
 Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. Ma tõesti ei armasta seda enam. Ma vihkan seda.
 
-Ma polnud ka ainus, kes sellest vaimustusest välja kasvas. Näha Harry Wolffit YouTube'is selgitamas, miks ta loobus GraphQL-i kasutamisest, tabas täpselt minu enda tüdimust selle ökosüsteemi vastu. Isegi Theo (t3.gg), looja, keda ma tõesti ei salli, tõi välja argumendid GraphQL-i tarbetu keerukuse ja tohutu lisakulu kohta, millele ma ei saanud ausalt vastu vaielda.
+Ma polnud ka ainus, kes sellest vaimustusest välja kasvas. Näha Harry Wolffit YouTube'is selgitamas, miks ta GraphQL-i vaimustuse rongilt maha astus, tabas täpselt minu enda tüdimust.[^9] Ta rääkis sellest, kuidas pealtnäha lihtne kasutajaliides peidab enda taga tohutut taustaprogrammi keerukust, viib kõik päringud POST-i peale loobudes tavalisest HTTP vahemälust ning lahendab Facebooki mastaabi muresid, mida tavalistel meeskondadel pole. Isegi Theo (t3.gg), looja, keda ma tõesti ei salli, tõi välja argumendid GraphQL-i tarbetu keerukuse ja tohutu lisakulu kohta, millele ma ei saanud ausalt vastu vaielda.[^10]
 
 Selles on veel üks osa: meie majasisene Hasura-laadne tööriist. Ma vihkan ka seda ja see mõjutab tugevalt minu suhtumist GraphQL-i. Kuid see on lugu teiseks päevaks.
 
@@ -154,3 +154,5 @@ Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või
 [^6]: GraphQL Tools: [kaug-alamskeemid](https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas) ja [skeemilaiendused](https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions).
 [^7]: [`p-limit`i dokumentatsioon](https://github.com/sindresorhus/p-limit).
 [^8]: [DataLoader: rühmitamine ja päringupõhine vahemälu](https://github.com/graphql/dataloader).
+[^9]: Harry Wolff: [Why I'm Off The GraphQL Hype Train](https://www.youtube.com/watch?v=S1wQ0WvJK64).
+[^10]: Theo - t3.gg: [Six Years Later, I'm Over GraphQL](https://www.youtube.com/watch?v=kS540w6R588).
