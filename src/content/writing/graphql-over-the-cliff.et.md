@@ -80,7 +80,7 @@ Ja siis pidin veel leidma, kus see oli ebaõnnestunud.
 
 Siin tuleb see kahekümne olemiga leht loosse tagasi. Päring oli väike. Selle laiendusväljade taga olev töö ei olnud seda lugedes ilmne.
 
-Meie ülesehituses olid laiendused jaotatud operatsiooni ja tüübi järgi kaustas `src/graphql/extensions/`: `Query/types/[typename]` ja `Mutation/types/[typename]`, millest igaühel oli oma `resolver.ts` ja `typeDefs.ts`. Nendes lahendajates sai väli delegeerida teisele skeemile,[^6] käitada GraphQL-i päringu üle HTTP või teha tavalisi HTTP-päringuid allavoolu teenustesse.
+Meie ülesehituses laiendasime skeemi kohandatud lahendajatega.[^6] Nendes lahendajates sai väli delegeerida teisele skeemile, käitada GraphQL-i päringu üle HTTP või teha tavalisi HTTP-päringuid allavoolu teenustesse.
 
 Meie puhul tegi lahendaja iga olemi jaoks tavalisi HTTP-päringuid viide teise teenusesse.
 
