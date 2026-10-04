@@ -16,15 +16,15 @@ cover:
 locale: en
 ---
 
-I remember one seemingly harmless query. A page of about twenty entities, each with extensions making roughly five requests to another service. The release hit an OOMKill (out-of-memory) failure, and we ended up using `p-limit`.
+I remember one *seemingly harmless* query. A page of about twenty entities, each with extensions making roughly five requests to another service. The release hit an **OOMKill (out-of-memory)** failure, and we ended up using `p-limit`.
 
-By then, I already found the production setup odd. There was schema stitching, delegation, extension points, fragments, and DataLoader. A small query could give me quite a lot to follow before I understood what was happening.
+By then, I already found the production setup odd. There was **schema stitching**, **delegation**, **extension points**, **fragments**, and **DataLoader**. A small query could give me quite a lot to follow before I understood what was happening.
 
 That was a long way from what had first attracted me to GraphQL.
 
 ## Before all that, I loved it
 
-Around 2018, I followed a [Net Ninja](https://www.youtube.com/watch?v=Y0lDGjwRYKw&list=PL4cUxeGkcC9iK6Qhn-QLcXCXPQUov1U7f) tutorial and loved GraphQL. Choosing fields and querying nested data felt really nice. I could describe what I wanted and get that shape back.
+Around 2018, I followed a [Net Ninja](https://www.youtube.com/watch?v=Y0lDGjwRYKw&list=PL4cUxeGkcC9iK6Qhn-QLcXCXPQUov1U7f) tutorial and *loved* GraphQL. Choosing fields and querying nested data felt really nice. I could describe what I wanted and get that shape back.
 
 Then I got a job using LoopBack, the framework from IBM/StrongLoop. It let us define models attached to a database and pass filters in the query string. We could choose fields and include relationships too.
 
@@ -48,11 +48,11 @@ const posts = await response.json();
 
 The filter selects published posts, asks for specific fields, and includes the category. I have kept `categoryId` because loading a relation can require its linking key.[^1]
 
-That already covered some of what had impressed me about GraphQL. It was a filter on an HTTP request, and for those needs I found it good enough.
+That already covered some of what had impressed me about GraphQL. It was a filter on an HTTP request, and for those needs I found it *good enough*.
 
 In our setup, we could also query and filter models across services. I remember Strong Remoting (`strong-remoting`) being involved. LoopBack's remote connector does use it to call exposed model methods in another LoopBack application, though I cannot establish our exact wiring from that recollection.[^2]
 
-I have mentioned LoopBack 3 and 4 when telling this story, but they should not be mixed together here. That remote connector explicitly does not support LoopBack 4.[^2]
+I have mentioned LoopBack 3 and 4 when telling this story, but **they should not be mixed together here**. That remote connector explicitly does not support LoopBack 4.[^2]
 
 ## Back in a production setup
 
@@ -74,9 +74,9 @@ return result.data;
 
 That is one policy, not the only policy. A screen might still show the successful parts, in which case it needs to keep both the data and the errors. GraphQL permits execution errors alongside partial data.[^4]
 
-A GraphQL server can technically return a 400 or 500 for validation errors or gateway crashes, and queries can technically run over GET.[^5] But in our setup, every query was a POST, and execution errors regularly arrived wrapped inside an HTTP 200. The HTTP status alone told me nothing. I had to unpack the body just to know whether a request had failed.
+A GraphQL server can technically return a 400 or 500 for validation errors or gateway crashes, and queries can technically run over GET.[^5] But in our setup, every query was a POST, and execution errors regularly arrived wrapped inside an HTTP 200. <mark>The HTTP status alone told me nothing.</mark> I had to unpack the body just to know whether a request had failed.
 
-Then I still had to find where it had failed.
+Then I still had to find *where* it had failed.
 
 ## Following the seemingly harmless query
 
@@ -84,7 +84,7 @@ This is where that page of twenty entities comes back into the story. The query 
 
 In our setup, we extended the schema with custom resolvers.[^6] Inside those resolvers, a field could delegate to another schema, run a GraphQL query over HTTP, or make plain HTTP requests to downstream services.
 
-In our case, the resolver was making plain HTTP requests to five other services for each entity.
+In our case, the resolver was making plain HTTP requests to **five other services** for each entity.
 
 To illustrate what that indirection looked like, here is a simplified resolver. This is not our production code, but it shows how those calls were wired inside:
 
@@ -108,7 +108,7 @@ export const resolver = {
 };
 ```
 
-That extension was running five HTTP requests for each returned entity. When a client asked for a page of twenty entities, that single GraphQL query scheduled a hundred downstream HTTP calls, before counting whatever work fetched the original page.
+That extension was running five HTTP requests for each returned entity. When a client asked for a page of twenty entities, that single GraphQL query scheduled a **hundred downstream HTTP calls**, before counting whatever work fetched the original page.
 
 Our release hit an out-of-memory failure, and we used `p-limit` to control concurrency. An illustrative resolver could wrap those downstream calls like this:
 
@@ -124,27 +124,27 @@ const results = await Promise.all(
 
 The calls still happen. This limits how many wrapped operations run at once; it does not batch them or reduce their number. The cap is shared by work using this limiter in this process, not by every server in a deployment.[^7]
 
-That is the heart of what frustrates me with this tech. To understand a single field, you are tracing an upstream query, a custom resolver, and HTTP requests to five different services. The query at the front tells you almost nothing about what is actually happening.
+<mark>That is the heart of what frustrates me with this tech.</mark> To understand a single field, you are tracing an upstream query, a custom resolver, and HTTP requests to five different services. The query at the front tells you almost nothing about what is actually happening.
 
-DataLoader is another thing to understand in the same setup. It can batch loads and cache results within an instance, but that does not mean every downstream call is automatically batched. Its documentation recommends instances scoped to individual requests.[^8]
+DataLoader is another thing to understand in the same setup. It can batch loads and cache results within an instance, but that does *not* mean every downstream call is automatically batched. Its documentation recommends instances scoped to individual requests.[^8]
 
 I have to know where we used it, just as I have to know where we stitched schemas or added extension points. When something goes wrong, those details stop being background implementation choices.
 
 ## And there were other incidents
 
-I remember a field leaking into another query because we had not configured things properly. There were also enums with the same values but different names. The result would not show until I did what I described as “retypecasting” them. I do not have the exact fix here, so I will not pretend to know whether that was a typing change or a runtime mapping.
+I remember a field leaking into another query because we had not configured things properly. There were also enums with the same values but different names. The result would not show until I did what I described as *“retypecasting”* them. I do not have the exact fix here, so I will not pretend to know whether that was a typing change or a runtime mapping.
 
 These are the experiences behind my opinion. I find a REST API with useful statuses and sufficient filtering easier to reason about. REST can hide work too, but I did not feel I needed all this delegation to get the filtering and relationships I wanted.
 
-I feel that better services, caching, and networking have addressed a lot of the problems GraphQL was meant to solve. Meanwhile, working with this setup became a nightmare for me. I really don't love it anymore. I hate it.
+I feel that better services, caching, and networking have addressed a lot of the problems GraphQL was meant to solve. Meanwhile, working with this setup became a nightmare for me. **I really don't love it anymore. I hate it.**
 
 Years ago, I watched Harry Wolff's video on getting off the GraphQL hype train.[^9] Back then, I did not really understand it. GraphQL still seemed like a clever panacea. But living through this setup brought every point he made into sharp focus.
 
-Sitting in his basement surrounded by moving boxes, Harry explained how the promise of frontend simplicity hides a deep well of backend complexity. The client can easily ask for whatever box it wants, but getting that to work performantly is like installing air conditioning: adjusting the thermostat upstairs looks effortless, but running the vents, pipes, and plumbing downstairs takes an enormous amount of unseen work. He went through the real trade-offs: how GraphQL moves complexity unevenly to the backend, how queries forced over POST discard built-in HTTP browser caching, how naive resolvers trigger silent N+1 stampedes on databases, and how it was ultimately engineered to solve Facebook's internal organizational scale rather than the needs of everyday teams. He concluded that he simply rests easier with REST. I could not agree more.
+Sitting in his basement surrounded by moving boxes, Harry explained how <mark>the promise of frontend simplicity hides a deep well of backend complexity</mark>. The client can easily ask for whatever box it wants, but getting that to work performantly is like installing air conditioning: adjusting the thermostat upstairs looks effortless, but running the vents, pipes, and plumbing downstairs takes an enormous amount of unseen work. He went through the real trade-offs: how GraphQL moves complexity unevenly to the backend, how queries forced over POST discard built-in HTTP browser caching, how naive resolvers trigger silent N+1 stampedes on databases, and how it was ultimately engineered to solve Facebook's internal organizational scale rather than the needs of everyday teams. He concluded that he simply *rests easier with REST*. I could not agree more.
 
 There is another part of this: our in-house Hasura-like tool. I hate that too, and it contributes to how I feel about GraphQL. But that is a story for another day.
 
-That tool was why I went and looked at Hasura itself. And, after a brief look, I loved it.
+That tool was why I went and looked at Hasura itself. And, after a brief look, *I loved it*.
 
 I still do not know whether that was my fondness for LoopBack filters or the simplicity of what I saw. I had only taken a quick look, but I liked it.
 
