@@ -16,7 +16,7 @@ cover:
 locale: en
 ---
 
-I remember one *seemingly harmless* query. A page of about twenty entities, each with extensions making roughly five requests to another service. The release hit an **OOMKill (out-of-memory)** failure, and we ended up using `p-limit`.
+I remember one *seemingly harmless* query that brought down production with an **out-of-memory crash (OOMKill)**. On the surface it looked like a clean, innocent page of data, but the machinery underneath turned into a runaway fan-out.
 
 By then, I already found the production setup odd. There was **schema stitching**, **delegation**, **extension points**, **fragments**, and **DataLoader**. A small query could give me quite a lot to follow before I understood what was happening.
 
@@ -50,15 +50,11 @@ The filter selects published posts, asks for specific fields, and includes the c
 
 That already covered some of what had impressed me about GraphQL. It was a filter on an HTTP request, and for those needs I found it *good enough*.
 
-In our setup, we could also query and filter models across services. I remember Strong Remoting (`strong-remoting`) being involved. LoopBack's remote connector does use it to call exposed model methods in another LoopBack application, though I cannot establish our exact wiring from that recollection.[^2]
-
-I have mentioned LoopBack 3 and 4 when telling this story, but **they should not be mixed together here**. That remote connector explicitly does not support LoopBack 4.[^2]
+In our setup, we could also query and filter models across services. I remember Strong Remoting (`strong-remoting`) being involved. LoopBack's remote connector uses it to call exposed model methods in another application, though that connector belonged strictly to LoopBack 3 and explicitly did not support LoopBack 4.[^2]
 
 ## Back in a production setup
 
-When I returned to GraphQL in another job, we used Apollo on the UI side and GraphQL Yoga on the backend. That was where I found the arrangement odd: stitching, delegation, extensions, fragments, and the work needed to follow a request through them.
-
-Even checking whether a request had succeeded needed more attention. In our setup, requests were POSTs, and an HTTP 200 could contain errors or only part of the requested data.
+When I returned to GraphQL in another job, we paired Apollo on the client with GraphQL Yoga on the backend. Right away, verifying whether a request had actually succeeded became an ordeal. In our setup, requests were POSTs, and an HTTP 200 could contain errors or only part of the requested data.
 
 With `fetch`, checking `response.ok` only checks the HTTP status. It does not inspect GraphQL errors.[^3] After that check, a client that refuses partial results needs something like this:
 
@@ -80,7 +76,7 @@ Then I still had to find *where* it had failed.
 
 ## Following the seemingly harmless query
 
-This is where that page of twenty entities comes back into the story. The query was small. The work behind its extension fields was not obvious from reading it.
+This is where that seemingly harmless query comes back into the story. It was asking for a page of twenty entities, but the work behind its extension fields was completely hidden from the caller.
 
 In our setup, we extended the schema with custom resolvers.[^6] Inside those resolvers, a field could delegate to another schema, run a GraphQL query over HTTP, or make plain HTTP requests to downstream services.
 
@@ -110,7 +106,7 @@ export const resolver = {
 
 That extension was running five HTTP requests for each returned entity. When a client asked for a page of twenty entities, that single GraphQL query scheduled a **hundred downstream HTTP calls**, before counting whatever work fetched the original page.
 
-Our release hit an out-of-memory failure, and we used `p-limit` to control concurrency. An illustrative resolver could wrap those downstream calls like this:
+The release hit an out-of-memory failure, which is why we turned to `p-limit` to control concurrency. An illustrative resolver could wrap those downstream calls like this:
 
 ```js
 // Outside the resolver, shared within this process.
@@ -144,9 +140,7 @@ Sitting in his basement surrounded by moving boxes, Harry explained how <mark>th
 
 There is another part of this: our in-house Hasura-like tool. I hate that too, and it contributes to how I feel about GraphQL. But that is a story for another day.
 
-That tool was why I went and looked at Hasura itself. And, after a brief look, *I loved it*.
-
-I still do not know whether that was my fondness for LoopBack filters or the simplicity of what I saw. I had only taken a quick look, but I liked it.
+That tool was why I went and looked at Hasura itself. I still do not know whether it was my fondness for LoopBack filters or the clean simplicity of what I saw, but after a brief look, *I loved it*.
 
 ## Notes
 

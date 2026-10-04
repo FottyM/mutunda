@@ -14,7 +14,7 @@ locale: et
 slug: graphql-over-the-cliff
 ---
 
-Mäletan ühte *pealtnäha süütut* päringut. Leht umbes kahekümne olemiga, millest igaühel olid laiendused, mis tegid umbes viis päringut teise teenusesse. Väljalase põrkus mälupuuduse tõrkega **(OOMKill)** ja me lõpetasime `p-limit`i kasutamisega.
+Mäletan ühte *pealtnäha süütut* päringut, mis viis toodangu mälupuuduse tõttu krahhini **(OOMKill)**. Pealtnäha oli tegu puhta ja lihtsa andmelehega, kuid selle all peituvad mehhanismid muutusid kontrollimatuks päringute laviiniks.
 
 Selleks ajaks tundus tootmisseadistus mulle juba kummaline. Seal oli **skeemide kokkuõmblemine (stitching)**, **delegeerimine**, **laienduspunktid**, **fragmendid** ja **DataLoader**. Väike päring võis nõuda pikka süvenemist enne, kui sain aru, mis tegelikult toimub.
 
@@ -48,15 +48,11 @@ Filter valib avaldatud postitused, küsib konkreetsed väljad ja kaasab kategoor
 
 See kattis juba osa sellest, mis mulle GraphQL-i juures muljet avaldas. See oli filter HTTP-päringul ja nende vajaduste jaoks piisas mulle sellest *täiesti*.
 
-Meie seadistuses saime mudeleid pärida ja filtreerida ka teenuste vahel. Mäletan, et selles osales Strong Remoting (`strong-remoting`). LoopBacki kaugkonnektor kasutab seda teise LoopBacki rakenduse avaldatud mudelimeetodite väljakutsumiseks, kuigi ma ei suuda sellest mälestusest meie täpset ühendust taastada.[^2]
-
-Olen seda lugu rääkides maininud LoopBack 3 ja 4, kuid **neid ei tohiks siin omavahel segi ajada**. See kaugkonnektor ei toeta selgesõnaliselt LoopBack 4.[^2]
+Meie seadistuses saime mudeleid pärida ja filtreerida ka teenuste vahel. Mäletan, et selles osales Strong Remoting (`strong-remoting`). LoopBacki kaugkonnektor kasutab seda teises rakenduses avatud mudelimeetodite väljakutsumiseks, ehkki see konnektor kuulus rangelt LoopBack 3 juurde ja ei toetanud selgesõnaliselt LoopBack 4 versiooni.[^2]
 
 ## Tagasi tootmisseadistuses
 
-Kui naasin GraphQL-i juurde teises töökohas, kasutasime kasutajaliidese poolel Apollot ja tagaosas GraphQL Yogat. Seal muutus korraldus minu jaoks kummaliseks: kokkuõmblemine, delegeerimine, laiendused, fragmendid ja kogu vaev, mida oli vaja päringu jälgimiseks läbi nende.
-
-Isegi päringu õnnestumise kontrollimine vajas rohkem tähelepanu. Meie seadistuses olid päringud POST-id ja HTTP 200 võis sisaldada vigu või ainult osa küsitud andmetest.
+Kui naasin teisel töökohal GraphQL-i juurde, kasutasime kliendi poolel Apollot ja taustaprogrammis GraphQL Yogat. Kohe muutus päringu õnnestumise kontrollimine omaette katsumuseks. Meie seadistuses olid päringud POST-id ja HTTP 200 võis sisaldada vigu või ainult osa küsitud andmetest.
 
 Käsuga `fetch` kontrollib `response.ok` ainult HTTP olekut. See ei kontrolli GraphQL-i vigu.[^3] Pärast seda kontrolli vajab klient, mis keeldub osalistest tulemustest, midagi sellist:
 
@@ -78,7 +74,7 @@ Ja siis pidin veel leidma, *kus* see oli ebaõnnestunud.
 
 ## Pealtnäha süütu päringu jälitamine
 
-Siin tuleb see kahekümne olemiga leht loosse tagasi. Päring oli väike. Selle laiendusväljade taga olev töö ei olnud seda lugedes ilmne.
+Siin tuleb see pealtnäha süütu päring uuesti mängu. See küsis lehekülge umbes kahekümne olemiga, kuid selle laiendusväljade taga peituv töö oli kutsuja eest täielikult varjatud.
 
 Meie ülesehituses laiendasime skeemi kohandatud lahendajatega.[^6] Nendes lahendajates sai väli delegeerida teisele skeemile, käitada GraphQL-i päringu üle HTTP või teha tavalisi HTTP-päringuid allavoolu teenustesse.
 
@@ -108,7 +104,7 @@ export const resolver = {
 
 See laiendus tegi viis HTTP-päringut iga tagastatud olemi kohta. Kui klient küsis lehekülje kahekümne olemiga, ajastas see ainus GraphQL-i päring **sada allavoolu HTTP-kõnet** enne algse lehe laadimise arvestamist.
 
-Meie väljalaset tabas mälupuuduse tõrge ja me kasutasime samaaegsuse piiramiseks `p-limit`it. Näitlik lahendaja sai need allavoolu kõned mähkida nii:
+Väljalaset tabas mälupuuduse tõrge, mistõttu võtsime samaaegsuse kontrollimiseks kasutusele `p-limit`i. Näitlik lahendaja sai need allavoolu kõned mähkida nii:
 
 ```js
 // Väljaspool lahendajat, jagatud selles protsessis.
@@ -142,9 +138,7 @@ Istumise ajal oma keldris keset kolimiskaste selgitas Harry, kuidas <mark>kasuta
 
 Selles on veel üks osa: meie majasisene Hasura-laadne tööriist. Ma vihkan ka seda ja see mõjutab tugevalt minu suhtumist GraphQL-i. Kuid see on lugu teiseks päevaks.
 
-See tööriist oli põhjus, miks läksin ja vaatasin Hasurat ennast. Ja pärast põgusat pilku *olin sellest vaimustuses*.
-
-Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või sellest, kui lihtne nähtu oli. Olin vaid korraks vaadanud, kuid see meeldis mulle.
+See tööriist oli põhjus, miks läksin ja vaatasin Hasurat ennast. Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või sellest, kui lihtne nähtu oli, kuid pärast põgusat pilku *olin sellest vaimustuses*.
 
 ## Notes
 
