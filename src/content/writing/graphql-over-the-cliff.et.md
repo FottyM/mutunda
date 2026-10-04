@@ -14,15 +14,15 @@ locale: et
 slug: graphql-over-the-cliff
 ---
 
-Mäletan ühte pealtnäha süütut päringut. Leht umbes kahekümne olemiga, millest igaühel olid laiendused, mis tegid umbes viis päringut teise teenusesse. Väljalase põrkus mälupuuduse tõrkega (OOMKill) ja me lõpetasime `p-limit`i kasutamisega.
+Mäletan ühte *pealtnäha süütut* päringut. Leht umbes kahekümne olemiga, millest igaühel olid laiendused, mis tegid umbes viis päringut teise teenusesse. Väljalase põrkus mälupuuduse tõrkega **(OOMKill)** ja me lõpetasime `p-limit`i kasutamisega.
 
-Selleks ajaks tundus tootmisseadistus mulle juba kummaline. Seal oli skeemide kokkuõmblemine (stitching), delegeerimine, laienduspunktid, fragmendid ja DataLoader. Väike päring võis nõuda pikka süvenemist enne, kui sain aru, mis tegelikult toimub.
+Selleks ajaks tundus tootmisseadistus mulle juba kummaline. Seal oli **skeemide kokkuõmblemine (stitching)**, **delegeerimine**, **laienduspunktid**, **fragmendid** ja **DataLoader**. Väike päring võis nõuda pikka süvenemist enne, kui sain aru, mis tegelikult toimub.
 
 See oli kaugel sellest, mis mind algselt GraphQL-i juures köitis.
 
 ## Enne seda kõike ma armastasin seda
 
-Umbes 2018. aastal vaatasin [Net Ninja](https://www.youtube.com/watch?v=Y0lDGjwRYKw&list=PL4cUxeGkcC9iK6Qhn-QLcXCXPQUov1U7f) õpetust ja olin GraphQL-ist vaimustuses. Väljade valimine ja pesastatud andmete pärimine oli väga meeldiv. Sain kirjeldada, mida tahtsin, ja saada täpselt selle kuju tagasi.
+Umbes 2018. aastal vaatasin [Net Ninja](https://www.youtube.com/watch?v=Y0lDGjwRYKw&list=PL4cUxeGkcC9iK6Qhn-QLcXCXPQUov1U7f) õpetust ja olin GraphQL-ist *vaimustuses*. Väljade valimine ja pesastatud andmete pärimine oli väga meeldiv. Sain kirjeldada, mida tahtsin, ja saada täpselt selle kuju tagasi.
 
 Seejärel sain töökoha, kus kasutati LoopBacki, IBM/StrongLoopi raamistikku. See võimaldas defineerida andmebaasiga seotud mudeleid ja anda päringustringis filtreid kaasa. Saime valida välju ja kaasata ka seoseid.
 
@@ -46,11 +46,11 @@ const posts = await response.json();
 
 Filter valib avaldatud postitused, küsib konkreetsed väljad ja kaasab kategooria. Jätsin alles `categoryId`, sest seose laadimine võib vajada selle sidumisvõtit.[^1]
 
-See kattis juba osa sellest, mis mulle GraphQL-i juures muljet avaldas. See oli filter HTTP-päringul ja nende vajaduste jaoks piisas mulle sellest täiesti.
+See kattis juba osa sellest, mis mulle GraphQL-i juures muljet avaldas. See oli filter HTTP-päringul ja nende vajaduste jaoks piisas mulle sellest *täiesti*.
 
-Meie seadistuses saime mudeleid pärida ja filtreerida ka teenuste vahel. Mäletan, et selles osales Strong Remoting. LoopBacki kaugkonnektor kasutab seda teise LoopBacki rakenduse avaldatud mudelimeetodite väljakutsumiseks, kuigi ma ei suuda sellest mälestusest meie täpset ühendust taastada.[^2]
+Meie seadistuses saime mudeleid pärida ja filtreerida ka teenuste vahel. Mäletan, et selles osales Strong Remoting (`strong-remoting`). LoopBacki kaugkonnektor kasutab seda teise LoopBacki rakenduse avaldatud mudelimeetodite väljakutsumiseks, kuigi ma ei suuda sellest mälestusest meie täpset ühendust taastada.[^2]
 
-Olen seda lugu rääkides maininud LoopBack 3 ja 4, kuid neid ei tohiks siin omavahel segi ajada. See kaugkonnektor ei toeta selgesõnaliselt LoopBack 4.[^2]
+Olen seda lugu rääkides maininud LoopBack 3 ja 4, kuid **neid ei tohiks siin omavahel segi ajada**. See kaugkonnektor ei toeta selgesõnaliselt LoopBack 4.[^2]
 
 ## Tagasi tootmisseadistuses
 
@@ -72,9 +72,9 @@ return result.data;
 
 See on üks poliitika, mitte ainus. Ekraan võib soovida näidata õnnestunud osi, sel juhul peab see säilitama nii andmed kui ka vead. GraphQL lubab täitmisvigu koos osaliste andmetega.[^4]
 
-GraphQL-i server võib valideerimistõrgete või lüüsi krahhi korral tehniliselt tagastada koodi 400 või 500 ning päringuid saab põhimõtteliselt teha ka GET-iga.[^5] Kuid meie seadistuses oli iga päring POST ning täitmistõrked saabusid reeglina pakituna HTTP 200 sisse. HTTP olek üksi ei öelnud mulle midagi. Pidin vastuse keha lahti pakkima ainuüksi selleks, et teada saada, kas päring ebaõnnestus.
+GraphQL-i server võib valideerimistõrgete või lüüsi krahhi korral tehniliselt tagastada koodi 400 või 500 ning päringuid saab põhimõtteliselt teha ka GET-iga.[^5] Kuid meie seadistuses oli iga päring POST ning täitmistõrked saabusid reeglina pakituna HTTP 200 sisse. <mark>HTTP olek üksi ei öelnud mulle midagi.</mark> Pidin vastuse keha lahti pakkima ainuüksi selleks, et teada saada, kas päring ebaõnnestus.
 
-Ja siis pidin veel leidma, kus see oli ebaõnnestunud.
+Ja siis pidin veel leidma, *kus* see oli ebaõnnestunud.
 
 ## Pealtnäha süütu päringu jälitamine
 
@@ -82,7 +82,7 @@ Siin tuleb see kahekümne olemiga leht loosse tagasi. Päring oli väike. Selle 
 
 Meie ülesehituses laiendasime skeemi kohandatud lahendajatega.[^6] Nendes lahendajates sai väli delegeerida teisele skeemile, käitada GraphQL-i päringu üle HTTP või teha tavalisi HTTP-päringuid allavoolu teenustesse.
 
-Meie puhul tegi lahendaja iga olemi jaoks tavalisi HTTP-päringuid viide teise teenusesse.
+Meie puhul tegi lahendaja iga olemi jaoks tavalisi HTTP-päringuid **viide teise teenusesse**.
 
 Selle kaudsuse illustreerimiseks on siin lihtsustatud lahendaja. See ei ole meie tootmiskood, kuid see näitab, kuidas need väljakutsed seesmiselt toimisid:
 
@@ -106,7 +106,7 @@ export const resolver = {
 };
 ```
 
-See laiendus tegi viis HTTP-päringut iga tagastatud olemi kohta. Kui klient küsis lehekülje kahekümne olemiga, ajastas see ainus GraphQL-i päring sada allavoolu HTTP-kõnet enne algse lehe laadimise arvestamist.
+See laiendus tegi viis HTTP-päringut iga tagastatud olemi kohta. Kui klient küsis lehekülje kahekümne olemiga, ajastas see ainus GraphQL-i päring **sada allavoolu HTTP-kõnet** enne algse lehe laadimise arvestamist.
 
 Meie väljalaset tabas mälupuuduse tõrge ja me kasutasime samaaegsuse piiramiseks `p-limit`it. Näitlik lahendaja sai need allavoolu kõned mähkida nii:
 
@@ -122,27 +122,27 @@ const results = await Promise.all(
 
 Väljakutsed toimuvad endiselt. See piirab samaaegselt töötavate mähitud operatsioonide arvu; see ei rühmita neid ega vähenda nende arvu. Ülempiiri jagavad seda piirajat kasutavad toimingud selles protsessis, mitte iga server klastris.[^7]
 
-See ongi see, mis mind selle tehnoloogia juures nii väga frustreerib. Üheainsa välja mõistmiseks tuleb lahti harutada ülemine päring, kohandatud lahendaja ja HTTP-kõned viide eraldi teenusesse. Päring eesotsas ei ütle peaaegu midagi selle kohta, mis tegelikult toimub.
+<mark>See ongi see, mis mind selle tehnoloogia juures nii väga frustreerib.</mark> Üheainsa välja mõistmiseks tuleb lahti harutada ülemine päring, kohandatud lahendaja ja HTTP-kõned viide eraldi teenusesse. Päring eesotsas ei ütle peaaegu midagi selle kohta, mis tegelikult toimub.
 
-DataLoader on teine asi, mida samas seadistuses mõista. See saab laadimisi rühmitada ja tulemusi eksemplari sees vahemällu salvestada, kuid see ei tähenda, et iga allavoolu kõne rühmitatakse automaatselt. Selle dokumentatsioon soovitab eksemplare, mis on seotud üksikute päringutega.[^8]
+DataLoader on teine asi, mida samas seadistuses mõista. See saab laadimisi rühmitada ja tulemusi eksemplari sees vahemällu salvestada, kuid see *ei* tähenda, et iga allavoolu kõne rühmitatakse automaatselt. Selle dokumentatsioon soovitab eksemplare, mis on seotud üksikute päringutega.[^8]
 
 Pean teadma, kus me seda kasutasime, samamoodi nagu pean teadma, kus me skeeme kokku õmblesime või laienduspunkte lisasime. Kui midagi läheb valesti, lakkavad need üksikasjad olemast taustal tehtud teostusvalikud.
 
 ## Ja oli ka teisi intsidente
 
-Mäletan, et üks väli lekkis teise päringusse, sest me polnud asju õigesti seadistanud. Oli ka samade väärtuste, kuid erinevate nimedega enume. Tulemust ei kuvatud enne, kui tegin midagi, mida kirjeldasin tüüpide ümbervalamisena. Mul pole siin täpset parandust käepärast, seega ei teeskle ma teadvat, kas tegu oli tüübiteisenduse või käitusaja vastendusega.
+Mäletan, et üks väli lekkis teise päringusse, sest me polnud asju õigesti seadistanud. Oli ka samade väärtuste, kuid erinevate nimedega enume. Tulemust ei kuvatud enne, kui tegin midagi, mida kirjeldasin *tüüpide ümbervalamisena*. Mul pole siin täpset parandust käepärast, seega ei teeskle ma teadvat, kas tegu oli tüübiteisenduse või käitusaja vastendusega.
 
 Need on kogemused minu arvamuse taga. Minu meelest on kasulike olekute ja piisava filtreerimisega REST API-st lihtsam aru saada. Ka REST võib tööd peita, kuid ma ei tundnud, et vajan soovitud filtreerimise ja seoste saamiseks kogu seda delegeerimist.
 
-Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. Ma tõesti ei armasta seda enam. Ma vihkan seda.
+Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. **Ma tõesti ei armasta seda enam. Ma vihkan seda.**
 
 Aastaid tagasi vaatasin Harry Wolffit selgitamas oma videos, miks ta astus maha GraphQL-i vaimustuse rongilt.[^9] Tollal ei saanud ma sellest päriselt aru. GraphQL tundus ikka veel geniaalse imerohuna. Kuid selle seadistuse läbielamine tõi iga tema välja toodud punkti kristallselgelt esile.
 
-Istumise ajal oma keldris keset kolimiskaste selgitas Harry, kuidas kasutajaliidese lihtsuse lubadus peidab tegelikult tohutut taustaprogrammi keerukust. Klient saab hõlpsasti valida täpselt need kastid, mida soovib, kuid selle toimima saamine nõuab sarnast vaeva nagu kliimaseadme paigaldamine: termostaadi reguleerimine teisel korrusel näeb välja vaevatu, kuid ventilatsioonitorude ja torustiku vedamine nõuab tohutut nähtamatut tööd. Ta võttis kokku tõelised kitsaskohad: kuidas keerukus nihkub ebaühtlaselt taustaprogrammi, kuidas POST-i kaudu tehtavad päringud loobuvad veebilehitseja tavalisest HTTP vahemälust, kuidas naiivsed lahendajad tekitavad andmebaasidele märkamatuid N+1 ülekoormusi ning kuidas see loodi eelkõige Facebooki organisatsioonilise mastaabi lahendamiseks, mitte tavaliste meeskondade vajadusteks. Ta lõpetas tõdemusega, et puhkab REST-iga märksa rahulikumalt. Ma ei saaks rohkem nõustuda.
+Istumise ajal oma keldris keset kolimiskaste selgitas Harry, kuidas <mark>kasutajaliidese lihtsuse lubadus peidab tegelikult tohutut taustaprogrammi keerukust</mark>. Klient saab hõlpsasti valida täpselt need kastid, mida soovib, kuid selle toimima saamine nõuab sarnast vaeva nagu kliimaseadme paigaldamine: termostaadi reguleerimine teisel korrusel näeb välja vaevatu, kuid ventilatsioonitorude ja torustiku vedamine nõuab tohutut nähtamatut tööd. Ta võttis kokku tõelised kitsaskohad: kuidas keerukus nihkub ebaühtlaselt taustaprogrammi, kuidas POST-i kaudu tehtavad päringud loobuvad veebilehitseja tavalisest HTTP vahemälust, kuidas naiivsed lahendajad tekitavad andmebaasidele märkamatuid N+1 ülekoormusi ning kuidas see loodi eelkõige Facebooki organisatsioonilise mastaabi lahendamiseks, mitte tavaliste meeskondade vajadusteks. Ta lõpetas tõdemusega, et *puhkab REST-iga märksa rahulikumalt*. Ma ei saaks rohkem nõustuda.
 
 Selles on veel üks osa: meie majasisene Hasura-laadne tööriist. Ma vihkan ka seda ja see mõjutab tugevalt minu suhtumist GraphQL-i. Kuid see on lugu teiseks päevaks.
 
-See tööriist oli põhjus, miks läksin ja vaatasin Hasurat ennast. Ja pärast põgusat pilku olin sellest vaimustuses.
+See tööriist oli põhjus, miks läksin ja vaatasin Hasurat ennast. Ja pärast põgusat pilku *olin sellest vaimustuses*.
 
 Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või sellest, kui lihtne nähtu oli. Olin vaid korraks vaadanud, kuid see meeldis mulle.
 

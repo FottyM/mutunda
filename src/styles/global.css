@@ -1719,6 +1719,26 @@ h3 {
   color: var(--color-muted);
 }
 
+.prose strong,
+.prose b {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.prose em,
+.prose i {
+  color: var(--color-text);
+  font-style: italic;
+}
+
+.prose mark {
+  background: color-mix(in srgb, var(--color-accent) 18%, var(--color-surface));
+  color: var(--color-text);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+}
+
 .prose a {
   color: var(--color-accent);
   font-weight: 650;
