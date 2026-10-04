@@ -8,12 +8,10 @@ tags:
   - blogging
 draft: false
 cover:
-  src: /images/writing/mutunda-nextjs-to-astro-cover.png
+  src: ../../assets/images/writing/mutunda-nextjs-to-astro-cover.png
   alt: A browser window clearing the first hurdle on the way to a calmer publishing system.
 locale: en
 ---
-
-![A browser window clearing the first hurdle on the way to a calmer publishing system.](/images/writing/mutunda-nextjs-to-astro-cover.png)
 
 This began with a small, awkward question: where should I put my writing?
 

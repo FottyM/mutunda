@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProgressiveImage from "../components/ProgressiveImage.astro";
 import SocialIcon from "../components/SocialIcon.astro";
+import portrait from "../assets/images/fortunat.jpeg";
 import type { Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
 
@@ -24,12 +26,11 @@ const t = useTranslations(locale);
     </header>
     <div class="about-page__body prose">
       <figure class="profile-portrait">
-        <img
-          src="/images/fortunat.jpeg"
+        <ProgressiveImage
+          src={portrait}
           alt="Fortunat Mutunda"
-          width="460"
-          height="460"
           loading="eager"
+          fetchpriority="high"
         />
       </figure>
       <p class="lede">{t("about.lede")}</p>

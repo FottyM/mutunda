@@ -8,13 +8,11 @@ tags:
   - blogging
 draft: false
 cover:
-  src: /images/writing/mutunda-nextjs-to-astro-cover.png
+  src: ../../assets/images/writing/mutunda-nextjs-to-astro-cover.png
   alt: Une fenêtre de navigateur franchit le premier obstacle vers un système de publication plus calme.
 locale: fr
 slug: moving-mutunda-me-from-nextjs-to-astro
 ---
-
-![Une fenêtre de navigateur franchit le premier obstacle vers un système de publication plus calme.](/images/writing/mutunda-nextjs-to-astro-cover.png)
 
 Tout a commencé par une petite question un peu gênante : où mettre mes textes ?
 

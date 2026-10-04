@@ -8,12 +8,10 @@ tags:
   - debugging
 draft: false
 cover:
-  src: /images/writing/graphql-over-the-cliff-cover.png
+  src: ../../assets/images/writing/graphql-over-the-cliff-cover.png
   alt: An abstract query sheet tipping over a cliff into a network of pipes and service nodes.
 locale: en
 ---
-
-![An abstract query sheet tipping over a cliff into a network of pipes and service nodes.](/images/writing/graphql-over-the-cliff-cover.png)
 
 I remember one stupid query: a page of about 20 entities, and each entity had an extension making something like five requests to another service. The release ran out of memory, and we had to fix it with p-limit. Gosh, I hate GraphQL.
 

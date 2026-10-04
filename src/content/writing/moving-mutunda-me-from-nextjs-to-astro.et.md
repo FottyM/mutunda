@@ -8,13 +8,11 @@ tags:
   - blogging
 draft: false
 cover:
-  src: /images/writing/mutunda-nextjs-to-astro-cover.png
+  src: ../../assets/images/writing/mutunda-nextjs-to-astro-cover.png
   alt: Brauseriaken ületab esimese tõkke teel rahulikuma avaldamissüsteemi poole.
 locale: et
 slug: moving-mutunda-me-from-nextjs-to-astro
 ---
-
-![Brauseriaken ületab esimese tõkke teel rahulikuma avaldamissüsteemi poole.](/images/writing/mutunda-nextjs-to-astro-cover.png)
 
 Kõik algas väikese ja veidi ebamugava küsimusega: kuhu ma oma kirjutised panen?
 

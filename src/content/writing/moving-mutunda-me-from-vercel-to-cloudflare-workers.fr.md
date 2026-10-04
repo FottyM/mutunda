@@ -8,13 +8,11 @@ tags:
   - architecture
 draft: false
 cover:
-  src: /images/writing/mutunda-vercel-to-cloudflare-cover.png
+  src: ../../assets/images/writing/mutunda-vercel-to-cloudflare-cover.png
   alt: Des pages statiques franchissent un obstacle vers une passerelle dans le nuage.
 locale: fr
 slug: moving-mutunda-me-from-vercel-to-cloudflare-workers
 ---
-
-![Des pages statiques franchissent un obstacle vers une passerelle dans le nuage.](/images/writing/mutunda-vercel-to-cloudflare-cover.png)
 
 Le chemin de Vercel vers Cloudflare Workers a commencé par un signe auquel je ne faisais pas confiance. Vercel construisait le site avec succès, mais GitHub marquait le déploiement comme échoué. Le problème ne venait pas de la construction Astro. Deux contrôles externes avaient atteint la limite du forfait Hobby de Vercel.
 

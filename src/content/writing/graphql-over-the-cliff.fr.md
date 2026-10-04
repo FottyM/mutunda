@@ -8,13 +8,11 @@ tags:
   - debogage
 draft: false
 cover:
-  src: /images/writing/graphql-over-the-cliff-cover.png
+  src: ../../assets/images/writing/graphql-over-the-cliff-cover.png
   alt: Une feuille de requête stylisée basculant d'une falaise vers un réseau de conduits et de nœuds de services.
 locale: fr
 slug: graphql-over-the-cliff
 ---
-
-![Une feuille de requête stylisée basculant d'une falaise vers un réseau de conduits et de nœuds de services.](/images/writing/graphql-over-the-cliff-cover.png)
 
 Je me souviens d'une requête stupide : une page d'environ 20 entités, et chaque entité avait une extension qui faisait quelque chose comme cinq requêtes vers un autre service. La version mise en production a épuisé la mémoire, et on a dû corriger ça avec p-limit. Bon sang, je déteste GraphQL.
 

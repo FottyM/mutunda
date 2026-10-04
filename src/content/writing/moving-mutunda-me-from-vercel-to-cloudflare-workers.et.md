@@ -8,13 +8,11 @@ tags:
   - architecture
 draft: false
 cover:
-  src: /images/writing/mutunda-vercel-to-cloudflare-cover.png
+  src: ../../assets/images/writing/mutunda-vercel-to-cloudflare-cover.png
   alt: Staatilised lehed ületavad tõkke teel pilveväravani.
 locale: et
 slug: moving-mutunda-me-from-vercel-to-cloudflare-workers
 ---
-
-![Staatilised lehed ületavad tõkke teel pilveväravani.](/images/writing/mutunda-vercel-to-cloudflare-cover.png)
 
 Tee Vercelist Cloudflare Workersisse algas märgiga, mida ma ei usaldanud. Vercel ehitas saidi edukalt, kuid GitHub märkis väljalaske ebaõnnestunuks. Probleem ei olnud Astro koostes. Kaks välist väljalaskekontrolli olid jõudnud Verceli Hobby paketi piirini.
 

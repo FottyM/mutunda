@@ -3,6 +3,7 @@ import { render, type CollectionEntry } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ButtonLink from "../components/ButtonLink.astro";
 import Callout from "../components/Callout.astro";
+import ProgressiveImage from "../components/ProgressiveImage.astro";
 import Tag from "../components/Tag.astro";
 import type { Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
@@ -24,6 +25,8 @@ const t = useTranslations(locale);
 <BaseLayout
   title={`${data.title} — Fortunat Mutunda`}
   description={data.description}
+  image={data.cover?.src}
+  imageAlt={data.cover?.alt}
   locale={locale}
   translations={translations}
 >
@@ -55,7 +58,12 @@ const t = useTranslations(locale);
 
     {data.cover && (
       <figure class="case-study__cover">
-        <img src={data.cover.src} alt={data.cover.alt} width="1440" height="900" loading="eager" />
+        <ProgressiveImage
+          src={data.cover.src}
+          alt={data.cover.alt}
+          loading="eager"
+          fetchpriority="high"
+        />
       </figure>
     )}
 

@@ -8,12 +8,10 @@ tags:
   - architecture
 draft: false
 cover:
-  src: /images/writing/mutunda-vercel-to-cloudflare-cover.png
+  src: ../../assets/images/writing/mutunda-vercel-to-cloudflare-cover.png
   alt: Static pages clear a hurdle into a cloud gateway.
 locale: en
 ---
-
-![Static pages clear a hurdle into a cloud gateway.](/images/writing/mutunda-vercel-to-cloudflare-cover.png)
 
 The road from Vercel to Cloudflare Workers began with an omen I did not trust. Vercel built the site successfully, but GitHub marked the deployment as failed. The Astro build was not the problem. Two external deployment checks had met the limit of Vercel's Hobby plan.
 

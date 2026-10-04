@@ -76,6 +76,8 @@ a:hover {
 }
 
 .site-header {
+  position: relative;
+  z-index: 20;
   border-bottom-width: 1px;
 }
 
@@ -1343,9 +1345,23 @@ h3 {
 }
 
 .article-header,
+.article-cover,
 .article-body {
   max-width: var(--reading-width);
   margin-inline: auto;
+}
+
+.article-cover {
+  margin-top: var(--space-12);
+  margin-bottom: var(--space-8);
+  border: var(--rule);
+  background: var(--color-surface-raised);
+  overflow: hidden;
+}
+
+.article-cover .progressive-image {
+  width: 100%;
+  height: auto;
 }
 
 .article-header {
@@ -1757,6 +1773,102 @@ h3 {
   margin-top: 0;
 }
 
+/* Progressive blur-up / LQIP gradual resolution rendering */
+.progressive-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background-color: var(--color-surface);
+}
+
+.progressive-image picture {
+  display: contents;
+}
+
+.progressive-image__placeholder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(18px);
+  transform: scale(1.08);
+  pointer-events: none;
+  transition: opacity var(--transition-slow);
+  opacity: 1;
+  z-index: 1;
+}
+
+.progressive-image__target {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  filter: blur(10px);
+  transition:
+    opacity var(--transition-slow),
+    filter var(--transition-slow);
+  will-change: opacity, filter;
+  z-index: 2;
+}
+
+.progressive-image__target.is-loaded {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.progressive-image.is-loaded .progressive-image__placeholder,
+.progressive-image:has(.progressive-image__target.is-loaded) .progressive-image__placeholder {
+  opacity: 0;
+}
+
+.profile-portrait .progressive-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 22%;
+  overflow: hidden;
+}
+
+.profile-portrait .progressive-image__placeholder {
+  filter: blur(14px);
+  transform: scale(1.55);
+  transform-origin: 50% 28%;
+}
+
+.profile-portrait .progressive-image__target.is-loaded {
+  filter: blur(0);
+}
+
+.case-study__cover .progressive-image {
+  width: 100%;
+  height: auto;
+}
+
+.error-page__tv .progressive-image {
+  width: 100%;
+  height: auto;
+}
+
+.prose .progressive-image,
+.prose figure.progressive-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  margin-block: var(--space-8);
+  border: var(--rule);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.prose > p:first-child .progressive-image,
+.prose > .progressive-image:first-child,
+.prose > figure.progressive-image:first-child {
+  margin-top: 0;
+}
+
 .prose code {
   padding: 0.15em 0.35em;
   background: var(--color-surface);
@@ -1972,34 +2084,80 @@ h3 {
     animation: none !important;
   }
 
-  html[data-astro-transition]::view-transition-old(root),
-  html[data-astro-transition]::view-transition-new(root) {
+  html[data-astro-transition]::view-transition-group(*),
+  html[data-astro-transition]::view-transition-old(*),
+  html[data-astro-transition]::view-transition-new(*) {
     animation: none !important;
+  }
+
+  .progressive-image__placeholder {
+    display: none !important;
+  }
+
+  .progressive-image__target {
+    opacity: 1 !important;
+    filter: none !important;
+    transition: none !important;
   }
 }
 
-/* The direction follows the primary-nav order rather than browser history. */
-html[data-astro-transition="next"]::view-transition-old(root) {
+/* Keep header stationary and animate only the page body (main) during route transitions */
+html:not(.theme-transitioning) .site-header {
+  view-transition-name: site-header;
+}
+
+html:not(.theme-transitioning) main {
+  view-transition-name: main-content;
+}
+
+::view-transition-group(site-header) {
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-old(main-content),
+::view-transition-new(main-content) {
+  mix-blend-mode: normal;
+}
+
+html[data-astro-transition]::view-transition-old(root) {
+  animation: none;
+  display: none;
+}
+
+html[data-astro-transition]::view-transition-new(root) {
+  animation: none;
+}
+
+/* Directional route transitions apply to the page body rather than the whole screen */
+html[data-astro-transition="next"]::view-transition-old(main-content) {
   animation: route-out-forward var(--transition-base) both;
 }
 
-html[data-astro-transition="next"]::view-transition-new(root) {
+html[data-astro-transition="next"]::view-transition-new(main-content) {
   animation: route-in-forward var(--transition-slow) both;
 }
 
-html[data-astro-transition="previous"]::view-transition-old(root) {
+html[data-astro-transition="previous"]::view-transition-old(main-content) {
   animation: route-out-back var(--transition-base) both;
 }
 
-html[data-astro-transition="previous"]::view-transition-new(root) {
+html[data-astro-transition="previous"]::view-transition-new(main-content) {
   animation: route-in-back var(--transition-slow) both;
 }
 
-html[data-astro-transition="same"]::view-transition-old(root) {
+html[data-astro-transition="same"]::view-transition-old(main-content) {
   animation: route-out-same var(--transition-fast) both;
 }
 
-html[data-astro-transition="same"]::view-transition-new(root) {
+html[data-astro-transition="same"]::view-transition-new(main-content) {
   animation: route-in-same var(--transition-base) both;
 }
 

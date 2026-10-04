@@ -8,13 +8,11 @@ tags:
   - debugging
 draft: false
 cover:
-  src: /images/writing/graphql-over-the-cliff-cover.png
+  src: ../../assets/images/writing/graphql-over-the-cliff-cover.png
   alt: Abstraktne päringuleht kaldumas üle kaljuserva torude ja teenusesõlmede võrgustikku.
 locale: et
 slug: graphql-over-the-cliff
 ---
-
-![Abstraktne päringuleht kaldumas üle kaljuserva torude ja teenusesõlmede võrgustikku.](/images/writing/graphql-over-the-cliff-cover.png)
 
 Mäletan üht lolli päringut: ühel lehel oli umbes 20 olemit ja igal olemil oli laiendus, mis tegi umbes viis päringut teise teenusesse. Väljalaskel sai mälu otsa ja pidime selle p-limitiga korda tegema. Pagan, ma vihkan GraphQL-i.
 
