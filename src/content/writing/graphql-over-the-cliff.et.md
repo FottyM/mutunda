@@ -130,7 +130,7 @@ Pean teadma, kus me seda kasutasime, samamoodi nagu pean teadma, kus me skeeme k
 
 ## Ja oli ka teisi intsidente
 
-Mäletan, et üks väli lekkis teise päringusse, sest me polnud asju õigesti seadistanud. Oli ka samade väärtuste, kuid erinevate nimedega enume. Tulemust ei kuvatud enne, kui tegin midagi, mida kirjeldasin *tüüpide ümbervalamisena*. Mul pole siin täpset parandust käepärast, seega ei teeskle ma teadvat, kas tegu oli tüübiteisenduse või käitusaja vastendusega.
+Mäletan, et üks väli lekkis valeseadistuse tõttu teise päringusse. Samuti oli samade väärtuste, kuid erinevate nimedega enume, mis ei ilmunud enne, kui tegin midagi, mida kirjeldasin *tüüpide ümbervalamisena*.
 
 Need on kogemused minu arvamuse taga. Minu meelest on kasulike olekute ja piisava filtreerimisega REST API-st lihtsam aru saada. Ka REST võib tööd peita, kuid ma ei tundnud, et vajan soovitud filtreerimise ja seoste saamiseks kogu seda delegeerimist.
 

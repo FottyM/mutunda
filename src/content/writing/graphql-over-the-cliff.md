@@ -132,7 +132,7 @@ I have to know where we used it, just as I have to know where we stitched schema
 
 ## And there were other incidents
 
-I remember a field leaking into another query because we had not configured things properly. There were also enums with the same values but different names. The result would not show until I did what I described as *“retypecasting”* them. I do not have the exact fix here, so I will not pretend to know whether that was a typing change or a runtime mapping.
+I remember a field leaking into another query because we had misconfigured things. There were also enums with the same values but different names that would not show until I *“retypecast”* them.
 
 These are the experiences behind my opinion. I find a REST API with useful statuses and sufficient filtering easier to reason about. REST can hide work too, but I did not feel I needed all this delegation to get the filtering and relationships I wanted.
 

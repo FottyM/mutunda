@@ -130,7 +130,7 @@ Je dois savoir où nous l'avons employé, tout comme je dois savoir où nous avo
 
 ## Et il y a eu d'autres incidents
 
-Je me rappelle un champ qui fuyait dans une autre requête parce que nous n'avions pas configuré les choses correctement. Il y avait aussi des énumérations avec les mêmes valeurs mais des noms différents. Le résultat n'apparaissait pas tant que je ne faisais pas ce que j'ai décrit comme un *« retri de types »*. Je n'ai pas le correctif exact sous les yeux, donc je ne prétendrai pas savoir s'il s'agissait d'un changement de typage ou d'une correspondance à l'exécution.
+Je me rappelle un champ qui fuyait dans une autre requête à cause d'une mauvaise configuration. Il y avait aussi des énumérations aux valeurs identiques mais aux noms différents, qui refusaient de s'afficher sans ce que j'avais qualifié de *« retri de types »*.
 
 Voilà les expériences qui nourrissent mon avis. Je trouve qu'une API REST avec des statuts utiles et un filtrage suffisant est plus facile à appréhender. REST peut dissimuler du travail lui aussi, mais je n'ai pas eu le sentiment d'avoir besoin de toute cette délégation pour obtenir le filtrage et les relations que je souhaitais.
 
