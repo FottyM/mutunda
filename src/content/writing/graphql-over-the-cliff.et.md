@@ -136,6 +136,10 @@ Need on kogemused minu arvamuse taga. Minu meelest on kasulike olekute ja piisav
 
 Tunnen, et paremad teenused, vahemällu salvestamine ja võrgud on lahendanud paljud probleemid, mida GraphQL pidi lahendama. Samal ajal muutus selle seadistusega töötamine minu jaoks õudusunenäoks. Ma tõesti ei armasta seda enam. Ma vihkan seda.
 
+Aastaid tagasi vaatasin Harry Wolffit selgitamas oma videos, miks ta astus maha GraphQL-i vaimustuse rongilt.[^9] Tollal ei saanud ma sellest päriselt aru. GraphQL tundus ikka veel geniaalse imerohuna. Kuid selle seadistuse läbielamine tõi iga tema välja toodud punkti kristallselgelt esile.
+
+Istumise ajal oma keldris keset kolimiskaste selgitas Harry, kuidas kasutajaliidese lihtsuse lubadus peidab tegelikult tohutut taustaprogrammi keerukust. Klient saab hõlpsasti valida täpselt need kastid, mida soovib, kuid selle toimima saamine nõuab sarnast vaeva nagu kliimaseadme paigaldamine: termostaadi reguleerimine teisel korrusel näeb välja vaevatu, kuid ventilatsioonitorude ja torustiku vedamine nõuab tohutut nähtamatut tööd. Ta võttis kokku tõelised kitsaskohad: kuidas keerukus nihkub ebaühtlaselt taustaprogrammi, kuidas POST-i kaudu tehtavad päringud loobuvad veebilehitseja tavalisest HTTP vahemälust, kuidas naiivsed lahendajad tekitavad andmebaasidele märkamatuid N+1 ülekoormusi ning kuidas see loodi eelkõige Facebooki organisatsioonilise mastaabi lahendamiseks, mitte tavaliste meeskondade vajadusteks. Ta lõpetas tõdemusega, et puhkab REST-iga märksa rahulikumalt. Ma ei saaks rohkem nõustuda.
+
 Selles on veel üks osa: meie majasisene Hasura-laadne tööriist. Ma vihkan ka seda ja see mõjutab tugevalt minu suhtumist GraphQL-i. Kuid see on lugu teiseks päevaks.
 
 See tööriist oli põhjus, miks läksin ja vaatasin Hasurat ennast. Ja pärast põgusat pilku olin sellest vaimustuses.
@@ -152,3 +156,4 @@ Ma ei tea endiselt, kas see tuli minu kiindumusest LoopBacki filtrite vastu või
 [^6]: GraphQL Tools: [kaug-alamskeemid](https://the-guild.dev/graphql/stitching/docs/getting-started/remote-subschemas) ja [skeemilaiendused](https://the-guild.dev/graphql/stitching/docs/approaches/schema-extensions).
 [^7]: [`p-limit`i dokumentatsioon](https://github.com/sindresorhus/p-limit).
 [^8]: [DataLoader: rühmitamine ja päringupõhine vahemälu](https://github.com/graphql/dataloader).
+[^9]: Harry Wolff: [Why I'm Off The GraphQL Hype Train](https://www.youtube.com/watch?v=S1wQ0WvJK64).
