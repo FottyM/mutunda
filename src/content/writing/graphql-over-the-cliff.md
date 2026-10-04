@@ -82,46 +82,43 @@ Then I still had to find where it had failed.
 
 This is where that page of twenty entities comes back into the story. The query was small. The work behind its extension fields was not obvious from reading it.
 
-To illustrate the kind of indirection I mean, here is a simplified GraphQL Tools delegation resolver. This is not our production code. It shows how a field can forward work to an underlying schema:
+In our setup, extensions were organised by operation and type under `src/graphql/extensions/`: `Query/types/[typename]` and `Mutation/types/[typename]`, each with its own `resolver.ts` and `typeDefs.ts`. Inside those resolvers, a field could delegate to another schema,[^6] run a GraphQL query over HTTP, or make plain HTTP requests to downstream services.
+
+In our case, the resolver was making plain HTTP requests to five other services for each entity.
+
+To illustrate what that indirection looked like, here is a simplified resolver. This is not our production code, but it shows how those calls were wired inside:
 
 ```js
 // resolver.ts
-import { delegateToSchema } from "@graphql-tools/delegate";
-
 export const resolver = {
   async resolve(parent: any, args: any, context: any, info: any) {
-    const [result] = await Promise.all([
-      delegateToSchema({
-        schema: subschema,
-        operation: "query",
-        fieldName: "entity",
-        args,
-        context,
-        info,
-      }),
-      ...services.map((service: any) => service.fetch(args.id)),
-    ]);
+    const [serviceA, serviceB, serviceC, serviceD, serviceE] =
+      await Promise.all([
+        fetch(`https://api.internal/service-a/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-b/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-c/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-d/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-e/${parent.id}`).then((r) => r.json()),
+      ]);
 
     // Add work of our own.
-    const extraData = await fetchExtraData(result.id);
-    return { ...result, extraData };
+    const extraData = await fetchExtraData(parent.id);
+    return { ...parent, extraData };
   },
 };
 ```
 
-This excerpt assumes a configured upstream subschema exposing `entity`. Delegation sends work to that underlying schema; an extension resolver can then add work of its own.[^6] Apollo and Yoga describe the client and server parts of our setup, not every step the request takes between arriving and returning a result.
+That extension was running five HTTP requests for each returned entity. When a client asked for a page of twenty entities, that single GraphQL query scheduled a hundred downstream HTTP calls, before counting whatever work fetched the original page.
 
-Suppose the extension uses five service clients for each returned entity. That is how a page of twenty can schedule a hundred downstream calls, before counting the original upstream request.
-
-Our release hit an out-of-memory failure, and we used `p-limit` to control concurrency. An illustrative extension resolver could share a limiter like this:
+Our release hit an out-of-memory failure, and we used `p-limit` to control concurrency. An illustrative resolver could wrap those downstream calls like this:
 
 ```js
 // Outside the resolver, shared within this process.
 const limit = pLimit(5);
 
 // Inside the extension resolver.
-return Promise.all(
-  extraClients.map((client) => limit(() => client(entity.id))),
+const results = await Promise.all(
+  services.map((url) => limit(() => fetch(url).then((r) => r.json()))),
 );
 ```
 
@@ -129,7 +126,7 @@ The calls still happen. This limits how many wrapped operations run at once; it 
 
 I do not have a memory profile here that proves the precise cause of our failure. These snippets explain the fan-out and the concurrency control, not the whole incident.
 
-But this is the part that frustrates me. To understand one field, I am now looking at an upstream query, a delegated resolver, an extension, and calls to another service. The query at the front gives me very little of that route.
+But this is the part that frustrates me. To understand one field, I am now looking at an upstream query, an extension resolver, and HTTP calls to five other services. The query at the front gives me very little of that route.
 
 DataLoader is another thing to understand in the same setup. It can batch loads and cache results within an instance, but that does not mean every downstream call is automatically batched. Its documentation recommends instances scoped to individual requests.[^8]
 

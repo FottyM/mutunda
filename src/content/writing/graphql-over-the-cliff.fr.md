@@ -80,46 +80,43 @@ Et je devais encore trouver où cela avait échoué.
 
 C'est ici que cette page de vingt entités revient dans l'histoire. La requête était courte. Le travail dissimulé derrière ses champs d'extension n'était pas évident à la lecture.
 
-Pour illustrer le genre d'indirection dont je parle, voici un résolveur de délégation GraphQL Tools simplifié. Ce n'est pas notre code de production. Il montre comment un champ peut transférer le travail à un schéma sous-jacent :
+Dans notre architecture, les extensions étaient organisées par opération et par type sous `src/graphql/extensions/` : `Query/types/[typename]` et `Mutation/types/[typename]`, chacun avec son `resolver.ts` et son `typeDefs.ts`. Dans ces résolveurs, un champ pouvait déléguer à un autre schéma,[^6] exécuter une requête GraphQL par HTTP ou effectuer de simples requêtes HTTP vers des services en aval.
+
+Dans notre cas, le résolveur effectuait de simples requêtes HTTP vers cinq autres services pour chaque entité.
+
+Pour illustrer ce à quoi ressemblait cette indirection, voici un résolveur simplifié. Ce n'est pas notre code de production, mais il montre comment ces appels étaient agencés à l'intérieur :
 
 ```js
 // resolver.ts
-import { delegateToSchema } from "@graphql-tools/delegate";
-
 export const resolver = {
   async resolve(parent: any, args: any, context: any, info: any) {
-    const [result] = await Promise.all([
-      delegateToSchema({
-        schema: subschema,
-        operation: "query",
-        fieldName: "entity",
-        args,
-        context,
-        info,
-      }),
-      ...services.map((service: any) => service.fetch(args.id)),
-    ]);
+    const [serviceA, serviceB, serviceC, serviceD, serviceE] =
+      await Promise.all([
+        fetch(`https://api.internal/service-a/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-b/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-c/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-d/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-e/${parent.id}`).then((r) => r.json()),
+      ]);
 
     // Add work of our own.
-    const extraData = await fetchExtraData(result.id);
-    return { ...result, extraData };
+    const extraData = await fetchExtraData(parent.id);
+    return { ...parent, extraData };
   },
 };
 ```
 
-Cet extrait suppose un sous-schéma distant configuré qui expose `entity`. La délégation transmet le travail à ce schéma sous-jacent ; un résolveur d'extension peut ensuite y ajouter son propre travail.[^6] Apollo et Yoga décrivent les parties client et serveur de notre infrastructure, et non chaque étape franchie par la requête entre son arrivée et le retour du résultat.
+Cette extension exécutait cinq requêtes HTTP pour chaque entité renvoyée. Quand un client demandait une page de vingt entités, cette unique requête GraphQL planifiait cent requêtes HTTP en aval, avant même de compter le travail pour récupérer la page d'origine.
 
-Supposons que l'extension fasse appel à cinq clients de service pour chaque entité renvoyée. C'est ainsi qu'une page de vingt entités peut planifier cent appels en aval, avant même de compter la requête initiale vers le schéma amont.
-
-Notre mise en production a subi une panne d'épuisement de mémoire, et nous avons utilisé `p-limit` pour réguler la concurrence. Un résolveur d'extension illustratif pourrait partager un limiteur ainsi :
+Notre mise en production a subi une panne d'épuisement de mémoire, et nous avons utilisé `p-limit` pour réguler la concurrence. Un résolveur illustratif pouvait encadrer ces requêtes en aval ainsi :
 
 ```js
 // En dehors du résolveur, partagé au sein de ce processus.
 const limit = pLimit(5);
 
 // À l'intérieur du résolveur d'extension.
-return Promise.all(
-  extraClients.map((client) => limit(() => client(entity.id))),
+const results = await Promise.all(
+  services.map((url) => limit(() => fetch(url).then((r) => r.json()))),
 );
 ```
 
@@ -127,7 +124,7 @@ Les appels ont toujours lieu. Cela limite le nombre d'opérations exécutées si
 
 Je n'ai pas ici de profil mémoire démontrant la cause exacte de notre panne. Ces extraits expliquent la dispersion des appels et le contrôle de concurrence, pas l'incident dans son intégralité.
 
-Mais c'est la partie qui me frustre. Pour comprendre un seul champ, je me retrouve à examiner une requête amont, un résolveur délégué, une extension et des appels vers un autre service. La requête initiale en façade ne me donne presque aucun indice sur cet itinéraire.
+Mais c'est la partie qui me frustre. Pour comprendre un seul champ, je me retrouve à examiner une requête en amont, un résolveur d'extension et des requêtes HTTP vers cinq autres services. La requête initiale en façade ne me donne presque aucun indice sur cet itinéraire.
 
 DataLoader est un autre élément à comprendre dans cette même configuration. Il peut regrouper les chargements par lots et mettre en cache les résultats au sein d'une instance, mais cela ne signifie pas que chaque appel en aval est automatiquement regroupé. Sa documentation recommande des instances cantonnées aux requêtes individuelles.[^8]
 

@@ -80,46 +80,43 @@ Ja siis pidin veel leidma, kus see oli ebaõnnestunud.
 
 Siin tuleb see kahekümne olemiga leht loosse tagasi. Päring oli väike. Selle laiendusväljade taga olev töö ei olnud seda lugedes ilmne.
 
-Selle kaudsuse illustreerimiseks on siin lihtsustatud GraphQL Toolsi delegeerimislahendaja. See ei ole meie tootmiskood. See näitab, kuidas väli saab suunata töö alusskeemile:
+Meie ülesehituses olid laiendused jaotatud operatsiooni ja tüübi järgi kaustas `src/graphql/extensions/`: `Query/types/[typename]` ja `Mutation/types/[typename]`, millest igaühel oli oma `resolver.ts` ja `typeDefs.ts`. Nendes lahendajates sai väli delegeerida teisele skeemile,[^6] käitada GraphQL-i päringu üle HTTP või teha tavalisi HTTP-päringuid allavoolu teenustesse.
+
+Meie puhul tegi lahendaja iga olemi jaoks tavalisi HTTP-päringuid viide teise teenusesse.
+
+Selle kaudsuse illustreerimiseks on siin lihtsustatud lahendaja. See ei ole meie tootmiskood, kuid see näitab, kuidas need väljakutsed seesmiselt toimisid:
 
 ```js
 // resolver.ts
-import { delegateToSchema } from "@graphql-tools/delegate";
-
 export const resolver = {
   async resolve(parent: any, args: any, context: any, info: any) {
-    const [result] = await Promise.all([
-      delegateToSchema({
-        schema: subschema,
-        operation: "query",
-        fieldName: "entity",
-        args,
-        context,
-        info,
-      }),
-      ...services.map((service: any) => service.fetch(args.id)),
-    ]);
+    const [serviceA, serviceB, serviceC, serviceD, serviceE] =
+      await Promise.all([
+        fetch(`https://api.internal/service-a/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-b/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-c/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-d/${parent.id}`).then((r) => r.json()),
+        fetch(`https://api.internal/service-e/${parent.id}`).then((r) => r.json()),
+      ]);
 
     // Add work of our own.
-    const extraData = await fetchExtraData(result.id);
-    return { ...result, extraData };
+    const extraData = await fetchExtraData(parent.id);
+    return { ...parent, extraData };
   },
 };
 ```
 
-See väljavõte eeldab konfigureeritud ülemist alamskeemi, mis avaldab olemi `entity`. Delegeerimine saadab töö sellele alusskeemile; laienduslahendaja saab seejärel lisada oma töö.[^6] Apollo ja Yoga kirjeldavad meie seadistuse kliendi- ja serveriosi, mitte iga sammu, mida päring teeb saabumise ja tulemuse tagastamise vahel.
+See laiendus tegi viis HTTP-päringut iga tagastatud olemi kohta. Kui klient küsis lehekülje kahekümne olemiga, ajastas see ainus GraphQL-i päring sada allavoolu HTTP-kõnet enne algse lehe laadimise arvestamist.
 
-Oletame, et laiendus kasutab iga tagastatud olemi jaoks viit teenuseklienti. Nii võib kahekümne olemiga leht ajastada sada allavoolu väljakutset enne esialgse ülemise päringu arvestamist.
-
-Meie väljalaset tabas mälupuuduse tõrge ja me kasutasime samaaegsuse piiramiseks `p-limit`it. Näitlik laienduslahendaja saaks piirajat jagada nii:
+Meie väljalaset tabas mälupuuduse tõrge ja me kasutasime samaaegsuse piiramiseks `p-limit`it. Näitlik lahendaja sai need allavoolu kõned mähkida nii:
 
 ```js
 // Väljaspool lahendajat, jagatud selles protsessis.
 const limit = pLimit(5);
 
 // Laienduslahendaja sees.
-return Promise.all(
-  extraClients.map((client) => limit(() => client(entity.id))),
+const results = await Promise.all(
+  services.map((url) => limit(() => fetch(url).then((r) => r.json()))),
 );
 ```
 
@@ -127,7 +124,7 @@ Väljakutsed toimuvad endiselt. See piirab samaaegselt töötavate mähitud oper
 
 Mul ei ole siin mäluprofiili, mis tõestaks meie rikke täpset põhjust. Need koodijupid selgitavad väljakutsete hargnemist ja samaaegsuse juhtimist, mitte kogu intsidenti.
 
-Kuid see on osa, mis mind frustreerib. Ühe välja mõistmiseks vaatan nüüd ülemist päringut, delegeeritud lahendajat, laiendust ja kõnesid teise teenusesse. Päring eesotsas annab mulle sellest teekonnast väga vähe teada.
+Kuid see on osa, mis mind frustreerib. Ühe välja mõistmiseks vaatan nüüd ülemist päringut, laienduslahendajat ja HTTP-päringuid viide teise teenusesse. Päring eesotsas annab mulle sellest teekonnast väga vähe teada.
 
 DataLoader on teine asi, mida samas seadistuses mõista. See saab laadimisi rühmitada ja tulemusi eksemplari sees vahemällu salvestada, kuid see ei tähenda, et iga allavoolu kõne rühmitatakse automaatselt. Selle dokumentatsioon soovitab eksemplare, mis on seotud üksikute päringutega.[^8]
 
