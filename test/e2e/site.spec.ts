@@ -178,3 +178,18 @@ test("case studies provide top and footer back buttons returning to selected wor
   await expect(page).toHaveURL(/\/fr\/projects\/?$/);
   await expect(page.getByRole("heading", { name: "Sélection de projets" })).toBeVisible();
 });
+
+test("GraphQL field note renders in English, French, and Estonian with footnotes and back links", async ({ page }) => {
+  await page.goto("/writing/graphql-over-the-cliff");
+  await expect(page.getByRole("heading", { name: "I loved GraphQL until I had to debug it" })).toBeVisible();
+  await expect(page.locator(".back-link")).toHaveText(/Back to field notes/);
+  await expect(page.locator("[data-footnote-ref]").first()).toBeVisible();
+
+  await page.goto("/fr/writing/graphql-over-the-cliff");
+  await expect(page.getByRole("heading", { name: "J'aimais GraphQL, jusqu'au jour où j'ai dû le déboguer" })).toBeVisible();
+  await expect(page.locator(".back-link")).toHaveText(/Retour aux notes de terrain/);
+
+  await page.goto("/et/writing/graphql-over-the-cliff");
+  await expect(page.getByRole("heading", { name: "Mulle meeldis GraphQL, kuni pidin seda siluma" })).toBeVisible();
+  await expect(page.locator(".back-link")).toHaveText(/Tagasi väljamärkmete juurde/);
+});
