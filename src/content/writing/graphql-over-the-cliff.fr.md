@@ -83,12 +83,12 @@ C'est ici que cette page de vingt entités revient dans l'histoire. La requête 
 Pour illustrer le genre d'indirection dont je parle, voici un résolveur de délégation GraphQL Tools simplifié. Ce n'est pas notre code de production. Il montre comment un champ peut transférer le travail à un schéma sous-jacent :
 
 ```js
-// resolvers.js
+// resolver.ts
 import { delegateToSchema } from "@graphql-tools/delegate";
 
-export const resolvers = {
-  Query: {
-    page: (_parent, args, context, info) =>
+export const resolver = {
+  async resolve(parent: any, args: any, context: any, info: any) {
+    const [result] = await Promise.all([
       delegateToSchema({
         schema: subschema,
         operation: "query",
@@ -97,10 +97,12 @@ export const resolvers = {
         context,
         info,
       }),
-  },
-  Entity: {
-    extras: (entity) =>
-      Promise.all(extraClients.map((client) => client(entity.id))),
+      ...services.map((service: any) => service.fetch(args.id)),
+    ]);
+
+    // Add work of our own.
+    const extraData = await fetchExtraData(result.id);
+    return { ...result, extraData };
   },
 };
 ```

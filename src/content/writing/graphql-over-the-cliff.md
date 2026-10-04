@@ -85,12 +85,12 @@ This is where that page of twenty entities comes back into the story. The query 
 To illustrate the kind of indirection I mean, here is a simplified GraphQL Tools delegation resolver. This is not our production code. It shows how a field can forward work to an underlying schema:
 
 ```js
-// resolvers.js
+// resolver.ts
 import { delegateToSchema } from "@graphql-tools/delegate";
 
-export const resolvers = {
-  Query: {
-    page: (_parent, args, context, info) =>
+export const resolver = {
+  async resolve(parent: any, args: any, context: any, info: any) {
+    const [result] = await Promise.all([
       delegateToSchema({
         schema: subschema,
         operation: "query",
@@ -99,10 +99,12 @@ export const resolvers = {
         context,
         info,
       }),
-  },
-  Entity: {
-    extras: (entity) =>
-      Promise.all(extraClients.map((client) => client(entity.id))),
+      ...services.map((service: any) => service.fetch(args.id)),
+    ]);
+
+    // Add work of our own.
+    const extraData = await fetchExtraData(result.id);
+    return { ...result, extraData };
   },
 };
 ```

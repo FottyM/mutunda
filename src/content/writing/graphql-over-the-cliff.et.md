@@ -83,12 +83,12 @@ Siin tuleb see kahekümne olemiga leht loosse tagasi. Päring oli väike. Selle 
 Selle kaudsuse illustreerimiseks on siin lihtsustatud GraphQL Toolsi delegeerimislahendaja. See ei ole meie tootmiskood. See näitab, kuidas väli saab suunata töö alusskeemile:
 
 ```js
-// resolvers.js
+// resolver.ts
 import { delegateToSchema } from "@graphql-tools/delegate";
 
-export const resolvers = {
-  Query: {
-    page: (_parent, args, context, info) =>
+export const resolver = {
+  async resolve(parent: any, args: any, context: any, info: any) {
+    const [result] = await Promise.all([
       delegateToSchema({
         schema: subschema,
         operation: "query",
@@ -97,10 +97,12 @@ export const resolvers = {
         context,
         info,
       }),
-  },
-  Entity: {
-    extras: (entity) =>
-      Promise.all(extraClients.map((client) => client(entity.id))),
+      ...services.map((service: any) => service.fetch(args.id)),
+    ]);
+
+    // Add work of our own.
+    const extraData = await fetchExtraData(result.id);
+    return { ...result, extraData };
   },
 };
 ```
