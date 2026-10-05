@@ -474,7 +474,7 @@ const externalItems = [
                 {t("palette.group_field_notes")}
               </span>
               <ul class="command-palette__group-items" role="presentation">
-                {writingItems.map((item) => (
+                {writingItems.map((item, index) => (
                   <li
                     id={item.id}
                     role="option"
@@ -485,6 +485,7 @@ const externalItems = [
                     data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
                     data-content={item.content}
                     aria-selected="false"
+                    style={index >= 2 ? "display: none;" : undefined}
                   >
                     <a
                       href={item.href}
@@ -528,7 +529,7 @@ const externalItems = [
                 {t("palette.group_selected_work")}
               </span>
               <ul class="command-palette__group-items" role="presentation">
-                {projectItems.map((item) => (
+                {projectItems.map((item, index) => (
                   <li
                     id={item.id}
                     role="option"
@@ -539,6 +540,7 @@ const externalItems = [
                     data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
                     data-content={item.content}
                     aria-selected="false"
+                    style={index >= 1 ? "display: none;" : undefined}
                   >
                     <a
                       href={item.href}
@@ -781,12 +783,30 @@ const externalItems = [
       const q = query.trim().toLowerCase();
       const allItems = getAllItems();
       let matchCount = 0;
+      let writingCount = 0;
+      let projectsCount = 0;
 
       allItems.forEach((item) => {
         const text = (item.dataset.search || "").toLowerCase();
         const content = item.dataset.content || "";
         const contentLower = content.toLowerCase();
-        const matches = !q || text.includes(q) || contentLower.includes(q);
+        let matches = !q || text.includes(q) || contentLower.includes(q);
+
+        // When not actively searching, show only the latest 2 field notes and latest 1 project
+        if (!q) {
+          if (item.dataset.paletteItem?.startsWith("writing-")) {
+            writingCount++;
+            if (writingCount > 2) {
+              matches = false;
+            }
+          } else if (item.dataset.paletteItem?.startsWith("project-")) {
+            projectsCount++;
+            if (projectsCount > 1) {
+              matches = false;
+            }
+          }
+        }
+
         item.style.display = matches ? "" : "none";
         const titleEl = item.querySelector<HTMLElement>(
           ".command-palette__item-title",

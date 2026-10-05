@@ -122,6 +122,31 @@ test("command palette searches full article body (e.g. Wolff) and displays match
   await expect(page).toHaveURL(/\/writing\/graphql-over-the-cliff\/?$/);
 });
 
+test("command palette initially shows only the latest 2 field notes and 1 project, expanding on search", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Meta+k");
+
+  const writingItems = page.locator('[data-group="writing"] .command-palette__item:visible');
+  await expect(writingItems).toHaveCount(2);
+
+  const projectItems = page.locator('[data-group="projects"] .command-palette__item:visible');
+  await expect(projectItems).toHaveCount(1);
+
+  // Older note is hidden initially
+  const olderNote = page.locator('[data-palette-item="writing-static-sites-are-operational-systems"]');
+  await expect(olderNote).toBeHidden();
+
+  // Searching reveals the older note
+  const input = page.locator("#command-palette-input");
+  await input.fill("operational");
+  await expect(olderNote).toBeVisible();
+
+  // Clearing the query restores the 2-item limit
+  await input.fill("");
+  await expect(writingItems).toHaveCount(2);
+  await expect(olderNote).toBeHidden();
+});
+
 test("command palette searches and navigates selected work case studies", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("Meta+k");

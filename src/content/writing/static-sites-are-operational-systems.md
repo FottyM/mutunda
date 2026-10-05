@@ -7,6 +7,9 @@ tags:
   - astro
   - delivery
 draft: false
+cover:
+  src: ../../assets/images/writing/static-sites-are-operational-systems-cover.png
+  alt: An abstract mechanical assembly line transforms raw blueprint sheets and geometric blocks into bundled release packages.
 locale: en
 ---
 
