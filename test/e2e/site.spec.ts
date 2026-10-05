@@ -410,4 +410,38 @@ test("editorial images render with progressive blur-up and gradual resolution", 
   await expect(articleTarget).toHaveClass(/is-loaded/);
 });
 
+test("editorial links, listing titles, and card titles define visited link styling", async ({ page }) => {
+  await page.goto("/");
+
+  const visitedTokenLight = await page.evaluate(() =>
+    window.getComputedStyle(document.documentElement).getPropertyValue("--color-visited").trim()
+  );
+  expect(visitedTokenLight).toBe("#6b3f63");
+
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
+  const visitedTokenDark = await page.evaluate(() =>
+    window.getComputedStyle(document.documentElement).getPropertyValue("--color-visited").trim()
+  );
+  expect(visitedTokenDark).toBe("#d49ec2");
+
+  const visitedSelectors = await page.evaluate(() => {
+    const selectors: string[] = [];
+    for (const sheet of Array.from(document.styleSheets)) {
+      try {
+        for (const rule of sheet.cssRules) {
+          if (rule instanceof CSSStyleRule && rule.selectorText.includes(":visited")) {
+            selectors.push(rule.selectorText);
+          }
+        }
+      } catch {}
+    }
+    return selectors;
+  });
+
+  expect(visitedSelectors.some((s) => s.includes(".text-link:visited"))).toBe(true);
+  expect(visitedSelectors.some((s) => s.includes(".writing-entry h2 a:visited"))).toBe(true);
+  expect(visitedSelectors.some((s) => s.includes(".card__title a:visited"))).toBe(true);
+  expect(visitedSelectors.some((s) => s.includes(".prose a:visited"))).toBe(true);
+});
+
 
