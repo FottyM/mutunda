@@ -903,18 +903,21 @@ const externalItems = [
           if (themeManager && typeof themeManager.setTheme === "function") {
             themeManager.setTheme(themeMode);
           } else {
-            // Fallback manual dispatch
+            window.dispatchEvent(
+              new CustomEvent("theme:set", { detail: themeMode }),
+            );
             const root = document.documentElement;
-            if (themeMode === "system") {
-              localStorage.removeItem("theme-preference");
-              const prefersDark = window.matchMedia(
-                "(prefers-color-scheme: dark)",
-              ).matches;
-              root.setAttribute("data-theme", prefersDark ? "dark" : "light");
-            } else {
-              localStorage.setItem("theme-preference", themeMode);
-              root.setAttribute("data-theme", themeMode);
-            }
+            try {
+              if (themeMode === "system") {
+                localStorage.removeItem("theme");
+                localStorage.removeItem("theme-preference");
+                root.removeAttribute("data-theme");
+              } else {
+                localStorage.setItem("theme", themeMode);
+                localStorage.removeItem("theme-preference");
+                root.setAttribute("data-theme", themeMode);
+              }
+            } catch (e) {}
           }
         }
         closePalette();

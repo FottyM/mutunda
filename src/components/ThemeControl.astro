@@ -100,7 +100,7 @@ const t = useTranslations(locale);
 
     function getStoredTheme(): "light" | "dark" | "system" {
       try {
-        const stored = localStorage.getItem("theme");
+        const stored = localStorage.getItem("theme") || localStorage.getItem("theme-preference");
         if (stored === "light" || stored === "dark") return stored;
       } catch (e) {}
       return "system";
@@ -136,11 +136,13 @@ const t = useTranslations(locale);
           document.documentElement.removeAttribute("data-theme");
           try {
             localStorage.removeItem("theme");
+            localStorage.removeItem("theme-preference");
           } catch (e) {}
         } else {
           document.documentElement.setAttribute("data-theme", theme);
           try {
             localStorage.setItem("theme", theme);
+            localStorage.removeItem("theme-preference");
           } catch (e) {}
         }
         updateActiveStates();
@@ -222,6 +224,10 @@ const t = useTranslations(locale);
         applyTheme(e.detail, true);
       }
     }) as EventListener);
+
+    (window as any).__themeManager = {
+      setTheme: (theme: "light" | "dark" | "system") => applyTheme(theme, true),
+    };
   }
 
   setupThemeControl();
