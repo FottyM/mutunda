@@ -7,6 +7,9 @@ tags:
   - astro
   - delivery
 draft: false
+cover:
+  src: ../../assets/images/writing/static-sites-are-operational-systems-cover.png
+  alt: Abstraktne mehaaniline koosteliin muudab joonislehed ja geomeetrilised klotsid pakendatud väljalaskepakkideks.
 locale: et
 slug: static-sites-are-operational-systems
 ---

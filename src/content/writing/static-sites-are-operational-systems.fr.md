@@ -7,6 +7,9 @@ tags:
   - astro
   - livraison
 draft: false
+cover:
+  src: ../../assets/images/writing/static-sites-are-operational-systems-cover.png
+  alt: Une chaîne d'assemblage mécanique abstraite transforme des feuilles de plans et des blocs géométriques en paquets de livraison scellés.
 locale: fr
 slug: static-sites-are-operational-systems
 ---

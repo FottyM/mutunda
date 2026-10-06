@@ -32,6 +32,154 @@ test("command palette supports its keyboard shortcut and selection", async ({ pa
   await expect(dialog).not.toBeVisible();
 });
 
+test("header search trigger displays search icon, shortcut tip badge, and collapses on mobile", async ({ page, isMobile }) => {
+  await page.goto("/");
+  const trigger = page.locator("#command-palette-trigger");
+  await expect(trigger).toBeVisible();
+  await expect(trigger).toHaveAttribute("title", /Search.*\(.*K\)/i);
+  await expect(trigger.locator("svg")).toHaveClass(/lucide-search/);
+
+  const kbdBadge = trigger.locator(".command-palette-trigger__kbd");
+  if (isMobile) {
+    await expect(kbdBadge).toBeHidden();
+  } else {
+    await expect(kbdBadge).toBeVisible();
+    await expect(kbdBadge).toContainText("K");
+
+    // Mobile viewport: shortcut tip collapses quietly to square button
+    await page.setViewportSize({ width: 375, height: 667 });
+    await expect(kbdBadge).toBeHidden();
+
+    // Reset viewport for desktop
+    await page.setViewportSize({ width: 1280, height: 800 });
+  }
+
+  await trigger.click();
+  const dialog = page.locator("#command-palette-dialog");
+  await expect(dialog).toBeVisible();
+  await expect(page.locator("#command-palette-input")).toBeFocused();
+});
+
+test("command palette orders groups with field notes and selected work below navigation, actions, languages", async ({ page }) => {
+  await page.goto("/");
+  await page.locator("#command-palette-trigger").click();
+  const dialog = page.locator("#command-palette-dialog");
+  await expect(dialog).toBeVisible();
+
+  const groups = page.locator("#command-palette-list > .command-palette__group");
+  const groupNames = await groups.evaluateAll((list) =>
+    list.map((el) => el.getAttribute("data-group"))
+  );
+  expect(groupNames).toEqual(["nav", "actions", "languages", "writing", "projects", "external"]);
+});
+
+test("command palette highlights items on cursor hover and synchronizes active selection", async ({ page, isMobile }) => {
+  if (isMobile) return;
+  await page.goto("/");
+  await page.locator("#command-palette-trigger").click();
+  const dialog = page.locator("#command-palette-dialog");
+  await expect(dialog).toBeVisible();
+
+  const secondItem = page.locator(".command-palette__item").nth(1);
+  await expect(secondItem).not.toHaveClass(/is-active/);
+
+  await secondItem.hover();
+  await expect(secondItem).toHaveClass(/is-active/);
+  await expect(secondItem).toHaveAttribute("aria-selected", "true");
+  const secondItemId = await secondItem.getAttribute("id");
+  await expect(page.locator("#command-palette-input")).toHaveAttribute("aria-activedescendant", secondItemId || "");
+});
+
+test("command palette searches and navigates field notes with query highlighting", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Meta+k");
+  const input = page.locator("#command-palette-input");
+  await input.fill("GraphQL");
+
+  const groupHeader = page.locator('.command-palette__group-title:has-text("Field Notes")');
+  await expect(groupHeader).toBeVisible();
+
+  const noteItem = page.locator('[data-palette-item^="writing-graphql-over-the-cliff"]');
+  await expect(noteItem).toBeVisible();
+  await expect(noteItem.locator("mark").first()).toContainText(/graphql/i);
+
+  await noteItem.click();
+  await expect(page).toHaveURL(/\/writing\/graphql-over-the-cliff\/?$/);
+});
+
+test("command palette searches full article body (e.g. Wolff) and displays matching excerpt", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Meta+k");
+  const input = page.locator("#command-palette-input");
+  await input.fill("Wolff");
+
+  const noteItem = page.locator('[data-palette-item^="writing-graphql-over-the-cliff"]');
+  await expect(noteItem).toBeVisible();
+  await expect(noteItem.locator(".command-palette__item-desc")).toContainText(/Wolff/i);
+  await expect(noteItem.locator("mark")).toContainText(/Wolff/i);
+
+  await noteItem.click();
+  await expect(page).toHaveURL(/\/writing\/graphql-over-the-cliff\/?$/);
+});
+
+test("command palette initially shows only the latest 2 field notes and 1 project, expanding on search", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Meta+k");
+
+  const writingItems = page.locator('[data-group="writing"] .command-palette__item:visible');
+  await expect(writingItems).toHaveCount(2);
+
+  const projectItems = page.locator('[data-group="projects"] .command-palette__item:visible');
+  await expect(projectItems).toHaveCount(1);
+
+  // Older note is hidden initially
+  const olderNote = page.locator('[data-palette-item="writing-static-sites-are-operational-systems"]');
+  await expect(olderNote).toBeHidden();
+
+  // Searching reveals the older note
+  const input = page.locator("#command-palette-input");
+  await input.fill("operational");
+  await expect(olderNote).toBeVisible();
+
+  // Clearing the query restores the 2-item limit
+  await input.fill("");
+  await expect(writingItems).toHaveCount(2);
+  await expect(olderNote).toBeHidden();
+});
+
+test("command palette searches and navigates selected work case studies", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Meta+k");
+  const input = page.locator("#command-palette-input");
+  await input.fill("Ebola");
+
+  const groupHeader = page.locator('.command-palette__group-title:has-text("Selected Work")');
+  await expect(groupHeader).toBeVisible();
+
+  const projectItem = page.locator('[data-palette-item^="project-ebola-tracker"]');
+  await expect(projectItem).toBeVisible();
+
+  await projectItem.click();
+  await expect(page).toHaveURL(/\/projects\/ebola-tracker\/?$/);
+});
+
+test("command palette preserves active locale and searches localized content", async ({ page }) => {
+  await page.goto("/fr");
+  const frTrigger = page.locator("#command-palette-trigger");
+  await expect(frTrigger).toHaveAttribute("title", /Rechercher.*\(.*K\)/i);
+
+  await frTrigger.click();
+  const input = page.locator("#command-palette-input");
+  await input.fill("GraphQL");
+
+  const frNoteItem = page.locator('[data-palette-item^="writing-graphql-over-the-cliff"]');
+  await expect(frNoteItem).toBeVisible();
+  await expect(frNoteItem).toContainText("Comment mon amour pour GraphQL");
+
+  await frNoteItem.click();
+  await expect(page).toHaveURL(/\/fr\/writing\/graphql-over-the-cliff\/?$/);
+});
+
 test("theme preference survives client-side navigation", async ({ page }) => {
   await page.goto("/");
 
@@ -260,6 +408,40 @@ test("editorial images render with progressive blur-up and gradual resolution", 
   await expect(articlePicture.locator('source[type="image/webp"]')).toHaveCount(1);
   const articleTarget = articleContainer.locator(".progressive-image__target");
   await expect(articleTarget).toHaveClass(/is-loaded/);
+});
+
+test("editorial links, listing titles, and card titles define visited link styling", async ({ page }) => {
+  await page.goto("/");
+
+  const visitedTokenLight = await page.evaluate(() =>
+    window.getComputedStyle(document.documentElement).getPropertyValue("--color-visited").trim()
+  );
+  expect(visitedTokenLight).toBe("#6b3f63");
+
+  await page.evaluate(() => document.documentElement.setAttribute("data-theme", "dark"));
+  const visitedTokenDark = await page.evaluate(() =>
+    window.getComputedStyle(document.documentElement).getPropertyValue("--color-visited").trim()
+  );
+  expect(visitedTokenDark).toBe("#d49ec2");
+
+  const visitedSelectors = await page.evaluate(() => {
+    const selectors: string[] = [];
+    for (const sheet of Array.from(document.styleSheets)) {
+      try {
+        for (const rule of sheet.cssRules) {
+          if (rule instanceof CSSStyleRule && rule.selectorText.includes(":visited")) {
+            selectors.push(rule.selectorText);
+          }
+        }
+      } catch {}
+    }
+    return selectors;
+  });
+
+  expect(visitedSelectors.some((s) => s.includes(".text-link:visited"))).toBe(true);
+  expect(visitedSelectors.some((s) => s.includes(".writing-entry h2 a:visited"))).toBe(true);
+  expect(visitedSelectors.some((s) => s.includes(".card__title a:visited"))).toBe(true);
+  expect(visitedSelectors.some((s) => s.includes(".prose a:visited"))).toBe(true);
 });
 
 

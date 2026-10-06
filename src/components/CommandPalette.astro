@@ -2,6 +2,7 @@
 import Icon from "./Icon.astro";
 import SocialIcon from "./SocialIcon.astro";
 import FlagIcon from "./FlagIcon.astro";
+import { getCollection } from "astro:content";
 import { LOCALES, LOCALE_LABELS, type Locale } from "../i18n/config";
 import { getLocaleFallbackPath, getLocalizedPath } from "../i18n/utils";
 import { useTranslations } from "../i18n/translations";
@@ -14,6 +15,7 @@ interface Props {
 const { locale, translations } = Astro.props;
 const t = useTranslations(locale);
 
+// 1. Navigation items (clean top-level destinations)
 const navItems = [
   {
     id: "nav-home",
@@ -60,26 +62,115 @@ const navItems = [
     category: t("palette.group_navigation"),
     keywords: "style guide design tokens visual system tokens",
   },
-  {
-    id: "nav-ebola-tracker",
-    href: getLocalizedPath("/projects/ebola-tracker", locale),
-    title: t("palette.item_ebola_title"),
-    description: t("palette.item_ebola_description"),
-    icon: "Activity" as const,
-    category: t("palette.group_navigation"),
-    keywords: "ebola tracker project case study dashboard epidemiological",
-  },
-  {
-    id: "nav-static-sites",
-    href: getLocalizedPath("/writing/static-sites-are-operational-systems", locale),
-    title: t("palette.item_static_sites_title"),
-    description: t("palette.item_static_sites_description"),
-    icon: "Cpu" as const,
-    category: t("palette.group_navigation"),
-    keywords: "static sites operational systems architecture article note",
-  },
 ];
 
+function cleanMarkdownForSearch(body?: string): string {
+  if (!body) return "";
+  return body
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/[*_]{1,3}([^*_]+)[*_]{1,3}/g, "$1")
+    .replace(/\[\^[^\]]+\]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// 2. Field Notes (dynamically indexed from writing collection for active locale)
+const allWriting = (
+  await getCollection("writing", ({ data }) => !data.draft)
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const getWritingSlug = (entry: (typeof allWriting)[0]) =>
+  entry.data.slug ??
+  entry.id.replace(/\.(fr|et)$/, "").replace(/^(fr|et)\//, "");
+
+const uniqueWritingSlugs = [...new Set(allWriting.map(getWritingSlug))];
+
+const writingItems = uniqueWritingSlugs
+  .map((slug) => {
+    const inLocale = allWriting.find(
+      (e) => getWritingSlug(e) === slug && (e.data.locale ?? "en") === locale,
+    );
+    if (inLocale) {
+      return {
+        id: `writing-${slug}`,
+        href: getLocalizedPath(`/writing/${slug}`, locale),
+        title: inLocale.data.title,
+        description: inLocale.data.description,
+        icon: "FileText" as const,
+        category: t("palette.group_field_notes"),
+        keywords: `${inLocale.data.tags?.join(" ") ?? ""} ${slug} writing article note`,
+        content: cleanMarkdownForSearch(inLocale.body),
+        badge: inLocale.data.tags?.[0] ?? "Note",
+      };
+    }
+    const inEn = allWriting.find(
+      (e) => getWritingSlug(e) === slug && (e.data.locale ?? "en") === "en",
+    );
+    if (!inEn) return null;
+    return {
+      id: `writing-${slug}`,
+      href: getLocalizedPath(`/writing/${slug}`, "en"),
+      title: `${inEn.data.title} ${t("writing.in_english")}`,
+      description: inEn.data.description,
+      icon: "FileText" as const,
+      category: t("palette.group_field_notes"),
+      keywords: `${inEn.data.tags?.join(" ") ?? ""} ${slug} writing article note`,
+      content: cleanMarkdownForSearch(inEn.body),
+      badge: inEn.data.tags?.[0] ?? "Note",
+    };
+  })
+  .filter((item): item is NonNullable<typeof item> => item !== null);
+
+// 3. Selected Work (dynamically indexed from projects collection for active locale)
+const allProjects = (
+  await getCollection("projects", ({ data }) => !data.draft)
+).sort((a, b) => b.data.year - a.data.year);
+
+const uniqueProjectSlugs = [...new Set(allProjects.map((p) => p.data.slug))];
+
+const projectItems = uniqueProjectSlugs
+  .map((slug) => {
+    const inLocale = allProjects.find(
+      (p) => p.data.slug === slug && (p.data.locale ?? "en") === locale,
+    );
+    if (inLocale) {
+      return {
+        id: `project-${slug}`,
+        href: getLocalizedPath(`/projects/${slug}`, locale),
+        title: inLocale.data.title,
+        description: inLocale.data.summary,
+        icon: "FolderGit2" as const,
+        category: t("palette.group_selected_work"),
+        keywords: `${inLocale.data.technologies?.join(" ") ?? ""} ${inLocale.data.year} ${slug} project case study work`,
+        content: cleanMarkdownForSearch(inLocale.body),
+        badge: String(inLocale.data.year),
+      };
+    }
+    const fallback =
+      allProjects.find(
+        (p) => p.data.slug === slug && (p.data.locale ?? "en") === "en",
+      ) ?? allProjects.find((p) => p.data.slug === slug);
+    if (!fallback) return null;
+    return {
+      id: `project-${slug}`,
+      href: getLocalizedPath(`/projects/${slug}`, fallback.data.locale ?? "en"),
+      title: `${fallback.data.title} ${t("projects.in_english")}`,
+      description: fallback.data.summary,
+      icon: "FolderGit2" as const,
+      category: t("palette.group_selected_work"),
+      keywords: `${fallback.data.technologies?.join(" ") ?? ""} ${fallback.data.year} ${slug} project case study work`,
+      content: cleanMarkdownForSearch(fallback.body),
+      badge: String(fallback.data.year),
+    };
+  })
+  .filter((item): item is NonNullable<typeof item> => item !== null);
+
+// 4. Action items
 const actionItems = [
   {
     id: "action-theme-light",
@@ -110,10 +201,14 @@ const actionItems = [
   },
 ];
 
+// 5. Language switcher items
 const languageItems = LOCALES.map((langLocale) => {
   const isCurrent = langLocale === locale;
-  const targetPath = translations?.[langLocale]
-    ?? (translations ? getLocaleFallbackPath(Astro.url.pathname, langLocale) : getLocalizedPath(Astro.url.pathname, langLocale));
+  const targetPath =
+    translations?.[langLocale] ??
+    (translations
+      ? getLocaleFallbackPath(Astro.url.pathname, langLocale)
+      : getLocalizedPath(Astro.url.pathname, langLocale));
   const nativeName = LOCALE_LABELS[langLocale].nativeName;
   const uppercaseCode = langLocale.toUpperCase();
 
@@ -122,7 +217,7 @@ const languageItems = LOCALES.map((langLocale) => {
     locale: langLocale,
     href: targetPath,
     title: t("palette.lang_switch", { lang: nativeName }),
-    description: `${nativeName} (${uppercaseCode})${isCurrent ? ` — ${t("palette.current")}` : ""}`,
+    description: `${nativeName} (${uppercaseCode})${isCurrent ? ` · ${t("palette.current")}` : ""}`,
     isCurrent,
     badge: uppercaseCode,
     category: t("palette.group_languages"),
@@ -130,6 +225,7 @@ const languageItems = LOCALES.map((langLocale) => {
   };
 });
 
+// 6. External profiles
 const externalItems = [
   {
     id: "ext-github",
@@ -161,9 +257,14 @@ const externalItems = [
   aria-controls="command-palette-dialog"
   title={t("palette.trigger")}
   aria-label={t("palette.trigger")}
-  data-label={t("palette.trigger")}
+  data-label={t("palette.trigger_base")}
 >
-  <Icon name="Command" size={15} class="command-palette-trigger__icon" />
+  <Icon name="Search" size={14} class="command-palette-trigger__icon" />
+  <kbd class="command-palette-trigger__kbd" aria-hidden="true">
+    <span class="command-palette-trigger__kbd-mod">⌘</span><span
+      class="command-palette-trigger__kbd-key">K</span
+    >
+  </kbd>
 </button>
 
 <dialog
@@ -202,129 +303,329 @@ const externalItems = [
     </div>
 
     <div class="command-palette__body" id="command-palette-body">
-      <ul class="command-palette__list" id="command-palette-list" role="listbox" aria-label={t("palette.dialog_label")}>
+      <ul
+        class="command-palette__list"
+        id="command-palette-list"
+        role="listbox"
+        aria-label={t("palette.dialog_label")}
+      >
         <!-- Navigation Group -->
         <li class="command-palette__group" data-group="nav" role="presentation">
-          <span class="command-palette__group-title">{t("palette.group_navigation")}</span>
+          <span class="command-palette__group-title"
+            >{t("palette.group_navigation")}</span
+          >
           <ul class="command-palette__group-items" role="presentation">
-            {navItems.map((item) => (
-              <li
-                id={item.id}
-                role="option"
-                class="command-palette__item"
-                data-type="link"
-                data-href={item.href}
-                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
-                aria-selected="false"
-              >
-                <a href={item.href} class="command-palette__link" tabindex="-1">
-                  <span class="command-palette__item-icon">
-                    <Icon name={item.icon} size={16} />
-                  </span>
-                  <span class="command-palette__item-content">
-                    <span class="command-palette__item-title">{item.title}</span>
-                    <span class="command-palette__item-desc">{item.description}</span>
-                  </span>
-                  <span class="command-palette__item-badge" aria-hidden="true">
-                    <Icon name="ArrowRight" size={12} />
-                  </span>
-                </a>
-              </li>
-            ))}
+            {
+              navItems.map((item) => (
+                <li
+                  id={item.id}
+                  role="option"
+                  class="command-palette__item"
+                  data-palette-item={item.id}
+                  data-type="link"
+                  data-href={item.href}
+                  data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                  aria-selected="false"
+                >
+                  <a
+                    href={item.href}
+                    class="command-palette__link"
+                    tabindex="-1"
+                  >
+                    <span class="command-palette__item-icon">
+                      <Icon name={item.icon} size={16} />
+                    </span>
+                    <span class="command-palette__item-content">
+                      <span class="command-palette__item-title">
+                        {item.title}
+                      </span>
+                      <span class="command-palette__item-desc">
+                        {item.description}
+                      </span>
+                    </span>
+                    <span
+                      class="command-palette__item-badge"
+                      aria-hidden="true"
+                    >
+                      <Icon name="ArrowRight" size={12} />
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </li>
 
         <!-- Actions Group -->
-        <li class="command-palette__group" data-group="actions" role="presentation">
-          <span class="command-palette__group-title">{t("palette.group_actions")}</span>
+        <li
+          class="command-palette__group"
+          data-group="actions"
+          role="presentation"
+        >
+          <span class="command-palette__group-title"
+            >{t("palette.group_actions")}</span
+          >
           <ul class="command-palette__group-items" role="presentation">
-            {actionItems.map((item) => (
-              <li
-                id={item.id}
-                role="option"
-                class="command-palette__item"
-                data-type="action"
-                data-action={item.action}
-                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
-                aria-selected="false"
-              >
-                <button type="button" class="command-palette__link command-palette__action-button" tabindex="-1">
-                  <span class="command-palette__item-icon">
-                    <Icon name={item.icon} size={16} />
-                  </span>
-                  <span class="command-palette__item-content">
-                    <span class="command-palette__item-title">{item.title}</span>
-                    <span class="command-palette__item-desc">{item.description}</span>
-                  </span>
-                  <span class="command-palette__item-badge" aria-hidden="true">
-                    <kbd>↵</kbd>
-                  </span>
-                </button>
-              </li>
-            ))}
+            {
+              actionItems.map((item) => (
+                <li
+                  id={item.id}
+                  role="option"
+                  class="command-palette__item"
+                  data-palette-item={item.id}
+                  data-type="action"
+                  data-action={item.action}
+                  data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                  aria-selected="false"
+                >
+                  <button
+                    type="button"
+                    class="command-palette__link command-palette__action-button"
+                    tabindex="-1"
+                  >
+                    <span class="command-palette__item-icon">
+                      <Icon name={item.icon} size={16} />
+                    </span>
+                    <span class="command-palette__item-content">
+                      <span class="command-palette__item-title">
+                        {item.title}
+                      </span>
+                      <span class="command-palette__item-desc">
+                        {item.description}
+                      </span>
+                    </span>
+                    <span
+                      class="command-palette__item-badge"
+                      aria-hidden="true"
+                    >
+                      <kbd>↵</kbd>
+                    </span>
+                  </button>
+                </li>
+              ))
+            }
           </ul>
         </li>
 
         <!-- Languages Group -->
-        <li class="command-palette__group" data-group="languages" role="presentation">
-          <span class="command-palette__group-title">{t("palette.group_languages")}</span>
+        <li
+          class="command-palette__group"
+          data-group="languages"
+          role="presentation"
+        >
+          <span class="command-palette__group-title"
+            >{t("palette.group_languages")}</span
+          >
           <ul class="command-palette__group-items" role="presentation">
-            {languageItems.map((item) => (
-              <li
-                id={item.id}
-                role="option"
-                class="command-palette__item"
-                data-type="link"
-                data-href={item.href}
-                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
-                aria-selected="false"
-              >
-                <a href={item.href} class="command-palette__link" tabindex="-1">
-                  <span class="command-palette__item-icon">
-                    <FlagIcon locale={item.locale} />
-                  </span>
-                  <span class="command-palette__item-content">
-                    <span class="command-palette__item-title">{item.title}</span>
-                    <span class="command-palette__item-desc">{item.description}</span>
-                  </span>
-                  <span class="command-palette__item-badge" aria-hidden="true">
-                    {item.isCurrent ? <Icon name="Check" size={13} /> : item.badge}
-                  </span>
-                </a>
-              </li>
-            ))}
+            {
+              languageItems.map((item) => (
+                <li
+                  id={item.id}
+                  role="option"
+                  class="command-palette__item"
+                  data-palette-item={item.id}
+                  data-type="link"
+                  data-href={item.href}
+                  data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                  aria-selected="false"
+                >
+                  <a
+                    href={item.href}
+                    class="command-palette__link"
+                    tabindex="-1"
+                  >
+                    <span class="command-palette__item-icon">
+                      <FlagIcon locale={item.locale} />
+                    </span>
+                    <span class="command-palette__item-content">
+                      <span class="command-palette__item-title">
+                        {item.title}
+                      </span>
+                      <span class="command-palette__item-desc">
+                        {item.description}
+                      </span>
+                    </span>
+                    <span
+                      class="command-palette__item-badge"
+                      aria-hidden="true"
+                    >
+                      {item.isCurrent ? (
+                        <Icon name="Check" size={13} />
+                      ) : (
+                        item.badge
+                      )}
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </li>
 
+        <!-- Field Notes Group -->
+        {
+          writingItems.length > 0 && (
+            <li
+              class="command-palette__group"
+              data-group="writing"
+              role="presentation"
+            >
+              <span class="command-palette__group-title">
+                {t("palette.group_field_notes")}
+              </span>
+              <ul class="command-palette__group-items" role="presentation">
+                {writingItems.map((item, index) => (
+                  <li
+                    id={item.id}
+                    role="option"
+                    class="command-palette__item"
+                    data-palette-item={item.id}
+                    data-type="link"
+                    data-href={item.href}
+                    data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                    data-content={item.content}
+                    aria-selected="false"
+                    style={index >= 2 ? "display: none;" : undefined}
+                  >
+                    <a
+                      href={item.href}
+                      class="command-palette__link"
+                      tabindex="-1"
+                    >
+                      <span class="command-palette__item-icon">
+                        <Icon name={item.icon} size={16} />
+                      </span>
+                      <span class="command-palette__item-content">
+                        <span class="command-palette__item-title">
+                          {item.title}
+                        </span>
+                        <span class="command-palette__item-desc">
+                          {item.description}
+                        </span>
+                      </span>
+                      <span
+                        class="command-palette__item-badge"
+                        aria-hidden="true"
+                      >
+                        {item.badge}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          )
+        }
+
+        <!-- Selected Work Group -->
+        {
+          projectItems.length > 0 && (
+            <li
+              class="command-palette__group"
+              data-group="projects"
+              role="presentation"
+            >
+              <span class="command-palette__group-title">
+                {t("palette.group_selected_work")}
+              </span>
+              <ul class="command-palette__group-items" role="presentation">
+                {projectItems.map((item, index) => (
+                  <li
+                    id={item.id}
+                    role="option"
+                    class="command-palette__item"
+                    data-palette-item={item.id}
+                    data-type="link"
+                    data-href={item.href}
+                    data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                    data-content={item.content}
+                    aria-selected="false"
+                    style={index >= 1 ? "display: none;" : undefined}
+                  >
+                    <a
+                      href={item.href}
+                      class="command-palette__link"
+                      tabindex="-1"
+                    >
+                      <span class="command-palette__item-icon">
+                        <Icon name={item.icon} size={16} />
+                      </span>
+                      <span class="command-palette__item-content">
+                        <span class="command-palette__item-title">
+                          {item.title}
+                        </span>
+                        <span class="command-palette__item-desc">
+                          {item.description}
+                        </span>
+                      </span>
+                      <span
+                        class="command-palette__item-badge"
+                        aria-hidden="true"
+                      >
+                        {item.badge}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          )
+        }
+
         <!-- External Profiles Group -->
-        <li class="command-palette__group" data-group="external" role="presentation">
-          <span class="command-palette__group-title">{t("palette.group_external")}</span>
+        <li
+          class="command-palette__group"
+          data-group="external"
+          role="presentation"
+        >
+          <span class="command-palette__group-title"
+            >{t("palette.group_external")}</span
+          >
           <ul class="command-palette__group-items" role="presentation">
-            {externalItems.map((item) => (
-              <li
-                id={item.id}
-                role="option"
-                class="command-palette__item"
-                data-type="link"
-                data-href={item.href}
-                data-external="true"
-                data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
-                aria-selected="false"
-              >
-                <a href={item.href} target="_blank" rel="noopener noreferrer" class="command-palette__link" tabindex="-1">
-                  <span class="command-palette__item-icon">
-                    <SocialIcon name={item.brand} class="command-palette__brand-icon" />
-                  </span>
-                  <span class="command-palette__item-content">
-                    <span class="command-palette__item-title">{item.title}</span>
-                    <span class="command-palette__item-desc">{item.description}</span>
-                  </span>
-                  <span class="command-palette__item-badge" aria-hidden="true">
-                    <Icon name="ExternalLink" size={12} />
-                  </span>
-                </a>
-              </li>
-            ))}
+            {
+              externalItems.map((item) => (
+                <li
+                  id={item.id}
+                  role="option"
+                  class="command-palette__item"
+                  data-palette-item={item.id}
+                  data-type="link"
+                  data-href={item.href}
+                  data-external="true"
+                  data-search={`${item.title} ${item.description} ${item.keywords}`.toLowerCase()}
+                  aria-selected="false"
+                >
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="command-palette__link"
+                    tabindex="-1"
+                  >
+                    <span class="command-palette__item-icon">
+                      <SocialIcon
+                        name={item.brand}
+                        class="command-palette__brand-icon"
+                      />
+                    </span>
+                    <span class="command-palette__item-content">
+                      <span class="command-palette__item-title">
+                        {item.title}
+                      </span>
+                      <span class="command-palette__item-desc">
+                        {item.description}
+                      </span>
+                    </span>
+                    <span
+                      class="command-palette__item-badge"
+                      aria-hidden="true"
+                    >
+                      <Icon name="ExternalLink" size={12} />
+                    </span>
+                  </a>
+                </li>
+              ))
+            }
           </ul>
         </li>
       </ul>
@@ -351,33 +652,66 @@ const externalItems = [
       </span>
     </footer>
 
-    <div class="visually-hidden" role="status" aria-live="polite" id="command-palette-status"></div>
+    <div
+      class="visually-hidden"
+      role="status"
+      aria-live="polite"
+      id="command-palette-status"
+    >
+    </div>
   </div>
 </dialog>
 
 <script>
   function setupCommandPalette() {
-    const trigger = document.getElementById("command-palette-trigger") as HTMLButtonElement | null;
-    const dialog = document.getElementById("command-palette-dialog") as HTMLDialogElement | null;
-    const input = document.getElementById("command-palette-input") as HTMLInputElement | null;
-    const closeBtn = document.getElementById("command-palette-close") as HTMLButtonElement | null;
-    const list = document.getElementById("command-palette-list") as HTMLUListElement | null;
-    const emptyState = document.getElementById("command-palette-empty") as HTMLElement | null;
-    const statusRegion = document.getElementById("command-palette-status") as HTMLElement | null;
+    const trigger = document.getElementById(
+      "command-palette-trigger",
+    ) as HTMLButtonElement | null;
+    const dialog = document.getElementById(
+      "command-palette-dialog",
+    ) as HTMLDialogElement | null;
+    const input = document.getElementById(
+      "command-palette-input",
+    ) as HTMLInputElement | null;
+    const closeBtn = document.getElementById(
+      "command-palette-close",
+    ) as HTMLButtonElement | null;
+    const list = document.getElementById(
+      "command-palette-list",
+    ) as HTMLUListElement | null;
+    const emptyState = document.getElementById(
+      "command-palette-empty",
+    ) as HTMLElement | null;
+    const statusRegion = document.getElementById(
+      "command-palette-status",
+    ) as HTMLElement | null;
 
     if (!dialog || !trigger || !input || !list) return;
     if (trigger.dataset.initialized === "true") return;
     trigger.dataset.initialized = "true";
 
-    // Platform shortcut detection (replace ⌘ with Ctrl on non-Mac)
-    const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.userAgent || navigator.platform);
-    const shortcutLabel = isMac ? "⌘⇧P" : "Ctrl+Shift+P";
-    const triggerLabel = trigger.dataset.label || trigger.getAttribute("aria-label") || "";
-    trigger.setAttribute("aria-label", `${triggerLabel} (${shortcutLabel})`);
-    trigger.title = `${triggerLabel} (${shortcutLabel})`;
+    // Platform shortcut detection (e.g. ⌘K on macOS, Ctrl+K on other platforms)
+    const isMac = /Mac|iPod|iPhone|iPad/.test(
+      navigator.userAgent || navigator.platform,
+    );
+    const shortcutLabel = isMac ? "⌘K" : "Ctrl+K";
+    const triggerBase =
+      trigger.dataset.label || trigger.getAttribute("aria-label") || "Search";
+    const cleanLabel = triggerBase.replace(/\s*\([^)]*\)$/, "");
+    trigger.setAttribute("aria-label", `${cleanLabel} (${shortcutLabel})`);
+    trigger.title = `${cleanLabel} (${shortcutLabel})`;
+
+    const kbdMod = trigger.querySelector<HTMLElement>(
+      ".command-palette-trigger__kbd-mod",
+    );
+    if (kbdMod) {
+      kbdMod.textContent = isMac ? "⌘" : "Ctrl\u00A0";
+    }
 
     const getAllItems = (): HTMLElement[] => {
-      return Array.from(list.querySelectorAll<HTMLElement>(".command-palette__item"));
+      return Array.from(
+        list.querySelectorAll<HTMLElement>(".command-palette__item"),
+      );
     };
 
     const getVisibleItems = (): HTMLElement[] => {
@@ -411,22 +745,117 @@ const externalItems = [
       });
     }
 
+    function highlightNode(
+      el: HTMLElement | null,
+      query: string,
+      customText?: string,
+    ) {
+      if (!el) return;
+      if (!el.dataset.origText) {
+        el.dataset.origText = el.textContent || "";
+      }
+      const raw = customText !== undefined ? customText : el.dataset.origText;
+      if (!query) {
+        el.textContent = el.dataset.origText;
+        return;
+      }
+      const lowerRaw = raw.toLowerCase();
+      const lowerQuery = query.toLowerCase();
+      const idx = lowerRaw.indexOf(lowerQuery);
+      if (idx === -1) {
+        el.textContent = raw;
+        return;
+      }
+      const before = raw.slice(0, idx);
+      const match = raw.slice(idx, idx + query.length);
+      const after = raw.slice(idx + query.length);
+
+      el.textContent = "";
+      if (before) el.appendChild(document.createTextNode(before));
+      const mark = document.createElement("mark");
+      mark.className = "command-palette__highlight";
+      mark.textContent = match;
+      el.appendChild(mark);
+      if (after) el.appendChild(document.createTextNode(after));
+    }
+
     function filterCommands(query: string) {
       const q = query.trim().toLowerCase();
       const allItems = getAllItems();
       let matchCount = 0;
+      let writingCount = 0;
+      let projectsCount = 0;
 
       allItems.forEach((item) => {
-        const text = item.dataset.search || "";
-        const matches = !q || text.includes(q);
+        const text = (item.dataset.search || "").toLowerCase();
+        const content = item.dataset.content || "";
+        const contentLower = content.toLowerCase();
+        let matches = !q || text.includes(q) || contentLower.includes(q);
+
+        // When not actively searching, show only the latest 2 field notes and latest 1 project
+        if (!q) {
+          if (item.dataset.paletteItem?.startsWith("writing-")) {
+            writingCount++;
+            if (writingCount > 2) {
+              matches = false;
+            }
+          } else if (item.dataset.paletteItem?.startsWith("project-")) {
+            projectsCount++;
+            if (projectsCount > 1) {
+              matches = false;
+            }
+          }
+        }
+
         item.style.display = matches ? "" : "none";
-        if (matches) matchCount++;
+        const titleEl = item.querySelector<HTMLElement>(
+          ".command-palette__item-title",
+        );
+        const descEl = item.querySelector<HTMLElement>(
+          ".command-palette__item-desc",
+        );
+        if (matches) {
+          matchCount++;
+          highlightNode(titleEl, q);
+
+          const rawDesc = descEl?.dataset.origText || descEl?.textContent || "";
+          const rawTitle =
+            titleEl?.dataset.origText || titleEl?.textContent || "";
+          const titleHasMatch = rawTitle.toLowerCase().includes(q);
+          const descHasMatch = rawDesc.toLowerCase().includes(q);
+
+          // If matched in content body rather than title/description, display contextual excerpt
+          if (
+            q &&
+            !titleHasMatch &&
+            !descHasMatch &&
+            descEl &&
+            contentLower.includes(q)
+          ) {
+            const matchIdx = contentLower.indexOf(q);
+            const start = Math.max(0, matchIdx - 35);
+            const end = Math.min(content.length, matchIdx + q.length + 45);
+            let snippet = content.slice(start, end).trim();
+            if (start > 0) snippet = "..." + snippet;
+            if (end < content.length) snippet = snippet + "...";
+            highlightNode(descEl, q, snippet);
+          } else {
+            highlightNode(descEl, q);
+          }
+        } else {
+          highlightNode(titleEl, "");
+          highlightNode(descEl, "");
+        }
       });
 
       // Update groups visibility
-      const groups = list?.querySelectorAll<HTMLElement>(".command-palette__group");
+      const groups = list?.querySelectorAll<HTMLElement>(
+        ".command-palette__group",
+      );
       groups?.forEach((grp) => {
-        const visibleInGroup = grp.querySelectorAll<HTMLElement>('.command-palette__item:not([style*="display: none"])');
+        const visibleInGroup = grp.querySelectorAll<HTMLElement>(
+          '.command-palette__item:not([style*="display: none"])',
+        );
         grp.style.display = visibleInGroup.length > 0 ? "" : "none";
       });
 
@@ -435,7 +864,8 @@ const externalItems = [
       }
 
       if (statusRegion) {
-        statusRegion.textContent = matchCount === 0 ? "No results" : `${matchCount} results available.`;
+        statusRegion.textContent =
+          matchCount === 0 ? "No results" : `${matchCount} results available.`;
       }
 
       updateActiveSelection(0, false);
@@ -448,18 +878,47 @@ const externalItems = [
         if (href) {
           if (item.dataset.external === "true") {
             window.open(href, "_blank", "noopener,noreferrer");
+            closePalette();
           } else {
-            window.location.href = href;
+            closePalette();
+            // Client-side router navigation
+            const router = (window as any).__router;
+            if (router && typeof router.navigate === "function") {
+              router.navigate(href);
+            } else {
+              window.location.href = href;
+            }
           }
         }
       } else if (type === "action") {
         const action = item.dataset.action;
-        if (action === "theme-light" || action === "theme-dark" || action === "theme-system") {
-          const themeTarget = action.replace("theme-", "") as "light" | "dark" | "system";
-          window.dispatchEvent(new CustomEvent("theme:set", { detail: themeTarget }));
+        if (
+          action === "theme-light" ||
+          action === "theme-dark" ||
+          action === "theme-system"
+        ) {
+          const themeMode = action.replace("theme-", "") as
+            "light" | "dark" | "system";
+          const themeManager = (window as any).__themeManager;
+          if (themeManager && typeof themeManager.setTheme === "function") {
+            themeManager.setTheme(themeMode);
+          } else {
+            // Fallback manual dispatch
+            const root = document.documentElement;
+            if (themeMode === "system") {
+              localStorage.removeItem("theme-preference");
+              const prefersDark = window.matchMedia(
+                "(prefers-color-scheme: dark)",
+              ).matches;
+              root.setAttribute("data-theme", prefersDark ? "dark" : "light");
+            } else {
+              localStorage.setItem("theme-preference", themeMode);
+              root.setAttribute("data-theme", themeMode);
+            }
+          }
         }
+        closePalette();
       }
-      closePalette();
     }
 
     let previousActiveElement: HTMLElement | null = null;
@@ -467,20 +926,21 @@ const externalItems = [
     function openPalette() {
       if (dialog?.open) return;
       previousActiveElement = document.activeElement as HTMLElement | null;
-      trigger?.setAttribute("aria-expanded", "true");
+      input!.value = "";
+      filterCommands("");
       dialog?.showModal();
-      if (input) {
-        input.value = "";
-        filterCommands("");
-        input.focus();
-      }
+      trigger?.setAttribute("aria-expanded", "true");
+      input?.focus();
     }
 
     function closePalette() {
       if (!dialog?.open) return;
       dialog.close();
       trigger?.setAttribute("aria-expanded", "false");
-      if (previousActiveElement && typeof previousActiveElement.focus === "function") {
+      if (
+        previousActiveElement &&
+        typeof previousActiveElement.focus === "function"
+      ) {
         previousActiveElement.focus();
       } else {
         trigger?.focus();
@@ -500,12 +960,11 @@ const externalItems = [
       dialog.addEventListener("click", (e) => {
         if (e.target !== dialog) return;
         const rect = dialog.getBoundingClientRect();
-        const isInContent = (
+        const isInContent =
           rect.top <= e.clientY &&
           e.clientY <= rect.top + rect.height &&
           rect.left <= e.clientX &&
-          e.clientX <= rect.left + rect.width
-        );
+          e.clientX <= rect.left + rect.width;
         if (!isInContent) {
           closePalette();
         }
@@ -556,7 +1015,7 @@ const externalItems = [
         return;
       }
 
-      // Also support Cmd+K / Ctrl+K as secondary affordance
+      // Also support Cmd+K / Ctrl+K as primary search affordance
       if (isK && hasModifier && !e.shiftKey) {
         e.preventDefault();
         if (dialog.open) {
@@ -569,9 +1028,24 @@ const externalItems = [
 
     window.addEventListener("keydown", onGlobalKeydown);
 
+    // Cursor hover synchronization with active selection
+    list.addEventListener("pointermove", (e) => {
+      const item = (e.target as HTMLElement).closest<HTMLElement>(
+        ".command-palette__item",
+      );
+      if (!item) return;
+      const visible = getVisibleItems();
+      const idx = visible.indexOf(item);
+      if (idx !== -1 && idx !== selectedIndex) {
+        updateActiveSelection(idx, false);
+      }
+    });
+
     // Direct item click
     list.addEventListener("click", (e) => {
-      const item = (e.target as HTMLElement).closest<HTMLElement>(".command-palette__item");
+      const item = (e.target as HTMLElement).closest<HTMLElement>(
+        ".command-palette__item",
+      );
       if (item) {
         e.preventDefault();
         executeItem(item);
