@@ -180,15 +180,37 @@ test("command palette preserves active locale and searches localized content", a
   await expect(page).toHaveURL(/\/fr\/writing\/graphql-over-the-cliff\/?$/);
 });
 
-test("theme preference survives client-side navigation", async ({ page }) => {
+test("theme preference survives client-side navigation across controls", async ({ page }) => {
   await page.goto("/");
 
+  // Test ThemeControl dropdown
   await page.locator("#theme-toggle").click();
   await page.locator('[data-theme-set="light"]').click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 
   await page.getByRole("link", { name: "Projects" }).click();
   await expect(page).toHaveURL(/\/projects\/?$/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  // Test CommandPalette theme switching
+  await page.locator("#command-palette-trigger").click();
+  await expect(page.locator("#command-palette-dialog")).toBeVisible();
+  await page.locator('[data-palette-item="action-theme-dark"]').click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  // Navigate to writing and verify dark theme survives navigation
+  await page.getByRole("link", { name: "Writing" }).click();
+  await expect(page).toHaveURL(/\/writing\/?$/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+
+  // Switch back to light via CommandPalette and verify across navigation
+  await page.locator("#command-palette-trigger").click();
+  await expect(page.locator("#command-palette-dialog")).toBeVisible();
+  await page.locator('[data-palette-item="action-theme-light"]').click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+
+  await page.getByRole("link", { name: "About" }).click();
+  await expect(page).toHaveURL(/\/about\/?$/);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 

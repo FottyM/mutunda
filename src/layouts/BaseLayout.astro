@@ -93,22 +93,43 @@ const isCurrent = (href: string) =>
     <ClientRouter />
     <script is:inline>
       (function () {
-        function applyStoredTheme() {
+        function getStoredTheme() {
           try {
-            var storedTheme = localStorage.getItem("theme");
-            if (storedTheme === "light" || storedTheme === "dark") {
-              document.documentElement.setAttribute("data-theme", storedTheme);
-            } else {
-              document.documentElement.removeAttribute("data-theme");
+            var theme = localStorage.getItem("theme");
+            if (theme === "light" || theme === "dark") return theme;
+            var legacy = localStorage.getItem("theme-preference");
+            if (legacy === "light" || legacy === "dark") {
+              localStorage.setItem("theme", legacy);
+              localStorage.removeItem("theme-preference");
+              return legacy;
             }
-          } catch (e) {
-            // Keep the server-rendered system theme when storage is unavailable.
+          } catch (e) {}
+          return null;
+        }
+
+        function applyStoredTheme() {
+          var storedTheme = getStoredTheme();
+          if (storedTheme) {
+            document.documentElement.setAttribute("data-theme", storedTheme);
+          } else {
+            document.documentElement.removeAttribute("data-theme");
           }
         }
 
         applyStoredTheme();
+
         // ClientRouter swaps the <html> element's attributes during navigation.
-        // Restore an explicit preference before the incoming page is painted.
+        // Synchronize incoming page's root attribute before swapping to prevent
+        // theme flickering or regression to OS dark default during page transitions.
+        document.addEventListener("astro:before-swap", function (event) {
+          var storedTheme = getStoredTheme();
+          if (storedTheme) {
+            event.newDocument.documentElement.setAttribute("data-theme", storedTheme);
+          } else {
+            event.newDocument.documentElement.removeAttribute("data-theme");
+          }
+        });
+
         document.addEventListener("astro:after-swap", applyStoredTheme);
 
         // Browser history alone cannot tell whether a primary-nav destination
