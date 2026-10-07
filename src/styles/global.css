@@ -964,6 +964,7 @@ h3 {
   font-family: var(--font-display);
   font-weight: 400;
   text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 h1 {
@@ -1849,6 +1850,14 @@ h3 {
   border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
 }
 
+.prose blockquote {
+  margin: 1.5em 0;
+  padding-inline-start: 1.25em;
+  border-inline-start: 2px solid var(--color-accent);
+  color: var(--color-text);
+  font-style: italic;
+}
+
 .prose a {
   color: var(--color-accent);
   font-weight: 650;
@@ -2013,6 +2022,8 @@ h3 {
   border: var(--rule);
   font-family: var(--font-mono);
   font-size: 0.9em;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .prose pre {
@@ -2030,6 +2041,8 @@ h3 {
   background: none;
   border: 0;
   color: inherit;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 @media (max-width: 48rem) {

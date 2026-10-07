@@ -64,53 +64,55 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
   locale={locale}
   translations={translations}
 >
-  <main id="main-content" class="article-page">
-    <header class="article-header">
-      <nav aria-label="Breadcrumb" class="article-breadcrumb">
-        <a href={getLocalizedPath("/writing", locale)} class="back-link">
-          ← {t("writing.back_to_index")}
-        </a>
-      </nav>
-      <p class="eyebrow">{t("writing.meta_field_note")}</p>
-      <h1>{entry.data.title}</h1>
-      <p class="lede">{entry.data.description}</p>
-      <div class="article-meta">
-        <time datetime={entry.data.date.toISOString()}>
-          {t("writing.published_date", { date: formatLocalizedDate(entry.data.date, locale) })}
-        </time>
-        <div class="tag-row" aria-label={t("common.tags")}>
-          {entry.data.tags.map((tag) => (
-            <Tag href={getLocalizedPath(`/writing/tags/${tagSlug(tag)}`, locale)}>{tag}</Tag>
-          ))}
+  <main id="main-content">
+    <article class="article-page">
+      <header class="article-header">
+        <nav aria-label="Breadcrumb" class="article-breadcrumb">
+          <a href={getLocalizedPath("/writing", locale)} class="back-link">
+            ← {t("writing.back_to_index")}
+          </a>
+        </nav>
+        <p class="eyebrow">{t("writing.meta_field_note")}</p>
+        <h1>{entry.data.title}</h1>
+        <p class="lede">{entry.data.description}</p>
+        <div class="article-meta">
+          <time datetime={entry.data.date.toISOString()}>
+            {t("writing.published_date", { date: formatLocalizedDate(entry.data.date, locale) })}
+          </time>
+          <div class="tag-row" aria-label={t("common.tags")}>
+            {entry.data.tags.map((tag) => (
+              <Tag href={getLocalizedPath(`/writing/tags/${tagSlug(tag)}`, locale)}>{tag}</Tag>
+            ))}
+          </div>
         </div>
+      </header>
+
+      {isFallback && (
+        <Callout title={t("common.language_notice")} tone="warning">
+          <p>{t("writing.fallback_notice")}</p>
+        </Callout>
+      )}
+
+      {entry.data.cover && (
+        <figure class="article-cover">
+          <ProgressiveImage
+            src={entry.data.cover.src}
+            alt={entry.data.cover.alt}
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+      )}
+
+      <div class="prose article-body">
+        <Content />
       </div>
-    </header>
 
-    {isFallback && (
-      <Callout title={t("common.language_notice")} tone="warning">
-        <p>{t("writing.fallback_notice")}</p>
-      </Callout>
-    )}
-
-    {entry.data.cover && (
-      <figure class="article-cover">
-        <ProgressiveImage
-          src={entry.data.cover.src}
-          alt={entry.data.cover.alt}
-          loading="eager"
-          fetchpriority="high"
-        />
-      </figure>
-    )}
-
-    <article class="prose article-body">
-      <Content />
+      <footer class="article-footer">
+        <ButtonLink href={getLocalizedPath("/writing", locale)} variant="secondary">
+          ← {t("writing.back_to_index")}
+        </ButtonLink>
+      </footer>
     </article>
-
-    <footer class="article-footer">
-      <ButtonLink href={getLocalizedPath("/writing", locale)} variant="secondary">
-        ← {t("writing.back_to_index")}
-      </ButtonLink>
-    </footer>
   </main>
 </BaseLayout>
