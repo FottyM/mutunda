@@ -1,0 +1,336 @@
+---
+import { renderSVG } from "uqr";
+import Icon from "./Icon.astro";
+import SocialIcon from "./SocialIcon.astro";
+import type { Locale } from "../i18n/config";
+import { useTranslations } from "../i18n/translations";
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  locale: Locale;
+}
+
+const { title, description, canonicalUrl, locale } = Astro.props;
+const t = useTranslations(locale);
+
+// Pre-render pure SVG QR Code at SSG build time for zero client footprint
+const qrSvg = renderSVG(canonicalUrl, {
+  pixelSize: 6,
+  whiteColor: "#ffffff",
+  blackColor: "#111111",
+});
+
+const encodedUrl = encodeURIComponent(canonicalUrl);
+const encodedTitle = encodeURIComponent(title);
+const encodedCombined = encodeURIComponent(`${title} ${canonicalUrl}`);
+const emailBody = encodeURIComponent(`${title}\n\n${description ? `${description}\n\n` : ""}${canonicalUrl}`);
+
+const whatsappUrl = `https://api.whatsapp.com/send?text=${encodedCombined}`;
+const telegramUrl = `https://t.me/share/url?url=${encodedUrl}&text=${encodedTitle}`;
+const redditUrl = `https://reddit.com/submit?url=${encodedUrl}&title=${encodedTitle}`;
+const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`;
+const xUrl = `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`;
+const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`;
+const blueskyUrl = `https://bsky.app/intent/compose?text=${encodedCombined}`;
+const emailUrl = `mailto:?subject=${encodedTitle}&body=${emailBody}`;
+---
+
+<aside class="share-actions" aria-labelledby="share-actions-heading">
+  <div class="share-actions__header">
+    <h2 id="share-actions-heading" class="share-actions__heading">
+      {t("share.heading")}
+    </h2>
+  </div>
+
+  <div class="share-actions__bar">
+    <div class="share-actions__primary">
+      <!-- Native Web Share API (shown dynamically when supported) -->
+      <button
+        type="button"
+        class="share-actions__button share-actions__button--native"
+        id="native-share-btn"
+        data-share-title={title}
+        data-share-text={description}
+        data-share-url={canonicalUrl}
+        title={t("share.native")}
+        aria-label={t("share.native")}
+        hidden
+      >
+        <Icon name="Share2" size={15} />
+        <span>{t("share.native")}</span>
+      </button>
+
+      <!-- Copy Link Button with clipboard API & zero-shift visual feedback -->
+      <button
+        type="button"
+        class="share-actions__button share-actions__button--copy"
+        id="copy-link-btn"
+        data-url={canonicalUrl}
+        data-label-idle={t("share.copy_link")}
+        data-label-copied={t("share.copied")}
+        data-announcement-copied={t("share.link_copied")}
+        title={t("share.copy_link")}
+        aria-label={t("share.copy_link")}
+      >
+        <span class="share-actions__icon-swap" aria-hidden="true">
+          <Icon name="Link" size={15} class="share-actions__icon--idle" />
+          <Icon name="Check" size={15} class="share-actions__icon--copied" />
+        </span>
+        <span class="share-actions__label-swap" aria-hidden="true">
+          <span class="share-actions__label--idle">{t("share.copy_link")}</span>
+          <span class="share-actions__label--copied">{t("share.copied")}</span>
+        </span>
+        <span class="sr-only share-actions__sr-status">{t("share.copy_link")}</span>
+      </button>
+    </div>
+
+    <div class="share-actions__divider" aria-hidden="true"></div>
+
+    <!-- Static platform web intents & messaging channels -->
+    <div class="share-actions__platforms" role="group" aria-label={t("share.heading")}>
+      <a
+        href={whatsappUrl}
+        class="share-actions__platform-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("share.whatsapp")}
+        aria-label={t("share.whatsapp")}
+      >
+        <SocialIcon name="whatsapp" size={16} />
+      </a>
+
+      <a
+        href={telegramUrl}
+        class="share-actions__platform-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("share.telegram")}
+        aria-label={t("share.telegram")}
+      >
+        <SocialIcon name="telegram" size={16} />
+      </a>
+
+      <button
+        type="button"
+        class="share-actions__platform-link share-actions__platform-link--button"
+        id="wechat-share-btn"
+        title={t("share.wechat")}
+        aria-label={t("share.wechat")}
+        aria-haspopup="dialog"
+        aria-controls="wechat-modal"
+      >
+        <SocialIcon name="wechat" size={16} />
+      </button>
+
+      <a
+        href={redditUrl}
+        class="share-actions__platform-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("share.reddit")}
+        aria-label={t("share.reddit")}
+      >
+        <SocialIcon name="reddit" size={16} />
+      </a>
+
+      <a
+        href={facebookUrl}
+        class="share-actions__platform-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("share.facebook")}
+        aria-label={t("share.facebook")}
+      >
+        <SocialIcon name="facebook" size={16} />
+      </a>
+
+      <a
+        href={xUrl}
+        class="share-actions__platform-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("share.x")}
+        aria-label={t("share.x")}
+      >
+        <SocialIcon name="x" size={16} />
+      </a>
+
+      <a
+        href={linkedinUrl}
+        class="share-actions__platform-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("share.linkedin")}
+        aria-label={t("share.linkedin")}
+      >
+        <SocialIcon name="linkedin" size={16} />
+      </a>
+
+      <a
+        href={blueskyUrl}
+        class="share-actions__platform-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        title={t("share.bluesky")}
+        aria-label={t("share.bluesky")}
+      >
+        <SocialIcon name="bluesky" size={16} />
+      </a>
+
+      <a
+        href={emailUrl}
+        class="share-actions__platform-link"
+        title={t("share.email")}
+        aria-label={t("share.email")}
+      >
+        <Icon name="Mail" size={16} />
+      </a>
+    </div>
+  </div>
+
+  <!-- Screen-reader live region for instant feedback -->
+  <div id="share-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- WeChat Scan QR Code Dialog Modal -->
+  <dialog id="wechat-modal" class="share-qr-dialog" aria-labelledby="wechat-modal-title">
+    <div class="share-qr-dialog__inner">
+      <header class="share-qr-dialog__header">
+        <h3 id="wechat-modal-title" class="share-qr-dialog__title">
+          {t("share.wechat_modal_title")}
+        </h3>
+        <button
+          type="button"
+          id="wechat-modal-close"
+          class="share-qr-dialog__close"
+          aria-label={t("share.wechat_modal_close")}
+          title={t("share.wechat_modal_close")}
+        >
+          <Icon name="X" size={16} />
+        </button>
+      </header>
+
+      <div class="share-qr-dialog__body">
+        <div class="share-qr-dialog__code-frame" set:html={qrSvg} />
+        <p class="share-qr-dialog__desc">
+          {t("share.wechat_modal_desc")}
+        </p>
+      </div>
+    </div>
+  </dialog>
+</aside>
+
+<script>
+  function initShareActions() {
+    const container = document.querySelector<HTMLElement>(".share-actions");
+    if (!container || container.dataset.initialized === "true") return;
+    container.dataset.initialized = "true";
+
+    // 1. Native Web Share API progressive activation
+    const nativeBtn = container.querySelector<HTMLButtonElement>("#native-share-btn");
+    if (nativeBtn && typeof navigator !== "undefined" && typeof navigator.share === "function") {
+      nativeBtn.hidden = false;
+      nativeBtn.addEventListener("click", async () => {
+        const shareTitle = nativeBtn.dataset.shareTitle || document.title;
+        const shareText = nativeBtn.dataset.shareText || "";
+        const shareUrl = nativeBtn.dataset.shareUrl || window.location.href;
+        try {
+          await navigator.share({
+            title: shareTitle,
+            text: shareText,
+            url: shareUrl,
+          });
+        } catch (err: any) {
+          if (err?.name !== "AbortError") {
+            console.warn("Native share failed:", err);
+          }
+        }
+      });
+    }
+
+    // 2. One-click Copy Link with accessible live feedback
+    const copyBtn = container.querySelector<HTMLButtonElement>("#copy-link-btn");
+    const liveRegion = container.querySelector<HTMLElement>("#share-live-region");
+    const srStatus = copyBtn?.querySelector<HTMLElement>(".share-actions__sr-status");
+    let copyTimer: number | undefined;
+
+    if (copyBtn) {
+      copyBtn.addEventListener("click", async () => {
+        const urlToCopy = copyBtn.dataset.url || window.location.href;
+        const idleLabel = copyBtn.dataset.labelIdle || "Copy link";
+        const copiedAnnouncement = copyBtn.dataset.announcementCopied || "Link copied to clipboard";
+
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(urlToCopy);
+          } else {
+            const tempInput = document.createElement("input");
+            tempInput.value = urlToCopy;
+            tempInput.style.position = "fixed";
+            tempInput.style.opacity = "0";
+            document.body.appendChild(tempInput);
+            tempInput.focus();
+            tempInput.select();
+            try {
+              (document as unknown as Record<string, (cmd: string) => boolean>)["execCommand"]?.("copy");
+            } finally {
+              document.body.removeChild(tempInput);
+            }
+          }
+
+          copyBtn.classList.add("is-copied");
+          copyBtn.setAttribute("aria-label", copiedAnnouncement);
+          if (srStatus) srStatus.textContent = copiedAnnouncement;
+          if (liveRegion) liveRegion.textContent = copiedAnnouncement;
+
+          if (copyTimer) window.clearTimeout(copyTimer);
+          copyTimer = window.setTimeout(() => {
+            copyBtn.classList.remove("is-copied");
+            copyBtn.setAttribute("aria-label", idleLabel);
+            if (srStatus) srStatus.textContent = idleLabel;
+            if (liveRegion) liveRegion.textContent = "";
+          }, 2400);
+        } catch (error) {
+          console.warn("Failed to copy link:", error);
+        }
+      });
+    }
+
+    // 3. WeChat QR Code Modal
+    const wechatBtn = container.querySelector<HTMLButtonElement>("#wechat-share-btn");
+    const wechatModal = container.querySelector<HTMLDialogElement>("#wechat-modal");
+    const closeBtn = container.querySelector<HTMLButtonElement>("#wechat-modal-close");
+
+    if (wechatBtn && wechatModal) {
+      wechatBtn.addEventListener("click", () => {
+        if (typeof wechatModal.showModal === "function") {
+          wechatModal.showModal();
+        } else {
+          wechatModal.setAttribute("open", "");
+        }
+      });
+
+      closeBtn?.addEventListener("click", () => {
+        if (typeof wechatModal.close === "function") {
+          wechatModal.close();
+        } else {
+          wechatModal.removeAttribute("open");
+        }
+      });
+
+      wechatModal.addEventListener("click", (event) => {
+        if (event.target === wechatModal) {
+          if (typeof wechatModal.close === "function") {
+            wechatModal.close();
+          } else {
+            wechatModal.removeAttribute("open");
+          }
+        }
+      });
+    }
+  }
+
+  initShareActions();
+  document.addEventListener("astro:page-load", initShareActions);
+</script>

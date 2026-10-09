@@ -466,4 +466,138 @@ test("editorial links, listing titles, and card titles define visited link styli
   expect(visitedSelectors.some((s) => s.includes(".prose a:visited"))).toBe(true);
 });
 
+test("share actions render across English, French, and Estonian field notes", async ({ page }) => {
+  await page.goto("/writing/static-sites-are-operational-systems");
+  const enHeading = page.locator(".share-actions__heading");
+  await expect(enHeading).toHaveText("Share this note");
+  const enCopyBtn = page.locator("#copy-link-btn");
+  await expect(enCopyBtn).toHaveText(/Copy link/);
+  await expect(page.locator('.share-actions a[title="Share on WhatsApp"]')).toBeVisible();
+  await expect(page.locator('.share-actions a[title="Share on Telegram"]')).toBeVisible();
+  await expect(page.locator('.share-actions button#wechat-share-btn')).toBeVisible();
+  await expect(page.locator('.share-actions a[title="Share on Reddit"]')).toBeVisible();
+  await expect(page.locator('.share-actions a[title="Share on Facebook"]')).toBeVisible();
+  await expect(page.locator('.share-actions a[title="Share on X"]')).toBeVisible();
+  await expect(page.locator('.share-actions a[title="Share on LinkedIn"]')).toBeVisible();
+  await expect(page.locator('.share-actions a[title="Share on Bluesky"]')).toBeVisible();
+  await expect(page.locator('.share-actions a[title="Share via email"]')).toBeVisible();
+
+  await page.goto("/fr/writing/static-sites-are-operational-systems");
+  const frHeading = page.locator(".share-actions__heading");
+  await expect(frHeading).toHaveText("Partager cette note");
+  const frCopyBtn = page.locator("#copy-link-btn");
+  await expect(frCopyBtn).toHaveText(/Copier le lien/);
+  await expect(page.locator('.share-actions a[title="Partager sur WhatsApp"]')).toBeVisible();
+  await expect(page.locator('.share-actions button#wechat-share-btn')).toBeVisible();
+
+  await page.goto("/et/writing/static-sites-are-operational-systems");
+  const etHeading = page.locator(".share-actions__heading");
+  await expect(etHeading).toHaveText("Jaga seda märkust");
+  const etCopyBtn = page.locator("#copy-link-btn");
+  await expect(etCopyBtn).toHaveText(/Kopeeri link/);
+  await expect(page.locator('.share-actions a[title="Jaga WhatsAppis"]')).toBeVisible();
+  await expect(page.locator('.share-actions button#wechat-share-btn')).toBeVisible();
+});
+
+test("copy link copies canonical URL, maintains zero layout shift, and triggers accessible feedback", async ({ page, context }) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/writing/static-sites-are-operational-systems");
+
+  const copyBtn = page.locator("#copy-link-btn");
+  const liveRegion = page.locator("#share-live-region");
+
+  await expect(copyBtn).toHaveText(/Copy link/);
+  const initialBox = await copyBtn.boundingBox();
+
+  await copyBtn.click();
+
+  await expect(copyBtn).toHaveClass(/is-copied/);
+  await expect(copyBtn.locator(".share-actions__label--copied")).toHaveText("Copied");
+  await expect(copyBtn).toHaveAttribute("aria-label", /Link copied/);
+  await expect(liveRegion).toHaveText(/Link copied/);
+
+  // Assert zero layout shift on the button width
+  const copiedBox = await copyBtn.boundingBox();
+  expect(Math.round(copiedBox?.width ?? 0)).toBe(Math.round(initialBox?.width ?? 0));
+
+  const clipboardText = await page.evaluate(async () => {
+    return await navigator.clipboard.readText();
+  });
+  expect(clipboardText).toContain("/writing/static-sites-are-operational-systems");
+});
+
+test("native Web Share activates progressively and passes article payload", async ({ page }) => {
+  await page.addInitScript(() => {
+    (window.navigator as any).share = async (payload: any) => {
+      (window as any).__lastSharePayload = payload;
+    };
+  });
+
+  await page.goto("/writing/static-sites-are-operational-systems");
+  const nativeBtn = page.locator("#native-share-btn");
+  await expect(nativeBtn).toBeVisible();
+
+  await nativeBtn.click();
+
+  const payload = await page.evaluate(() => (window as any).__lastSharePayload);
+  expect(payload).toBeDefined();
+  expect(payload.title).toBe("Static sites are operational systems");
+  expect(payload.url).toContain("/writing/static-sites-are-operational-systems");
+});
+
+test("static web intent URLs are properly encoded with rel=noopener and zero external scripts", async ({ page }) => {
+  await page.goto("/writing/static-sites-are-operational-systems");
+
+  const links = page.locator(".share-actions__platforms a");
+  const count = await links.count();
+  expect(count).toBeGreaterThanOrEqual(8);
+
+  for (let i = 0; i < count; i++) {
+    const link = links.nth(i);
+    const href = await link.getAttribute("href");
+    expect(href).toBeTruthy();
+
+    if (href?.startsWith("mailto:")) {
+      expect(href).toContain("mailto:?subject=");
+      expect(href).toContain("Static%20sites%20are%20operational%20systems");
+    } else {
+      expect(await link.getAttribute("target")).toBe("_blank");
+      expect(await link.getAttribute("rel")).toBe("noopener noreferrer");
+      expect(href).toMatch(/^https:\/\//);
+    }
+  }
+
+  // Verify zero external third-party tracker scripts or iframes
+  const externalScripts = await page.locator('script[src*="facebook"], script[src*="twitter"], script[src*="linkedin"], script[src*="addthis"], script[src*="sharethis"]').count();
+  expect(externalScripts).toBe(0);
+
+  const trackerIframes = await page.locator('iframe[src*="facebook"], iframe[src*="twitter"]').count();
+  expect(trackerIframes).toBe(0);
+});
+
+test("wechat modal opens with SVG QR code and closes via close button and escape", async ({ page }) => {
+  await page.goto("/writing/static-sites-are-operational-systems");
+
+  const wechatBtn = page.locator("#wechat-share-btn");
+  const dialog = page.locator("#wechat-modal");
+
+  await expect(dialog).not.toBeVisible();
+  await wechatBtn.click();
+  await expect(dialog).toBeVisible();
+
+  // QR code SVG rendered inside dialog
+  const qrSvg = dialog.locator(".share-qr-dialog__code-frame svg");
+  await expect(qrSvg).toBeVisible();
+
+  // Close via close button
+  await dialog.locator("#wechat-modal-close").click();
+  await expect(dialog).not.toBeVisible();
+
+  // Re-open and close via Escape key
+  await wechatBtn.click();
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(dialog).not.toBeVisible();
+});
+
 
