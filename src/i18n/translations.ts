@@ -117,6 +117,26 @@ export const translations = {
       "This field note is not yet translated into the selected language. Displaying the original English version.",
     "writing.in_english": "(In English)",
 
+    // Share actions
+    "share.heading": "Share this note",
+    "share.native": "Share...",
+    "share.copy_link": "Copy link",
+    "share.copied": "Copied",
+    "share.link_copied": "Link copied to clipboard",
+    "share.whatsapp": "Share on WhatsApp",
+    "share.telegram": "Share on Telegram",
+    "share.wechat": "Share on WeChat",
+    "share.reddit": "Share on Reddit",
+    "share.facebook": "Share on Facebook",
+    "share.x": "Share on X",
+    "share.linkedin": "Share on LinkedIn",
+    "share.bluesky": "Share on Bluesky",
+    "share.email": "Share via email",
+    "share.wechat_modal_title": "Scan with WeChat",
+    "share.wechat_modal_desc":
+      "Scan this QR code with WeChat to read and share this field note.",
+    "share.wechat_modal_close": "Close",
+
     // About
     "about.title": "About — Fortunat Mutunda",
     "about.description":
@@ -270,6 +290,26 @@ export const translations = {
       "Cette note de terrain n'est pas encore traduite en français. Affichage de la version originale en anglais.",
     "writing.in_english": "(En anglais)",
 
+    // Share actions
+    "share.heading": "Partager cette note",
+    "share.native": "Partager...",
+    "share.copy_link": "Copier le lien",
+    "share.copied": "Copié",
+    "share.link_copied": "Lien copié dans le presse-papiers",
+    "share.whatsapp": "Partager sur WhatsApp",
+    "share.telegram": "Partager sur Telegram",
+    "share.wechat": "Partager sur WeChat",
+    "share.reddit": "Partager sur Reddit",
+    "share.facebook": "Partager sur Facebook",
+    "share.x": "Partager sur X",
+    "share.linkedin": "Partager sur LinkedIn",
+    "share.bluesky": "Partager sur Bluesky",
+    "share.email": "Partager par e-mail",
+    "share.wechat_modal_title": "Scanner avec WeChat",
+    "share.wechat_modal_desc":
+      "Scannez ce code QR avec WeChat pour lire et partager cette note de terrain.",
+    "share.wechat_modal_close": "Fermer",
+
     // About
     "about.title": "À propos — Fortunat Mutunda",
     "about.description":
@@ -421,6 +461,26 @@ export const translations = {
     "writing.fallback_notice":
       "See väljamärge ei ole veel eesti keelde tõlgitud. Kuvatakse ingliskeelne algupärand.",
     "writing.in_english": "(Inglise keeles)",
+
+    // Share actions
+    "share.heading": "Jaga seda märkust",
+    "share.native": "Jaga...",
+    "share.copy_link": "Kopeeri link",
+    "share.copied": "Kopeeritud",
+    "share.link_copied": "Link kopeeritud lõikelauale",
+    "share.whatsapp": "Jaga WhatsAppis",
+    "share.telegram": "Jaga Telegramis",
+    "share.wechat": "Jaga WeChatis",
+    "share.reddit": "Jaga Redditis",
+    "share.facebook": "Jaga Facebookis",
+    "share.x": "Jaga X-is",
+    "share.linkedin": "Jaga LinkedInis",
+    "share.bluesky": "Jaga Blueskys",
+    "share.email": "Jaga e-postiga",
+    "share.wechat_modal_title": "Skanni WeChatiga",
+    "share.wechat_modal_desc":
+      "Skannige see QR-kood WeChatiga, et seda väljamärkust lugeda ja jagada.",
+    "share.wechat_modal_close": "Sulge",
 
     // About
     "about.title": "Minust — Fortunat Mutunda",

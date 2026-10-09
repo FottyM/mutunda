@@ -4,6 +4,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import ButtonLink from "../components/ButtonLink.astro";
 import Callout from "../components/Callout.astro";
 import ProgressiveImage from "../components/ProgressiveImage.astro";
+import ShareActions from "../components/ShareActions.astro";
 import Tag from "../components/Tag.astro";
 import type { Locale } from "../i18n/config";
 import { useTranslations } from "../i18n/translations";
@@ -107,6 +108,13 @@ const tagSlug = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, "-").r
       <div class="prose article-body">
         <Content />
       </div>
+
+      <ShareActions
+        title={entry.data.title}
+        description={entry.data.description}
+        canonicalUrl={canonicalUrl}
+        locale={locale}
+      />
 
       <footer class="article-footer">
         <ButtonLink href={getLocalizedPath("/writing", locale)} variant="secondary">

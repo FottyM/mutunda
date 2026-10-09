@@ -1511,6 +1511,343 @@ h3 {
   transform: translateX(-3px);
 }
 
+/* ==========================================================================
+   Share Actions (Field Notes)
+   ========================================================================== */
+
+.share-actions {
+  max-width: var(--reading-width);
+  margin: var(--space-12) auto 0;
+  padding-top: var(--space-6);
+  border-top: var(--rule);
+}
+
+.share-actions__header {
+  margin-bottom: var(--space-3);
+}
+
+.share-actions__heading {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-muted);
+}
+
+.share-actions__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.share-actions__primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.share-actions__divider {
+  width: 1px;
+  height: 1.5rem;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .share-actions__divider {
+    display: none;
+  }
+}
+
+.share-actions__button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 2.25rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: 1px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.share-actions__button:hover {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border-strong);
+  color: var(--color-accent);
+}
+
+.share-actions__button:active {
+  transform: translateY(1px);
+}
+
+.share-actions__button:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Copy Link Icon state swapping */
+.share-actions__icon-swap {
+  display: inline-grid;
+  place-items: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.share-actions__icon-swap .share-actions__icon--idle,
+.share-actions__icon-swap .share-actions__icon--copied {
+  grid-area: 1 / 1;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.share-actions__icon-swap .share-actions__icon--copied {
+  opacity: 0;
+  transform: scale(0.6);
+  color: var(--color-success);
+}
+
+.share-actions__button.is-copied {
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.share-actions__button.is-copied .share-actions__icon--idle {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.share-actions__button.is-copied .share-actions__icon--copied {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Zero-shift Label Swap */
+.share-actions__label-swap {
+  display: inline-grid;
+  grid-template-areas: "label";
+  align-items: center;
+}
+
+.share-actions__label--idle,
+.share-actions__label--copied {
+  grid-area: label;
+  white-space: nowrap;
+  transition:
+    opacity var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.share-actions__label--idle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.share-actions__label--copied {
+  opacity: 0;
+  transform: translateY(2px);
+  color: var(--color-success);
+}
+
+.share-actions__button.is-copied .share-actions__label--idle {
+  opacity: 0;
+  transform: translateY(-2px);
+}
+
+.share-actions__button.is-copied .share-actions__label--copied {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.share-actions__platforms {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.share-actions__platform-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 1px;
+  background: var(--color-surface);
+  color: var(--color-muted);
+  cursor: pointer;
+  text-decoration: none;
+  user-select: none;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.share-actions__platform-link:hover {
+  background: var(--color-surface-raised);
+  border-color: var(--color-border-strong);
+  color: var(--color-accent);
+}
+
+.share-actions__platform-link:active {
+  transform: translateY(1px);
+}
+
+.share-actions__platform-link:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* WeChat QR Code Modal Dialog */
+.share-qr-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+  width: min(22rem, calc(100vw - 2rem));
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 4px;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  outline: none;
+  z-index: 1000;
+}
+
+.share-qr-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.share-qr-dialog[open] {
+  animation: qr-dialog-in 140ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes qr-dialog-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% - 8px)) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.share-qr-dialog__inner {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) var(--space-6) var(--space-6);
+}
+
+.share-qr-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: var(--rule);
+}
+
+.share-qr-dialog__title {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.share-qr-dialog__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.share-qr-dialog__close:hover {
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+}
+
+.share-qr-dialog__close:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.share-qr-dialog__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.share-qr-dialog__code-frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 12.5rem;
+  height: 12.5rem;
+  margin-bottom: var(--space-3);
+  padding: var(--space-3);
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.share-qr-dialog__code-frame svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.share-qr-dialog__desc {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--color-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .share-qr-dialog[open] {
+    animation: none;
+  }
+}
+
 .article-footer,
 .case-study__footer {
   max-width: var(--reading-width);
