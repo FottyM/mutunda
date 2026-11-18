@@ -51,17 +51,21 @@ Because Kubernetes quietly replaced the crashed pod each time, traffic kept flow
 
 Seeing the restart alert fire gave us two immediate things we had lacked for months: proof that something was actively leaking or crashing, and a clean four-hour window to inspect.
 
-## Tracing the leak with pprof, metrics, and AI
+## Tracing the leak with `@datadog/pprof`, metrics, and AI
 
-To find out what was filling up the process, we turned on **`pprof`** to capture heap profiles and observe where memory was actually going.[^4] We combined those profiles with good old **Grafana and Prometheus** metrics to line up memory growth, restart timestamps, and deployment history.
+To find out what was filling up the process, we turned on **`@datadog/pprof`** to capture heap profiles and observe where memory was actually going.[^4] We combined those profiles with good old **Grafana and Prometheus** metrics to line up memory growth, restart timestamps, and deployment history.
 
-That timeline did half the work. The sawtooth memory climb started right after the caching and DataLoader update had shipped. From there, we used AI alongside the `pprof` output and codebase to trace the exact allocation path and separate likely suspects from the real cause.
+The metrics timeline did half the work. The sawtooth memory climb started right after the caching and DataLoader update had shipped, which immediately narrowed the search to that release. The heap profiles then pointed to what was actually piling up inside Node.js: retained cached payloads alongside expiration timers that were never being released before the pod died.
+
+From there, we used AI alongside the `@datadog/pprof` output and the codebase to trace those allocations back to the exact NestJS caching layer and separate plausible suspects from the real cause. AI sped up the code path tracing, while Grafana and Prometheus kept us honest about when the behaviour started and whether the hypothesis matched production.
 
 What we found was almost funny in hindsight.
 
 ## Writes to the heap, reads from Redis
 
 The team had intended to back the new cache with Redis. What had actually happened was more subtle and far worse: **reads were going to Redis, while writes were going to local process memory**, with a **one-week TTL** set via the NestJS caching layer.[^3]
+
+It is easy to see how a bug like that slips through review. Neither path throws an error. A service can hold a working Redis client for reads while a NestJS `CacheModule` or decorator quietly falls back to its default in-memory store for writes. Everything compiles, tests pass, and Redis looks healthy because it is barely being touched.
 
 Here is an illustrative NestJS setup, not our production code, showing how easily a split between a custom Redis client and a default in-memory `CacheModule` can leave reads and writes talking to two different places:
 
@@ -118,11 +122,17 @@ export class AppModule {}
 
 After we released the fix, the sawtooth curve flattened out. The pod restart alert stopped firing completely. Better still, with the cache finally living in Redis and surviving across requests and restarts, our **p95 latency** dropped well below where it had been before.
 
-None of that happened because we suddenly became better at guessing what was wrong with a legacy service. It happened because one small, actionable alert finally forced a four-hour failure into the open.
+## What makes an alert worth keeping
+
+Working through a legacy service taught me to be picky about what earns an alert. Adding twenty noisy rules is almost as bad as having none, because people quickly stop reading them.[^1]
+
+An alert is worth wiring up when it points to a concrete failure mode that demands an investigation: a container restarting in production, an out-of-memory kill, or a sustained burn against an SLO error budget. Metrics that fluctuate normally on their own, like brief CPU spikes or raw cache hit ratios, belong on a dashboard where you can inspect them during debugging rather than in an alert channel.
+
+Starting with one unmistakable signal beat trying to instrument everything at once. None of this got fixed because we suddenly became better at guessing what was wrong with a legacy service. It got fixed because one small, actionable alert finally forced a four-hour failure into the open.
 
 ## Notes
 
 [^1]: Google SRE Book: [Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/).
 [^2]: `kube-state-metrics`: [Pod metrics (`kube_pod_container_status_restarts_total`)](https://github.com/kubernetes/kube-state-metrics/blob/main/docs/metrics/workload/pod-metrics.md).
 [^3]: NestJS Documentation: [Caching (`@nestjs/cache-manager`)](https://docs.nestjs.com/techniques/caching).
-[^4]: Google `pprof` for Node.js: [`google/pprof-nodejs`](https://github.com/google/pprof-nodejs).
+[^4]: Datadog `pprof` for Node.js: [`@datadog/pprof` (`DataDog/pprof-nodejs`)](https://github.com/DataDog/pprof-nodejs).

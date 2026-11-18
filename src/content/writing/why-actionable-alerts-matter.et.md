@@ -52,17 +52,21 @@ Kuna Kubernetes vahetas kokku kukkunud podi iga kord vaikselt välja, liikus lii
 
 Taaskäivituse hoiatus andis meile korraga kaks asja, millest olime kuid puudust tundnud: kindla tõendi, et midagi lekib või kukub aktiivselt kokku, ning selge neljatunnise akna, mida uurida.
 
-## Lekke jälil pprofi, meetrikate ja AI abil
+## Lekke jälil `@datadog/pprof`-i, meetrikate ja AI abil
 
-Et näha, mis protsessi mälu täitis, lülitasime sisse **`pprof`-i**, et koguda mäluhunniku profiile ja näha, kuhu mälu tegelikult läheb.[^4] Kõrvutasime need profiilid vanade heade **Grafana ja Prometheuse** meetrikatega, et panna ühele ajajoonele mälukasv, taaskäivituste ajad ja väljalasete ajalugu.
+Et näha, mis protsessi mälu täitis, lülitasime sisse **`@datadog/pprof`-i**, et koguda mäluhunniku profiile ja näha, kuhu mälu tegelikult läheb.[^4] Kõrvutasime need profiilid vanade heade **Grafana ja Prometheuse** meetrikatega, et panna ühele ajajoonele mälukasv, taaskäivituste ajad ja väljalasete ajalugu.
 
-See ajajoon tegi ära poole tööst. Saehambakujuline mälukasv algas täpselt pärast vahemälu ja DataLoaderite uuenduse avaldamist. Sealt edasi kasutasime AI-d koos `pprof`-i väljundi ja koodibaasiga, et jälitada täpset mälujaotuse teekonda ning eristada tõenäolised kahtlusalused tegelikust põhjusest.
+Meetrikate ajajoon tegi ära poole tööst. Saehambakujuline mälukasv algas täpselt pärast vahemälu ja DataLoaderite uuenduse avaldamist, mis kitsendas otsingu kohe sellele väljalaskele. Mäluhunniku profiilid näitasid seejärel, mis Node.js-is tegelikult kuhjus: mällu jäänud vahemälu sisu koos aegumistaimeritega, mida ei vabastatud kunagi enne podi surma.
+
+Sealt edasi kasutasime AI-d koos `@datadog/pprof`-i väljundi ja koodibaasiga, et siduda need mälujaotused täpse NestJS-i vahemälukihiga ning eristada tõenäolised kahtlusalused tegelikust põhjusest. AI kiirendas kooditee läbiuurimist, samal ajal kui Grafana ja Prometheus hoidsid meid ausana selles, millal probleem algas ja kas hüpotees klappis toodanguga.
 
 See, mille leidsime, oli tagantjärele peaaegu koomiline.
 
 ## Kirjutamised mäluhunnikusse, lugemised Redisesse
 
 Meeskond oli arvanud, et uus vahemälu töötab Redise peal. Tegelik olukord oli peenem ja palju hullem: **lugemised läksid Redisesse, samal ajal kui kirjutamised läksid protsessi kohalikku sisemällu**, ning NestJS-i vahemälukihis oli määratud **ühe nädala pikkune TTL**.[^3]
+
+Sellise vea läbilibisemine koodiülevaatusest on lihtne. Kumbki tee ei viska viga. Teenusel võib olla täiesti töötav Redise klient lugemiste jaoks, samal ajal kui NestJS-i `CacheModule` või dekoraator langeb kirjutamisel vaikselt tagasi vaikimisi sisemällu. Kõik kompileerub, testid lähevad läbi ja Redis paistab täiesti terve, sest teda peaaegu ei koormata.
 
 Siin on näitlik NestJS-i seadistus, mitte meie tootmiskood, mis näitab, kuidas eraldi Redise kliendi ja vaikimisi sisemälus töötava `CacheModule`-i lahknevus paneb lugemised ja kirjutamised rääkima kahe eri kohaga:
 
@@ -119,11 +123,17 @@ export class AppModule {}
 
 Pärast paranduse avaldamist muutus saehambakõver sirgeks. Podi taaskäivituse hoiatus lakkas täielikult käivitumast. Veel parem, kuna vahemälu elab nüüd päriselt Redises ja jääb alles üle päringute ning taaskäivituste, langes meie **p95 latentsus** märgatavalt madalamale kui varem.
 
-Miski sellest ei juhtunud seepärast, et oleksime äkki osanud pärandteenuse vigu paremini ära arvata. See juhtus seepärast, et üks väike ja teostatav hoiatus tõi neljatunnise tõrke lõpuks päevavalgele.
+## Millist hoiatust tasub hoida
+
+Pärandteenusega töötamine õpetas mind olema valiv selles osas, mis üldse hoiatuse ära teenib. Kahekümne mürarikka reegli lisamine on peaaegu sama halb kui null hoiatust, sest inimesed lõpetavad kiiresti nende lugemise.[^1]
+
+Hoiatust tasub seadistada siis, kui see viitab konkreetsele tõrkele, mis nõuab uurimist: toodangus taaskäivituv konteiner, mälupuuduse tõttu tapetud protsess või püsiv SLO veaeelarve põlemine. Meetrikad, mis kõiguvad iseenesest normaalselt, näiteks lühikesed protsessoripiigid või toored vahemälu tabamussuhted, kuuluvad pigem juhtpaneelile silumiseks kui hoiatuskanalisse.
+
+Ühe eksimatu signaaliga alustamine oli palju tõhusam kui kõike korraga mõõta püüda. Miski sellest ei saanud korda seepärast, et oleksime äkki osanud pärandteenuse vigu paremini ära arvata. See sai korda seepärast, et üks väike ja teostatav hoiatus tõi neljatunnise tõrke lõpuks päevavalgele.
 
 ## Notes
 
 [^1]: Google SRE Book: [Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/).
 [^2]: `kube-state-metrics`: [Podi meetrikad (`kube_pod_container_status_restarts_total`)](https://github.com/kubernetes/kube-state-metrics/blob/main/docs/metrics/workload/pod-metrics.md).
 [^3]: NestJS-i dokumentatsioon: [Caching (`@nestjs/cache-manager`)](https://docs.nestjs.com/techniques/caching).
-[^4]: Google `pprof` Node.js-ile: [`google/pprof-nodejs`](https://github.com/google/pprof-nodejs).
+[^4]: Datadog `pprof` Node.js-ile: [`@datadog/pprof` (`DataDog/pprof-nodejs`)](https://github.com/DataDog/pprof-nodejs).

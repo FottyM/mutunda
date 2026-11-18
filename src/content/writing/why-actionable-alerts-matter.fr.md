@@ -52,17 +52,21 @@ Comme Kubernetes remplaçait silencieusement le pod planté à chaque fois, le t
 
 Le déclenchement de cette alerte nous a donné d'un coup deux éléments qui nous manquaient depuis des mois : la preuve qu'une fuite ou un crash actif se produisait, et une fenêtre nette de quatre heures à inspecter.
 
-## Remonter la fuite avec pprof, les métriques et l'IA
+## Remonter la fuite avec `@datadog/pprof`, les métriques et l'IA
 
-Pour comprendre ce qui remplissait le processus, nous avons activé **`pprof`** afin de capturer des profils de tas mémoire et voir où partait réellement la RAM.[^4] Nous avons croisé ces profils avec nos bonnes vieilles métriques **Grafana et Prometheus** pour aligner la montée en mémoire, les horaires de redémarrage et l'historique des déploiements.
+Pour comprendre ce qui remplissait le processus, nous avons activé **`@datadog/pprof`** afin de capturer des profils de tas mémoire et voir où partait réellement la RAM.[^4] Nous avons croisé ces profils avec nos bonnes vieilles métriques **Grafana et Prometheus** pour aligner la montée en mémoire, les horaires de redémarrage et l'historique des déploiements.
 
-Cette chronologie a fait la moitié du travail. La courbe mémoire en dents de scie avait démarré juste après la mise en production du cache et des DataLoaders. À partir de là, nous avons utilisé l'IA en appui des sorties `pprof` et du code pour remonter la piste d'allocation exacte et distinguer les suspects probables de la véritable cause.
+La chronologie des métriques a fait la moitié du travail. La courbe mémoire en dents de scie avait démarré juste après la mise en production du cache et des DataLoaders, ce qui a tout de suite recentré l'enquête sur cette version. Les profils de tas ont ensuite montré ce qui s'accumulait réellement dans Node.js : des données mises en cache retenues en mémoire, accompagnées de minuteurs d'expiration jamais libérés avant la mort du pod.
+
+À partir de là, nous avons utilisé l'IA en appui des sorties `@datadog/pprof` et du code pour relier ces allocations à la couche de cache NestJS et distinguer les suspects plausibles de la véritable cause. L'IA a accéléré la lecture du chemin d'exécution, tandis que Grafana et Prometheus nous ont permis de vérifier la date de début et de confirmer l'hypothèse en production.
 
 Ce que nous avons trouvé prête presque à sourire avec le recul.
 
 ## Des écritures dans le tas mémoire, des lectures dans Redis
 
 L'équipe pensait avoir adossé le nouveau cache à Redis. Ce qui se passait réellement était plus subtil et bien pire : **les lectures partaient vers Redis, tandis que les écritures partaient dans la mémoire locale du processus**, avec un **TTL d'une semaine** posé via la couche de cache NestJS.[^3]
+
+On comprend vite comment un tel bug passe la revue de code. Aucun des deux chemins ne lève d'erreur. Un service peut disposer d'un client Redis fonctionnel pour les lectures pendant qu'un `CacheModule` ou un décorateur NestJS retombe silencieusement sur son stockage en mémoire par défaut pour les écritures. Tout compile, les tests passent, et Redis a l'air parfaitement sain puisqu'il est à peine sollicité.
 
 Voici une configuration NestJS illustrative, et non notre code de production, qui montre à quel point un décalage entre un client Redis dédié et un `CacheModule` en mémoire par défaut peut faire parler lectures et écritures à deux endroits différents :
 
@@ -119,11 +123,17 @@ export class AppModule {}
 
 Après la mise en production du correctif, la courbe en dents de scie s'est aplatie. L'alerte de redémarrage de pod a complètement cessé de se déclencher. Mieux encore, avec un cache enfin hébergé dans Redis et persistant entre les requêtes et les redémarrages, notre **latence p95** est descendue nettement en dessous de son niveau précédent.
 
-Rien de tout cela n'est arrivé parce que nous serions soudain devenus meilleurs pour deviner ce qui clochait dans un service legacy. C'est arrivé parce qu'une petite alerte exploitable a enfin mis en lumière une panne qui se répétait toutes les quatre heures.
+## Ce qui mérite vraiment une alerte
+
+Maintenir un service legacy m'a appris à être sélectif sur ce qui mérite une alerte. Ajouter vingt règles bruyantes est presque aussi inutile que de n'en avoir aucune, car tout le monde finit par ne plus les lire.[^1]
+
+Une alerte vaut la peine d'exister lorsqu'elle désigne une panne concrète qui appelle une enquête : un conteneur qui redémarre en production, un arrêt par épuisement de mémoire ou une consommation soutenue du budget d'erreur d'un SLO. Les métriques qui fluctuent normalement d'elles-mêmes, comme un pic CPU bref ou un taux de succès de cache brut, ont leur place sur un tableau de bord pour le débogage plutôt que dans un canal d'alerte.
+
+Commencer par un seul signal incontestable a valu bien mieux que d'essayer de tout instrumenter d'un coup. Rien de tout cela n'a été corrigé parce que nous serions soudain devenus meilleurs pour deviner ce qui clochait dans un service legacy. Cela a été corrigé parce qu'une petite alerte exploitable a enfin mis en lumière une panne qui se répétait toutes les quatre heures.
 
 ## Notes
 
 [^1]: Google SRE Book : [Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/).
 [^2]: `kube-state-metrics` : [Métriques de pod (`kube_pod_container_status_restarts_total`)](https://github.com/kubernetes/kube-state-metrics/blob/main/docs/metrics/workload/pod-metrics.md).
 [^3]: Documentation NestJS : [Caching (`@nestjs/cache-manager`)](https://docs.nestjs.com/techniques/caching).
-[^4]: Google `pprof` pour Node.js : [`google/pprof-nodejs`](https://github.com/google/pprof-nodejs).
+[^4]: Datadog `pprof` pour Node.js : [`@datadog/pprof` (`DataDog/pprof-nodejs`)](https://github.com/DataDog/pprof-nodejs).
