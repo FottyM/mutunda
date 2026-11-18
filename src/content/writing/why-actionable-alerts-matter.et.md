@@ -54,7 +54,7 @@ Taaskäivituse hoiatus andis meile korraga kaks asja, millest olime kuid puudust
 
 ## Lekke jälil pprofi, meetrikate ja AI abil
 
-Et näha, mis protsessi mälu täitis, lülitasime sisse **`pprof`-i**, et koguda mäluhunniku profiile ja näha, kuhu mälu tegelikult läheb.[^4] Kõrvutasime need profiilid vanade heade **Grafana ja Prometheuse** meetrikatega, et panna ühele ajajoonele mälukasv, taaskäivituste ajad ja väljalasete ajalugu.
+Et näha, mis protsessi mälu täitis, lülitasime sisse **`@datadog/pprof`-i**, et koguda mäluhunniku profiile ja näha, kuhu mälu tegelikult läheb.[^4] Kõrvutasime need profiilid vanade heade **Grafana ja Prometheuse** meetrikatega, et panna ühele ajajoonele mälukasv, taaskäivituste ajad ja väljalasete ajalugu.
 
 See ajajoon tegi ära poole tööst. Saehambakujuline mälukasv algas täpselt pärast vahemälu ja DataLoaderite uuenduse avaldamist. Sealt edasi kasutasime AI-d koos `pprof`-i väljundi ja koodibaasiga, et jälitada täpset mälujaotuse teekonda ning eristada tõenäolised kahtlusalused tegelikust põhjusest.
 
@@ -126,4 +126,4 @@ Miski sellest ei juhtunud seepärast, et oleksime äkki osanud pärandteenuse vi
 [^1]: Google SRE Book: [Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/).
 [^2]: `kube-state-metrics`: [Podi meetrikad (`kube_pod_container_status_restarts_total`)](https://github.com/kubernetes/kube-state-metrics/blob/main/docs/metrics/workload/pod-metrics.md).
 [^3]: NestJS-i dokumentatsioon: [Caching (`@nestjs/cache-manager`)](https://docs.nestjs.com/techniques/caching).
-[^4]: Google `pprof` Node.js-ile: [`google/pprof-nodejs`](https://github.com/google/pprof-nodejs).
+[^4]: Datadog `pprof` Node.js-ile: [`@datadog/pprof` (`DataDog/pprof-nodejs`)](https://github.com/DataDog/pprof-nodejs).

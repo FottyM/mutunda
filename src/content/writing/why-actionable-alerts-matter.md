@@ -53,7 +53,7 @@ Seeing the restart alert fire gave us two immediate things we had lacked for mon
 
 ## Tracing the leak with pprof, metrics, and AI
 
-To find out what was filling up the process, we turned on **`pprof`** to capture heap profiles and observe where memory was actually going.[^4] We combined those profiles with good old **Grafana and Prometheus** metrics to line up memory growth, restart timestamps, and deployment history.
+To find out what was filling up the process, we turned on **`@datadog/pprof`** to capture heap profiles and observe where memory was actually going.[^4] We combined those profiles with good old **Grafana and Prometheus** metrics to line up memory growth, restart timestamps, and deployment history.
 
 That timeline did half the work. The sawtooth memory climb started right after the caching and DataLoader update had shipped. From there, we used AI alongside the `pprof` output and codebase to trace the exact allocation path and separate likely suspects from the real cause.
 
@@ -125,4 +125,4 @@ None of that happened because we suddenly became better at guessing what was wro
 [^1]: Google SRE Book: [Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/).
 [^2]: `kube-state-metrics`: [Pod metrics (`kube_pod_container_status_restarts_total`)](https://github.com/kubernetes/kube-state-metrics/blob/main/docs/metrics/workload/pod-metrics.md).
 [^3]: NestJS Documentation: [Caching (`@nestjs/cache-manager`)](https://docs.nestjs.com/techniques/caching).
-[^4]: Google `pprof` for Node.js: [`google/pprof-nodejs`](https://github.com/google/pprof-nodejs).
+[^4]: Datadog `pprof` for Node.js: [`@datadog/pprof` (`DataDog/pprof-nodejs`)](https://github.com/DataDog/pprof-nodejs).

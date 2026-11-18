@@ -54,7 +54,7 @@ Le déclenchement de cette alerte nous a donné d'un coup deux éléments qui no
 
 ## Remonter la fuite avec pprof, les métriques et l'IA
 
-Pour comprendre ce qui remplissait le processus, nous avons activé **`pprof`** afin de capturer des profils de tas mémoire et voir où partait réellement la RAM.[^4] Nous avons croisé ces profils avec nos bonnes vieilles métriques **Grafana et Prometheus** pour aligner la montée en mémoire, les horaires de redémarrage et l'historique des déploiements.
+Pour comprendre ce qui remplissait le processus, nous avons activé **`@datadog/pprof`** afin de capturer des profils de tas mémoire et voir où partait réellement la RAM.[^4] Nous avons croisé ces profils avec nos bonnes vieilles métriques **Grafana et Prometheus** pour aligner la montée en mémoire, les horaires de redémarrage et l'historique des déploiements.
 
 Cette chronologie a fait la moitié du travail. La courbe mémoire en dents de scie avait démarré juste après la mise en production du cache et des DataLoaders. À partir de là, nous avons utilisé l'IA en appui des sorties `pprof` et du code pour remonter la piste d'allocation exacte et distinguer les suspects probables de la véritable cause.
 
@@ -126,4 +126,4 @@ Rien de tout cela n'est arrivé parce que nous serions soudain devenus meilleurs
 [^1]: Google SRE Book : [Monitoring Distributed Systems](https://sre.google/sre-book/monitoring-distributed-systems/).
 [^2]: `kube-state-metrics` : [Métriques de pod (`kube_pod_container_status_restarts_total`)](https://github.com/kubernetes/kube-state-metrics/blob/main/docs/metrics/workload/pod-metrics.md).
 [^3]: Documentation NestJS : [Caching (`@nestjs/cache-manager`)](https://docs.nestjs.com/techniques/caching).
-[^4]: Google `pprof` pour Node.js : [`google/pprof-nodejs`](https://github.com/google/pprof-nodejs).
+[^4]: Datadog `pprof` pour Node.js : [`@datadog/pprof` (`DataDog/pprof-nodejs`)](https://github.com/DataDog/pprof-nodejs).
